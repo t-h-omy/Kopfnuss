@@ -82,9 +82,23 @@ export function validateAnswer(userAnswer) {
   }
   
   const correctAnswer = currentTask.task.answer;
-  const normalizedAnswer = typeof userAnswer === 'string' 
-    ? parseFloat(userAnswer.trim()) 
-    : userAnswer;
+  
+  // Parse and validate answer - use parseInt for integer results
+  let normalizedAnswer;
+  if (typeof userAnswer === 'string') {
+    const trimmed = userAnswer.trim();
+    // Check if answer should be integer (all our tasks have integer answers)
+    normalizedAnswer = parseInt(trimmed, 10);
+    // Validate that it's a valid integer
+    if (isNaN(normalizedAnswer) || trimmed !== normalizedAnswer.toString()) {
+      return {
+        isValid: false,
+        error: 'Bitte gib eine ganze Zahl ein'
+      };
+    }
+  } else {
+    normalizedAnswer = Math.floor(userAnswer);
+  }
   
   const isCorrect = normalizedAnswer === correctAnswer;
   

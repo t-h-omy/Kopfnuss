@@ -12,15 +12,16 @@ import { loadDiamonds, saveDiamonds } from './diamondManager.js';
 
 /**
  * Calculate days between two dates
+ * Uses date components to avoid timezone issues
  * @param {string} date1 - First date (YYYY-MM-DD)
  * @param {string} date2 - Second date (YYYY-MM-DD)
  * @returns {number} Number of days difference
  */
 function daysBetween(date1, date2) {
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  const diffTime = Math.abs(d2 - d1);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const d1 = new Date(date1 + 'T00:00:00');
+  const d2 = new Date(date2 + 'T00:00:00');
+  const diffTime = Math.abs(d2.getTime() - d1.getTime());
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 }
 

@@ -133,6 +133,7 @@ export function generatePowers() {
 
 /**
  * Generate a mixed (random operation) task
+ * Note: Powers are excluded from mixed mode as they have a different difficulty level
  * @returns {Object} Task object with question, answer, and metadata
  */
 export function generateMixed() {
@@ -141,6 +142,7 @@ export function generateMixed() {
     generateSubtraction,
     generateMultiplication,
     generateDivision
+    // Powers excluded - they're more advanced and have their own challenge
   ];
   
   // Randomly select a generator
