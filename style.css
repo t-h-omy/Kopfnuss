@@ -1,0 +1,127 @@
+/* Kopfnuss - Mobile-First PWA Styles */
+
+/* CSS Variables für Theming */
+:root {
+  --primary-color: #4CAF50;
+  --secondary-color: #FF9800;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #e0e0e0;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --border-radius: 8px;
+  --transition: 0.3s ease;
+}
+
+/* Reset und Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App Container */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Navigation - TODO: Implementierung */
+#nav {
+  /* TODO: Navigation Styles */
+  background-color: var(--primary-color);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow);
+}
+
+/* Main Content */
+#main-content {
+  flex: 1;
+  padding: var(--spacing-md);
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Footer - TODO: Implementierung */
+#footer {
+  /* TODO: Footer Styles */
+  padding: var(--spacing-md);
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Offline Indicator */
+#offline-indicator {
+  /* TODO: Offline Indicator Styles */
+  position: fixed;
+  bottom: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f44336;
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+}
+
+/* Responsive - Tablet */
+@media (min-width: 768px) {
+  #app {
+    max-width: 768px;
+  }
+  
+  #main-content {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Responsive - Desktop */
+@media (min-width: 1024px) {
+  #app {
+    max-width: 1024px;
+  }
+  
+  #main-content {
+    padding: var(--spacing-xl);
+  }
+}
+
+/* TODO: Screen-spezifische Styles */
+/* TODO: Component Styles */
+/* TODO: Animation Styles */
