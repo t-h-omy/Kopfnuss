@@ -257,4 +257,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Exports für Module
-export { Router, KopfnussApp, showScreen };
+export { Router, KopfnussApp };
