@@ -1,6 +1,10 @@
 # Assets README
 Dieser Ordner enthält alle statischen Assets für die Kopfnuss PWA
 
+## Aktueller Status
+⚠️ **Nur Platzhalter vorhanden**: icon-placeholder.svg ist ein temporäres Icon.
+Alle unten aufgeführten Icons müssen noch erstellt werden.
+
 ## Geplante Assets:
 
 ### Icons (PWA)
