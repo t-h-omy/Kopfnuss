@@ -4,18 +4,72 @@
 import { getTodaysChallenges } from './logic/challengeGenerator.js';
 import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds } from './logic/diamondManager.js';
+import { VERSION } from './version.js';
 
-// Service Worker Registrierung
+// Service Worker Registrierung mit Version Logging
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('./sw.js')
       .then((registration) => {
         console.log('ServiceWorker registriert:', registration.scope);
+        console.log('App Version:', VERSION.string);
+        
+        // Prüfe auf Updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('Neuer ServiceWorker gefunden, installiere...');
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('Neue Version verfügbar! Bitte Seite neu laden.');
+              // Optional: Benutzer informieren
+              showUpdateNotification();
+            }
+          });
+        });
       })
       .catch((error) => {
         console.error('ServiceWorker Registrierung fehlgeschlagen:', error);
       });
   });
+}
+
+/**
+ * Show update notification to user
+ */
+function showUpdateNotification() {
+  // Erstelle einfache Benachrichtigung (könnte später verbessert werden)
+  const notification = document.createElement('div');
+  notification.id = 'update-notification';
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    z-index: 10000;
+    font-size: 14px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  `;
+  notification.innerHTML = `
+    <span>Neue Version verfügbar!</span>
+    <button onclick="location.reload()" style="
+      background: white;
+      color: #4CAF50;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    ">Aktualisieren</button>
+  `;
+  document.body.appendChild(notification);
 }
 
 // Global state for current screen and data
@@ -82,6 +136,9 @@ function loadChallengesScreen(container) {
       </div>
       <div class="diamond-display">
         💎 Diamanten: ${diamondInfo.current}
+      </div>
+      <div class="version-display" style="font-size: 0.8em; opacity: 0.7;">
+        v${VERSION.string}
       </div>
     </div>
   `;
