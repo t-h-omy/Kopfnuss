@@ -6,6 +6,7 @@ import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds, addDiamonds } from './logic/diamondManager.js';
 import { clearAllData } from './logic/storageManager.js';
 import { VERSION } from './version.js';
+import { CONFIG } from './data/balancing.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -108,6 +109,7 @@ if ('serviceWorker' in navigator) {
 // Global state for current screen and data
 let currentScreen = null;
 let currentChallengeIndex = null;
+let returningFromTaskScreen = false;
 
 /**
  * Show a screen by name
@@ -120,6 +122,11 @@ export function showScreen(screenName, data = null) {
   if (!mainContent) {
     console.error('Main content element not found');
     return;
+  }
+  
+  // Track if we're returning from task screen to challenges
+  if (currentScreen === 'taskScreen' && screenName === 'challenges') {
+    returningFromTaskScreen = true;
   }
   
   // Store current screen
@@ -160,10 +167,19 @@ function loadChallengesScreen(container) {
   // Get data
   const challenges = getTodaysChallenges();
   const streakInfo = getStreakInfo();
+  
+  // Update diamonds based on progress and check if any were awarded
+  const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
   
-  // Update diamonds based on progress
-  updateDiamonds();
+  // Check if we should show diamond celebration popup
+  // Only show when returning from task screen AND diamonds were awarded
+  if (returningFromTaskScreen && diamondResult.awarded > 0) {
+    returningFromTaskScreen = false;
+    showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND);
+  } else {
+    returningFromTaskScreen = false;
+  }
   
   // Create main container
   const challengesContainer = document.createElement('div');
@@ -505,6 +521,64 @@ function showRewardPopup() {
  */
 function closeRewardPopup() {
   const overlay = document.getElementById('reward-popup-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+  
+  // Remove any remaining confetti
+  const confettiPieces = document.querySelectorAll('.confetti-piece');
+  confettiPieces.forEach(piece => piece.remove());
+}
+
+/**
+ * Show diamond celebration popup when player earns diamonds from task completion
+ * @param {number} diamondsAwarded - Number of diamonds awarded
+ * @param {number} tasksPerDiamond - Number of tasks needed to earn one diamond
+ */
+function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'diamond-celebration-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card';
+  
+  // Create message based on number of diamonds awarded
+  const diamondText = diamondsAwarded === 1 
+    ? `+1 Diamant` 
+    : `+${diamondsAwarded} Diamanten`;
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🎉</div>
+    <h2>Glückwunsch!</h2>
+    <div class="reward-diamond-display">
+      <span class="reward-diamond-icon">💎</span>
+      <span class="reward-diamond-text">${diamondText}</span>
+    </div>
+    <p>Du hast ${tasksPerDiamond} Aufgaben gelöst und dafür einen Diamanten erhalten!</p>
+    <button id="diamond-celebration-close-button" class="btn-primary">Belohnung abholen</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add confetti effect
+  createConfettiEffect();
+  
+  // Add event listener for close button
+  const closeButton = document.getElementById('diamond-celebration-close-button');
+  closeButton.addEventListener('click', () => {
+    closeDiamondCelebrationPopup();
+  });
+}
+
+/**
+ * Close the diamond celebration popup
+ */
+function closeDiamondCelebrationPopup() {
+  const overlay = document.getElementById('diamond-celebration-popup-overlay');
   if (overlay) {
     overlay.remove();
   }
