@@ -3,7 +3,7 @@
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.2.2';
+const APP_VERSION = '1.2.3';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
@@ -173,5 +173,31 @@ self.addEventListener('message', (event) => {
   
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    console.log('[SW] Clearing all caches on request');
+    event.waitUntil(
+      caches.keys()
+        .then((cacheNames) => {
+          return Promise.all(
+            cacheNames.map((cacheName) => {
+              console.log('[SW] Deleting cache:', cacheName);
+              return caches.delete(cacheName);
+            })
+          );
+        })
+        .then(() => {
+          console.log('[SW] All caches cleared');
+          // Re-cache essential files
+          return caches.open(CACHE_NAME);
+        })
+        .then((cache) => {
+          return cache.addAll(urlsToCache);
+        })
+        .then(() => {
+          console.log('[SW] Cache refreshed with new files');
+        })
+    );
   }
 });

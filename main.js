@@ -265,7 +265,6 @@ function loadChallengesScreen(container) {
     infoCard.innerHTML = `
       <h3>${challenge.name}</h3>
       <p class="challenge-status">${statusText}</p>
-      ${challenge.state === 'completed' ? `<p class="challenge-errors">Fehler: ${challenge.errors}</p>` : ''}
     `;
     
     // Append elements in correct order based on position
