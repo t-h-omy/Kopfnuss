@@ -1,9 +1,9 @@
 // Kopfnuss - Main Application Entry Point
 // Routing und App-Initialisierung
 
-import { getTodaysChallenges } from './logic/challengeGenerator.js';
+import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges } from './logic/challengeGenerator.js';
 import { getStreakInfo } from './logic/streakManager.js';
-import { getDiamondInfo, updateDiamonds } from './logic/diamondManager.js';
+import { getDiamondInfo, updateDiamonds, addDiamonds } from './logic/diamondManager.js';
 import { VERSION } from './version.js';
 
 /**
@@ -291,6 +291,25 @@ function loadChallengesScreen(container) {
   challengesMap.appendChild(svg);
   challengesMap.appendChild(challengesList);
   
+  // Create reward button section
+  const rewardSection = document.createElement('div');
+  rewardSection.className = 'reward-section';
+  
+  const allCompleted = areAllChallengesCompleted();
+  const rewardButton = document.createElement('button');
+  rewardButton.id = 'reward-button';
+  rewardButton.className = allCompleted ? 'reward-button active' : 'reward-button disabled';
+  rewardButton.textContent = 'Belohnung abholen';
+  rewardButton.disabled = !allCompleted;
+  
+  if (allCompleted) {
+    rewardButton.addEventListener('click', () => {
+      showRewardPopup();
+    });
+  }
+  
+  rewardSection.appendChild(rewardButton);
+  
   // Create footer with version
   const footer = document.createElement('div');
   footer.className = 'challenges-footer';
@@ -298,6 +317,7 @@ function loadChallengesScreen(container) {
   
   challengesContainer.appendChild(header);
   challengesContainer.appendChild(challengesMap);
+  challengesContainer.appendChild(rewardSection);
   challengesContainer.appendChild(footer);
   
   container.appendChild(challengesContainer);
@@ -420,6 +440,96 @@ function loadStatsScreen(container) {
       <p>Statistiken werden hier angezeigt</p>
     </div>
   `;
+}
+
+/**
+ * Show reward popup with celebration effect
+ * Awards 1 diamond and allows generating new challenges
+ */
+function showRewardPopup() {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'reward-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🎉</div>
+    <h2>Glückwunsch!</h2>
+    <div class="reward-diamond-display">
+      <span class="reward-diamond-icon">💎</span>
+      <span class="reward-diamond-text">+1 Diamant</span>
+    </div>
+    <p>Du hast alle Herausforderungen gemeistert!</p>
+    <button id="new-challenge-button" class="btn-primary">Neue Herausforderung</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add confetti effect
+  createConfettiEffect();
+  
+  // Add event listener for new challenge button
+  const newChallengeButton = document.getElementById('new-challenge-button');
+  newChallengeButton.addEventListener('click', () => {
+    // Award the diamond when user confirms
+    addDiamonds(1);
+    
+    // Close popup
+    closeRewardPopup();
+    
+    // Generate new challenges
+    resetChallenges();
+    
+    // Refresh challenges screen
+    showScreen('challenges');
+  });
+}
+
+/**
+ * Close the reward popup
+ */
+function closeRewardPopup() {
+  const overlay = document.getElementById('reward-popup-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+  
+  // Remove any remaining confetti
+  const confettiPieces = document.querySelectorAll('.confetti-piece');
+  confettiPieces.forEach(piece => piece.remove());
+}
+
+/**
+ * Create confetti celebration effect
+ */
+function createConfettiEffect() {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
+  const confettiCount = 50;
+  const minDuration = 1.5;
+  const durationVariance = 1;
+  const cleanupDelay = 3000;
+  
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti-piece';
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.top = '-20px';
+    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+    confetti.style.animationDuration = (Math.random() * durationVariance + minDuration) + 's';
+    
+    document.body.appendChild(confetti);
+    
+    // Remove confetti after animation
+    setTimeout(() => {
+      confetti.remove();
+    }, cleanupDelay);
+  }
 }
 
 // Router Skeleton (kept for future use)
