@@ -53,7 +53,21 @@ function createChallenge(operationType, index) {
 }
 
 /**
+ * Shuffle an array in place using Fisher-Yates algorithm
+ * @param {Array} array - Array to shuffle
+ * @returns {Array} The shuffled array (same reference)
+ */
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+/**
  * Generate 5 daily challenges
+ * Challenges are shuffled randomly so order varies each day
  * @returns {Array} Array of 5 challenge objects
  */
 export function generateDailyChallenges() {
@@ -64,6 +78,9 @@ export function generateDailyChallenges() {
     'division',
     'mixed'
   ];
+  
+  // Shuffle the challenge types to randomize order
+  shuffleArray(challengeTypes);
   
   const challenges = challengeTypes.map((type, index) => 
     createChallenge(type, index)
