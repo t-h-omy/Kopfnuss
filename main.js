@@ -63,9 +63,9 @@ if ('serviceWorker' in navigator) {
           
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Neue Version verfügbar! Bitte Seite neu laden.');
-              // Optional: Benutzer informieren
-              showUpdateNotification();
+              console.log('Neue Version verfügbar! Automatisches Neuladen...');
+              // Automatically reload to get the new version
+              window.location.reload();
             }
           });
         });
@@ -74,44 +74,16 @@ if ('serviceWorker' in navigator) {
         console.error('ServiceWorker Registrierung fehlgeschlagen:', error);
       });
   });
-}
-
-/**
- * Show update notification to user
- */
-function showUpdateNotification() {
-  // Erstelle einfache Benachrichtigung (könnte später verbessert werden)
-  const notification = document.createElement('div');
-  notification.id = 'update-notification';
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #4CAF50;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    z-index: 10000;
-    font-size: 14px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-  `;
-  notification.innerHTML = `
-    <span>Neue Version verfügbar!</span>
-    <button onclick="location.reload()" style="
-      background: white;
-      color: #4CAF50;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    ">Aktualisieren</button>
-  `;
-  document.body.appendChild(notification);
+  
+  // Listen for controller change (when new SW takes over)
+  // This ensures the page reloads if the SW was updated while the page was open
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    console.log('ServiceWorker Controller gewechselt, lade Seite neu...');
+    window.location.reload();
+  });
 }
 
 // Global state for current screen and data
@@ -136,6 +108,13 @@ export function showScreen(screenName, data = null) {
   
   // Clear current content
   mainContent.innerHTML = '';
+  
+  // Manage body class for task screen keyboard stability
+  if (screenName === 'taskScreen') {
+    document.body.classList.add('task-screen-active');
+  } else {
+    document.body.classList.remove('task-screen-active');
+  }
   
   // Route to appropriate screen
   switch (screenName) {
