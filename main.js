@@ -550,6 +550,11 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond) {
     ? `+1 Diamant` 
     : `+${diamondsAwarded} Diamanten`;
   
+  // Create description based on number of diamonds awarded
+  const descriptionText = diamondsAwarded === 1
+    ? `Du hast ${tasksPerDiamond} Aufgaben gelöst und dafür einen Diamanten erhalten!`
+    : `Du hast ${tasksPerDiamond * diamondsAwarded} Aufgaben gelöst und dafür ${diamondsAwarded} Diamanten erhalten!`;
+  
   popupCard.innerHTML = `
     <div class="reward-celebration">🎉</div>
     <h2>Glückwunsch!</h2>
@@ -557,7 +562,7 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond) {
       <span class="reward-diamond-icon">💎</span>
       <span class="reward-diamond-text">${diamondText}</span>
     </div>
-    <p>Du hast ${tasksPerDiamond} Aufgaben gelöst und dafür einen Diamanten erhalten!</p>
+    <p>${descriptionText}</p>
     <button id="diamond-celebration-close-button" class="btn-primary">Belohnung abholen</button>
   `;
   
