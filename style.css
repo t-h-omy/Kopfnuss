@@ -5,6 +5,9 @@
 
 /* CSS Variables für Theming */
 :root {
+  /* App Height for mobile keyboard stability */
+  --app-height: 100vh;
+  
   /* Primary Colors */
   --color-blue: #1E6BB8;
   --color-orange: #F28C28;
@@ -90,6 +93,14 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+/* When task screen is active, prevent body scrolling for keyboard stability */
+body.task-screen-active {
+  overflow: hidden;
+  height: var(--app-height, 100vh);
+  /* Prevent iOS bounce/rubber-band scrolling */
+  overscroll-behavior: none;
 }
 
 /* Decorative background numbers */
@@ -517,42 +528,79 @@ body::before {
 
 /* ===========================
    TASK SCREEN STYLES
+   Keyboard-stable layout for mobile devices
+   Compact layout to fit above mobile keyboard
    =========================== */
 
 .task-screen {
   max-width: 600px;
   margin: 0 auto;
   animation: fadeIn 0.4s ease;
+  /* Use fixed height to prevent layout shifts when mobile keyboard appears */
+  height: var(--app-height);
+  min-height: var(--app-height);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Main interaction area - positioned to stay above keyboard */
+.task-screen-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: var(--spacing-sm);
+  padding-top: var(--spacing-xs);
+  overflow: hidden;
+  gap: var(--spacing-xs);
+}
+
+/* Task screen version footer - can be covered by keyboard */
+.task-screen-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-md);
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  color: #999;
+  background: transparent;
+  z-index: 1;
 }
 
 .task-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   background: white;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
+  flex-shrink: 0;
 }
 
 .task-header h2 {
-  font-size: var(--font-node-title-large);
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-blue);
 }
 
-/* Progress Bar */
+/* Progress Bar - Compact */
 .task-progress {
-  margin: var(--spacing-lg) 0;
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   background: white;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
   text-align: center;
-  font-size: var(--font-progress);
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-color);
+  flex-shrink: 0;
 }
 
 .progress-bar-container {
@@ -591,52 +639,58 @@ body::before {
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-/* Task Content */
+/* Task Content - Compact layout for keyboard visibility */
 .task-content {
   background: white;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-medium);
   text-align: center;
-  margin-bottom: var(--spacing-lg);
   position: relative;
+  flex-shrink: 0;
 }
 
 .task-question {
-  font-size: var(--font-task-large);
+  font-size: 24px;
   font-weight: 700;
   color: var(--color-blue);
-  margin-bottom: var(--spacing-xl);
-  min-height: 60px;
+  margin-bottom: var(--spacing-sm);
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 #task-input {
   width: 100%;
-  max-width: 280px;
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-size: var(--font-task);
+  max-width: 200px;
+  padding: var(--spacing-sm) var(--spacing-md);
   font-family: 'Fredoka', 'Nunito', sans-serif;
   font-weight: 600;
   text-align: center;
-  border: 3px solid var(--color-blue);
-  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-md);
   background: var(--color-off-white);
   color: var(--text-color);
-  transition: all var(--transition);
-  margin-bottom: var(--spacing-lg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  margin-bottom: var(--spacing-sm);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* Prevent auto-zoom on iOS Safari - minimum 16px font-size required */
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  #task-input {
+    font-size: var(--font-task);
+  }
 }
 
 #task-input:focus {
   outline: none;
   border-color: var(--color-orange);
   box-shadow: 0 0 0 4px rgba(242, 140, 40, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  transform: scale(1.02);
   background: white;
+  /* Remove transform to prevent layout shifts */
 }
 
 #task-input::placeholder {
@@ -647,11 +701,11 @@ body::before {
 button,
 .btn {
   font-family: 'Fredoka', 'Nunito', sans-serif;
-  font-size: var(--font-button);
+  font-size: 16px;
   font-weight: 600;
-  padding: var(--spacing-md) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition);
   box-shadow: var(--shadow-button);
@@ -668,8 +722,8 @@ button,
 
 #submit-answer:hover,
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(30, 107, 184, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 107, 184, 0.4);
 }
 
 #submit-answer:active,
@@ -683,15 +737,15 @@ button,
 .btn-secondary {
   background: var(--color-gray);
   color: var(--text-color);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  font-size: 16px;
-  padding: var(--spacing-sm) var(--spacing-md);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  padding: var(--spacing-xs) var(--spacing-md);
 }
 
 #back-button:hover,
 .btn-secondary:hover {
   background: #c0c0c0;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 #back-button:active,
@@ -699,18 +753,19 @@ button,
   transform: translateY(0);
 }
 
-/* Task Feedback */
+/* Task Feedback - Compact */
 .task-feedback {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-size: var(--font-progress-large);
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
   font-weight: 600;
   text-align: center;
-  min-height: 50px;
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .feedback-correct {

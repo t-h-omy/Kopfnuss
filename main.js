@@ -6,13 +6,59 @@ import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds } from './logic/diamondManager.js';
 import { VERSION } from './version.js';
 
-// Service Worker Registrierung mit Version Logging
+/**
+ * Set the --app-height CSS custom property for mobile keyboard stability
+ * This prevents layout shifts when mobile keyboard appears/disappears
+ */
+function setAppHeight() {
+  const appHeight = window.innerHeight;
+  document.documentElement.style.setProperty('--app-height', `${appHeight}px`);
+}
+
+// Initialize app height on load
+setAppHeight();
+
+// Update app height on resize (but NOT on focus/blur to prevent keyboard-related jumps)
+// Use a debounced resize handler to avoid excessive updates
+let resizeTimeout = null;
+window.addEventListener('resize', () => {
+  // Clear existing timeout
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
+  // Debounce resize events to prevent rapid updates
+  resizeTimeout = setTimeout(() => {
+    // Only update if we're not in a focused input state (keyboard likely showing)
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+      activeElement.tagName === 'INPUT' || 
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.contentEditable === 'true'
+    );
+    
+    if (!isInputFocused) {
+      setAppHeight();
+    }
+  }, 100);
+});
+
+// Also set on orientation change (more reliable than resize for orientation)
+window.addEventListener('orientationchange', () => {
+  // Wait for orientation change to complete
+  setTimeout(setAppHeight, 100);
+});
+
+// Service Worker Registrierung mit Version Logging und automatischem Cache-Reset
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    // Register SW with updateViaCache: 'none' to bypass HTTP cache for SW file
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
       .then((registration) => {
         console.log('ServiceWorker registriert:', registration.scope);
         console.log('App Version:', VERSION.string);
+        
+        // Force update check immediately
+        registration.update();
         
         // Prüfe auf Updates
         registration.addEventListener('updatefound', () => {
@@ -21,9 +67,23 @@ if ('serviceWorker' in navigator) {
           
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Neue Version verfügbar! Bitte Seite neu laden.');
-              // Optional: Benutzer informieren
-              showUpdateNotification();
+              console.log('Neue Version verfügbar! Cache wird geleert und Seite neu geladen...');
+              // Clear all caches before reloading
+              caches.keys().then((cacheNames) => {
+                return Promise.all(
+                  cacheNames.map((cacheName) => {
+                    console.log('Lösche Cache:', cacheName);
+                    return caches.delete(cacheName);
+                  })
+                );
+              }).then(() => {
+                // Tell SW to skip waiting
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }).catch((error) => {
+                console.error('Cache löschen fehlgeschlagen:', error);
+                // Still try to skip waiting even if cache deletion failed
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              });
             }
           });
         });
@@ -32,44 +92,16 @@ if ('serviceWorker' in navigator) {
         console.error('ServiceWorker Registrierung fehlgeschlagen:', error);
       });
   });
-}
-
-/**
- * Show update notification to user
- */
-function showUpdateNotification() {
-  // Erstelle einfache Benachrichtigung (könnte später verbessert werden)
-  const notification = document.createElement('div');
-  notification.id = 'update-notification';
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #4CAF50;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    z-index: 10000;
-    font-size: 14px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-  `;
-  notification.innerHTML = `
-    <span>Neue Version verfügbar!</span>
-    <button onclick="location.reload()" style="
-      background: white;
-      color: #4CAF50;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    ">Aktualisieren</button>
-  `;
-  document.body.appendChild(notification);
+  
+  // Listen for controller change (when new SW takes over)
+  // This ensures the page reloads if the SW was updated while the page was open
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    console.log('ServiceWorker Controller gewechselt, lade Seite neu...');
+    window.location.reload();
+  });
 }
 
 // Global state for current screen and data
@@ -94,6 +126,13 @@ export function showScreen(screenName, data = null) {
   
   // Clear current content
   mainContent.innerHTML = '';
+  
+  // Manage body class for task screen keyboard stability
+  if (screenName === 'taskScreen') {
+    document.body.classList.add('task-screen-active');
+  } else {
+    document.body.classList.remove('task-screen-active');
+  }
   
   // Route to appropriate screen
   switch (screenName) {
@@ -334,19 +373,25 @@ function drawConnectionPaths(svg, challengesList, nodePositions) {
  * @param {number} challengeIndex - Index of challenge
  */
 async function loadTaskScreen(container, challengeIndex) {
+  // Update app height when entering task screen to ensure proper sizing
+  setAppHeight();
+  
   container.innerHTML = `
     <div class="task-screen" id="task-screen-content">
-      <div class="task-header">
-        <h2>Challenge ${challengeIndex + 1}</h2>
-        <button id="back-button">Zurück</button>
+      <div class="task-screen-main">
+        <div class="task-header">
+          <h2>Challenge ${challengeIndex + 1}</h2>
+          <button id="back-button">Zurück</button>
+        </div>
+        <div class="task-progress" id="task-progress"></div>
+        <div class="task-content">
+          <div class="task-question" id="task-question"></div>
+          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
+          <button id="submit-answer">Prüfen</button>
+        </div>
+        <div class="task-feedback" id="task-feedback"></div>
       </div>
-      <div class="task-content">
-        <div class="task-question" id="task-question"></div>
-        <input type="number" id="task-input" placeholder="Deine Antwort">
-        <button id="submit-answer">Prüfen</button>
-      </div>
-      <div class="task-progress" id="task-progress"></div>
-      <div class="task-feedback" id="task-feedback"></div>
+      <div class="task-screen-footer">v${VERSION.string}</div>
     </div>
   `;
   
