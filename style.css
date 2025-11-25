@@ -544,22 +544,6 @@ body::before {
   overflow: hidden;
 }
 
-/* Fixed top container for stable positioning above keyboard */
-.task-screen-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background: linear-gradient(135deg, var(--color-off-white) 0%, #fff 100%);
-  padding: var(--spacing-md);
-  padding-top: env(safe-area-inset-top, var(--spacing-md));
-  display: flex;
-  flex-direction: column;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
 /* Main interaction area - positioned to stay above keyboard */
 .task-screen-main {
   flex: 1;

@@ -33,7 +33,7 @@ window.addEventListener('resize', () => {
     const isInputFocused = activeElement && (
       activeElement.tagName === 'INPUT' || 
       activeElement.tagName === 'TEXTAREA' ||
-      activeElement.contentEditable === 'true'
+      activeElement.isContentEditable === true
     );
     
     if (!isInputFocused) {
