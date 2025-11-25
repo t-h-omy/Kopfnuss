@@ -111,29 +111,29 @@ export function generateDivision() {
 }
 
 /**
- * Generate a power of 2 task
+ * Generate a squared task
  * @returns {Object} Task object with question, answer, and metadata
  */
-export function generatePowers() {
-  const exponent = randomInt(
-    BALANCING.powers.exponent.min,
-    BALANCING.powers.exponent.max
+export function generateSquared() {
+  const base = randomInt(
+    BALANCING.squared.min,
+    BALANCING.squared.max
   );
-  const answer = Math.pow(2, exponent);
+  const answer = base * base;
   
   return {
-    question: `2^${exponent}`,
+    question: `${base}²`,
     answer: answer,
     metadata: {
-      operation: 'powers',
-      operands: [2, exponent]
+      operation: 'squared',
+      operands: [base]
     }
   };
 }
 
 /**
  * Generate a mixed (random operation) task
- * Note: Powers are excluded from mixed mode as they have a different difficulty level
+ * Includes all operation types for variety
  * @returns {Object} Task object with question, answer, and metadata
  */
 export function generateMixed() {
@@ -141,8 +141,8 @@ export function generateMixed() {
     generateAddition,
     generateSubtraction,
     generateMultiplication,
-    generateDivision
-    // Powers excluded - they're more advanced and have their own challenge
+    generateDivision,
+    generateSquared
   ];
   
   // Randomly select a generator
@@ -170,8 +170,8 @@ export function generateTask(operationType) {
       return generateMultiplication();
     case 'division':
       return generateDivision();
-    case 'powers':
-      return generatePowers();
+    case 'squared':
+      return generateSquared();
     case 'mixed':
       return generateMixed();
     default:

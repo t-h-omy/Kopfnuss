@@ -67,22 +67,25 @@ function shuffleArray(array) {
 
 /**
  * Generate 5 daily challenges
- * Challenges are shuffled randomly so order varies each day
+ * Challenges are randomly selected from all available types (max one of each type)
+ * and shuffled so order varies each day
  * @returns {Array} Array of 5 challenge objects
  */
 export function generateDailyChallenges() {
-  const challengeTypes = [
+  const allChallengeTypes = [
     'addition',
     'subtraction',
     'multiplication',
     'division',
+    'squared',
     'mixed'
   ];
   
-  // Shuffle the challenge types to randomize order
-  shuffleArray(challengeTypes);
+  // Shuffle all challenge types and pick first 5
+  shuffleArray(allChallengeTypes);
+  const selectedTypes = allChallengeTypes.slice(0, 5);
   
-  const challenges = challengeTypes.map((type, index) => 
+  const challenges = selectedTypes.map((type, index) => 
     createChallenge(type, index)
   );
   

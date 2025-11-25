@@ -30,9 +30,10 @@ export const BALANCING = {
     quotient: { min: 2, max: 20 }
   },
   
-  // Powers of 2: 2^n where n is between min and max
-  powers: {
-    exponent: { min: 1, max: 10 }
+  // Squared: z² where z is between min and max
+  squared: {
+    min: 2,
+    max: 20
   }
 };
 
@@ -90,5 +91,10 @@ export const CHALLENGE_TYPES = {
     name: 'Gemischt',
     icon: '🎲',
     difficulty: 3
+  },
+  squared: {
+    name: 'Quadratzahlen',
+    icon: 'x²',
+    difficulty: 2
   }
 };
