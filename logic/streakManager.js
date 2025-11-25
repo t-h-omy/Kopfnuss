@@ -27,17 +27,13 @@ function daysBetween(date1, date2) {
 
 /**
  * Update streak based on current progress
- * @returns {Object} Updated streak object with additional metadata
+ * @returns {Object} Updated streak object
  */
 export function updateStreak() {
   const streak = loadStreak();
   const progress = loadProgress();
   const today = getTodayDate();
   const lastActiveDate = streak.lastActiveDate;
-  
-  // Track the previous streak count to detect new milestone
-  const previousStreak = streak.currentStreak;
-  let streakIncreased = false;
   
   // Check if player completed enough tasks today
   const tasksCompletedToday = progress.tasksCompletedToday || 0;
@@ -50,11 +46,8 @@ export function updateStreak() {
       streak.longestStreak = 1;
       streak.lastActiveDate = today;
       streak.isFrozen = false;
-      streakIncreased = previousStreak < 1;
     }
     saveStreak(streak);
-    streak.streakIncreased = streakIncreased;
-    streak.previousStreak = previousStreak;
     return streak;
   }
   
@@ -65,7 +58,6 @@ export function updateStreak() {
     if (hasCompletedMinimum && streak.currentStreak === 0) {
       streak.currentStreak = 1;
       streak.isFrozen = false;
-      streakIncreased = previousStreak < 1;
     }
   }
   // Next day - increment streak if minimum completed
@@ -74,7 +66,6 @@ export function updateStreak() {
       streak.currentStreak += 1;
       streak.isFrozen = false;
       streak.lastActiveDate = today;
-      streakIncreased = true;
       
       // Update longest streak if necessary
       if (streak.currentStreak > streak.longestStreak) {
@@ -97,7 +88,6 @@ export function updateStreak() {
       streak.currentStreak = 1;
       streak.lastActiveDate = today;
       streak.isFrozen = false;
-      streakIncreased = previousStreak < 1;
     }
   }
   // More than 2 days - streak definitely lost
@@ -109,14 +99,10 @@ export function updateStreak() {
     if (hasCompletedMinimum) {
       streak.currentStreak = 1;
       streak.lastActiveDate = today;
-      streakIncreased = previousStreak < 1;
     }
   }
   
   saveStreak(streak);
-  // Add metadata to indicate if this is a genuine new streak (not rescued/unfrozen)
-  streak.streakIncreased = streakIncreased;
-  streak.previousStreak = previousStreak;
   return streak;
 }
 
@@ -190,15 +176,12 @@ export function rescueStreak() {
   
   streak.isFrozen = false;
   streak.lastActiveDate = today;
-  // Mark that the streak was rescued (not genuinely increased)
-  streak.wasRescued = true;
   saveStreak(streak);
   
   return {
     success: true,
     message: 'Streak rescued!',
-    diamondsRemaining: diamonds - CONFIG.STREAK_RESCUE_COST,
-    wasRescued: true
+    diamondsRemaining: diamonds - CONFIG.STREAK_RESCUE_COST
   };
 }
 

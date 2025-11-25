@@ -2,9 +2,9 @@
 // Routing und App-Initialisierung
 
 import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges } from './logic/challengeGenerator.js';
-import { getStreakInfo, updateStreak } from './logic/streakManager.js';
+import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds, addDiamonds } from './logic/diamondManager.js';
-import { clearAllData, loadStreak, saveStreak } from './logic/storageManager.js';
+import { clearAllData, loadStreak } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
 
@@ -170,21 +170,15 @@ function loadChallengesScreen(container) {
   // Get previous streak data BEFORE updating
   const previousStreakData = loadStreak();
   const previousStreakCount = previousStreakData.currentStreak;
-  const wasRescued = previousStreakData.wasRescued || false;
   
   // Update streak and get new data (this also calls updateStreak internally)
   const streakInfo = getStreakInfo();
   
-  // Check if streak genuinely increased (not from rescue)
-  // The streak increased if currentStreak > previousStreak AND wasRescued is false
-  const streakIncreased = streakInfo.currentStreak > previousStreakCount && !wasRescued;
-  
-  // Clear the wasRescued flag after checking (so it doesn't affect future checks)
-  if (wasRescued) {
-    const streak = loadStreak();
-    streak.wasRescued = false;
-    saveStreak(streak);
-  }
+  // Check if streak genuinely increased
+  // When a streak is rescued (unfrozen), the count stays the same, so this check
+  // automatically excludes rescued streaks from triggering the celebration popup.
+  // The popup only shows when currentStreak > previousStreak (genuine new day achievement)
+  const streakIncreased = streakInfo.currentStreak > previousStreakCount;
   
   // Update diamonds based on progress and check if any were awarded
   const diamondResult = updateDiamonds();

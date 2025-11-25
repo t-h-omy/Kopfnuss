@@ -131,8 +131,7 @@ export function loadStreak() {
     currentStreak: 0,
     longestStreak: 0,
     lastActiveDate: null,
-    isFrozen: false,
-    wasRescued: false
+    isFrozen: false
   });
 }
 
