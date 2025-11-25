@@ -473,12 +473,12 @@ function showRewardPopup() {
   // Add confetti effect
   createConfettiEffect();
   
-  // Award the diamond
-  addDiamonds(1);
-  
   // Add event listener for new challenge button
   const newChallengeButton = document.getElementById('new-challenge-button');
   newChallengeButton.addEventListener('click', () => {
+    // Award the diamond when user confirms
+    addDiamonds(1);
+    
     // Close popup
     closeRewardPopup();
     
@@ -510,22 +510,25 @@ function closeRewardPopup() {
 function createConfettiEffect() {
   const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
   const confettiCount = 50;
+  const minDuration = 1.5;
+  const durationVariance = 1;
+  const cleanupDelay = 3000;
   
   for (let i = 0; i < confettiCount; i++) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti-piece';
     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.top = '100vh';
+    confetti.style.top = '-20px';
     confetti.style.animationDelay = Math.random() * 0.5 + 's';
-    confetti.style.animationDuration = (Math.random() * 1 + 1.5) + 's';
+    confetti.style.animationDuration = (Math.random() * durationVariance + minDuration) + 's';
     
     document.body.appendChild(confetti);
     
     // Remove confetti after animation
     setTimeout(() => {
       confetti.remove();
-    }, 3000);
+    }, cleanupDelay);
   }
 }
 

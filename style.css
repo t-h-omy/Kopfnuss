@@ -553,7 +553,7 @@ body::before {
 
 .reward-diamond-icon {
   font-size: 32px;
-  animation: starBurst 1s ease infinite;
+  animation: starBurst 1s ease 3;
 }
 
 .reward-diamond-text {
@@ -1094,7 +1094,7 @@ button,
     opacity: 1;
   }
   100% {
-    transform: translateY(-100vh) rotate(720deg);
+    transform: translateY(100vh) rotate(720deg);
     opacity: 0;
   }
 }
