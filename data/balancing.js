@@ -6,10 +6,10 @@
  * Designed for 6th grade level (10-12 years old)
  */
 export const BALANCING = {
-  // Addition: Two-digit numbers
+  // Addition
   addition: {
     min: 10,
-    max: 99
+    max: 999
   },
   
   // Subtraction: Ensure positive results
@@ -50,7 +50,7 @@ export const CONFIG = {
   TASKS_FOR_STREAK: 10,
   
   // Tasks needed to earn one diamond
-  TASKS_PER_DIAMOND: 100,
+  TASKS_PER_DIAMOND: 9,
   
   // Cost to rescue a streak
   STREAK_RESCUE_COST: 1,
