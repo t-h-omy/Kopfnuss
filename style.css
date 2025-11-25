@@ -535,7 +535,7 @@ body::before {
   color: var(--color-blue);
   cursor: pointer;
   transition: all var(--transition);
-  text-align: left;
+  text-align: center;
   width: 100%;
 }
 
@@ -550,11 +550,13 @@ body::before {
 
 .btn-settings.btn-danger {
   border-color: var(--color-danger);
-  color: var(--color-danger);
+  background: var(--color-danger);
+  color: white;
 }
 
 .btn-settings.btn-danger:hover {
-  background: var(--color-danger);
+  background: var(--color-danger-dark);
+  border-color: var(--color-danger-dark);
   color: white;
 }
 
