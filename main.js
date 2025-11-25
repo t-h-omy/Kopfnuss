@@ -219,6 +219,13 @@ function loadChallengesScreen(container) {
   // Create header with streak and diamonds
   const header = document.createElement('div');
   header.className = 'challenges-header';
+  
+  // Create progress text with correct singular/plural form
+  const tasksUntilNext = diamondInfo.tasksUntilNext;
+  const progressText = tasksUntilNext === 1 
+    ? 'Noch 1 Aufgabe bis +1 💎' 
+    : `Noch ${tasksUntilNext} Aufgaben bis +1 💎`;
+  
   header.innerHTML = `
     <h1>Tägliche Herausforderungen</h1>
     <div class="header-stats">
@@ -231,6 +238,7 @@ function loadChallengesScreen(container) {
         <span class="stat-value">${diamondInfo.current}</span>
       </div>
     </div>
+    <div class="diamond-progress-info">${progressText}</div>
   `;
   
   // Create challenges map container
