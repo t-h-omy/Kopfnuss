@@ -4,6 +4,7 @@
 import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges } from './logic/challengeGenerator.js';
 import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds, addDiamonds } from './logic/diamondManager.js';
+import { clearAllData } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 
 /**
@@ -168,6 +169,14 @@ function loadChallengesScreen(container) {
   const challengesContainer = document.createElement('div');
   challengesContainer.className = 'challenges-container';
   
+  // Create burger menu button (positioned absolutely in container)
+  const burgerButton = document.createElement('button');
+  burgerButton.className = 'burger-menu-button';
+  burgerButton.id = 'burger-menu-button';
+  burgerButton.setAttribute('aria-label', 'Einstellungen öffnen');
+  burgerButton.innerHTML = '<span class="burger-icon">☰</span>';
+  burgerButton.addEventListener('click', showSettingsPopup);
+  
   // Create header with streak and diamonds
   const header = document.createElement('div');
   header.className = 'challenges-header';
@@ -315,6 +324,7 @@ function loadChallengesScreen(container) {
   footer.className = 'challenges-footer';
   footer.innerHTML = `v${VERSION.string}`;
   
+  challengesContainer.appendChild(burgerButton);
   challengesContainer.appendChild(header);
   challengesContainer.appendChild(challengesMap);
   challengesContainer.appendChild(rewardSection);
@@ -530,6 +540,144 @@ function createConfettiEffect() {
       confetti.remove();
     }, cleanupDelay);
   }
+}
+
+/**
+ * Show settings popup with options to reset data or generate new challenges
+ */
+function showSettingsPopup() {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay settings-popup-overlay';
+  overlay.id = 'settings-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card settings-popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>⚙️ Einstellungen</h2>
+    <div class="settings-actions">
+      <button id="regenerate-challenges-button" class="btn-settings">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">Neue Herausforderungen generieren</span>
+      </button>
+      <button id="reset-all-data-button" class="btn-settings btn-danger">
+        <span class="btn-icon">🗑️</span>
+        <span class="btn-text">Speicherstand löschen und neu beginnen</span>
+      </button>
+    </div>
+    <button id="close-settings-button" class="btn-secondary settings-close-button">Schließen</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add event listeners
+  const closeBtn = document.getElementById('close-settings-button');
+  const regenerateBtn = document.getElementById('regenerate-challenges-button');
+  const resetBtn = document.getElementById('reset-all-data-button');
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeSettingsPopup);
+  if (regenerateBtn) regenerateBtn.addEventListener('click', handleRegenerateChallenges);
+  if (resetBtn) resetBtn.addEventListener('click', handleResetAllData);
+}
+
+/**
+ * Close the settings popup
+ */
+function closeSettingsPopup() {
+  const overlay = document.getElementById('settings-popup-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+/**
+ * Handle regenerate challenges action
+ * Generates new daily challenges without resetting other data
+ */
+function handleRegenerateChallenges() {
+  // Close settings popup
+  closeSettingsPopup();
+  
+  // Generate new challenges
+  resetChallenges();
+  
+  // Refresh challenges screen
+  showScreen('challenges');
+}
+
+/**
+ * Handle reset all data action
+ * Shows confirmation popup before resetting
+ */
+function handleResetAllData() {
+  // Close settings popup first
+  closeSettingsPopup();
+  
+  // Show confirmation popup
+  showResetConfirmationPopup();
+}
+
+/**
+ * Show confirmation popup for resetting all data
+ */
+function showResetConfirmationPopup() {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay confirmation-popup-overlay';
+  overlay.id = 'reset-confirmation-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card confirmation-popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>⚠️ Achtung</h2>
+    <p>Willst du wirklich allen Fortschritt löschen und den Streak und alle Diamanten entfernen?</p>
+    <div class="confirmation-buttons">
+      <button id="confirm-reset-button" class="btn-danger">Ja</button>
+      <button id="cancel-reset-button" class="btn-secondary">Nein</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add event listeners
+  const confirmBtn = document.getElementById('confirm-reset-button');
+  const cancelBtn = document.getElementById('cancel-reset-button');
+  
+  if (confirmBtn) confirmBtn.addEventListener('click', executeFullReset);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeResetConfirmationPopup);
+}
+
+/**
+ * Close the reset confirmation popup
+ */
+function closeResetConfirmationPopup() {
+  const overlay = document.getElementById('reset-confirmation-popup-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+/**
+ * Execute full reset of all save data
+ */
+function executeFullReset() {
+  // Close confirmation popup
+  closeResetConfirmationPopup();
+  
+  // Clear all data
+  clearAllData();
+  
+  // Generate new challenges
+  resetChallenges();
+  
+  // Refresh challenges screen
+  showScreen('challenges');
 }
 
 // Router Skeleton (kept for future use)
