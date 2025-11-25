@@ -162,7 +162,7 @@ function handleAnswerSubmit() {
       inputElement.focus();
       feedbackElement.textContent = '';
       feedbackElement.className = 'task-feedback';
-      // Update progress display to show new error count
+      // Refresh progress display (task number stays the same until correct answer)
       const currentTask = getCurrentTask();
       if (currentTask) {
         const progressElement = document.getElementById('task-progress');
