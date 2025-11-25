@@ -226,6 +226,16 @@ body::before {
   font-weight: 600;
 }
 
+/* Diamond Progress Info */
+.diamond-progress-info {
+  margin-top: var(--spacing-md);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-blue);
+  text-align: center;
+}
+
 /* Challenge Map Container */
 .challenges-map {
   position: relative;

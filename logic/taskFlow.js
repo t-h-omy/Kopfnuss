@@ -142,6 +142,23 @@ export function nextTask() {
   // Update task index in storage
   updateTaskIndex(currentChallengeIndex, currentTaskIndex);
   
+  // Update progress immediately when task is solved correctly
+  // This ensures diamond progress updates in real-time
+  const progress = loadProgress();
+  const today = new Date().toISOString().split('T')[0];
+  
+  progress.totalTasksCompleted = (progress.totalTasksCompleted || 0) + 1;
+  
+  // Update tasks completed today
+  if (progress.lastPlayedDate === today) {
+    progress.tasksCompletedToday = (progress.tasksCompletedToday || 0) + 1;
+  } else {
+    progress.tasksCompletedToday = 1;
+  }
+  
+  progress.lastPlayedDate = today;
+  saveProgress(progress);
+  
   const hasNext = currentTaskIndex < challenge.tasks.length;
   
   if (!hasNext) {
@@ -173,23 +190,13 @@ export function completeCurrentChallenge() {
   // Mark challenge as complete
   completeChallenge(currentChallengeIndex, errors);
   
-  // Update overall progress
+  // Update overall progress - only increment challenges completed
+  // Tasks are already counted in nextTask() when each task is solved
   const progress = loadProgress();
   const challenge = getChallenge(currentChallengeIndex);
   
-  progress.totalTasksCompleted += challenge.tasks.length;
-  progress.totalChallengesCompleted += 1;
+  progress.totalChallengesCompleted = (progress.totalChallengesCompleted || 0) + 1;
   progress.lastPlayedDate = new Date().toISOString().split('T')[0];
-  
-  // Get today's date
-  const today = new Date().toISOString().split('T')[0];
-  if (progress.lastPlayedDate === today) {
-    // Increment tasks completed today
-    progress.tasksCompletedToday = (progress.tasksCompletedToday || 0) + challenge.tasks.length;
-  } else {
-    // New day, reset counter
-    progress.tasksCompletedToday = challenge.tasks.length;
-  }
   
   saveProgress(progress);
   
