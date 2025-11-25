@@ -169,17 +169,19 @@ function loadChallengesScreen(container) {
   const challengesContainer = document.createElement('div');
   challengesContainer.className = 'challenges-container';
   
+  // Create burger menu button (positioned absolutely in container)
+  const burgerButton = document.createElement('button');
+  burgerButton.className = 'burger-menu-button';
+  burgerButton.id = 'burger-menu-button';
+  burgerButton.setAttribute('aria-label', 'Einstellungen öffnen');
+  burgerButton.innerHTML = '<span class="burger-icon">☰</span>';
+  burgerButton.addEventListener('click', showSettingsPopup);
+  
   // Create header with streak and diamonds
   const header = document.createElement('div');
   header.className = 'challenges-header';
   header.innerHTML = `
-    <div class="header-top-row">
-      <div class="header-spacer"></div>
-      <h1>Tägliche Herausforderungen</h1>
-      <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
-        <span class="burger-icon">☰</span>
-      </button>
-    </div>
+    <h1>Tägliche Herausforderungen</h1>
     <div class="header-stats">
       <div class="stat-capsule">
         <span class="stat-icon">🔥</span>
@@ -191,14 +193,6 @@ function loadChallengesScreen(container) {
       </div>
     </div>
   `;
-  
-  // Add event listener for burger menu button
-  setTimeout(() => {
-    const burgerButton = document.getElementById('burger-menu-button');
-    if (burgerButton) {
-      burgerButton.addEventListener('click', showSettingsPopup);
-    }
-  }, 0);
   
   // Create challenges map container
   const challengesMap = document.createElement('div');
@@ -330,6 +324,7 @@ function loadChallengesScreen(container) {
   footer.className = 'challenges-footer';
   footer.innerHTML = `v${VERSION.string}`;
   
+  challengesContainer.appendChild(burgerButton);
   challengesContainer.appendChild(header);
   challengesContainer.appendChild(challengesMap);
   challengesContainer.appendChild(rewardSection);

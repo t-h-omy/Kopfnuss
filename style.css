@@ -465,32 +465,13 @@ body::before {
 }
 
 /* ===========================
-   HEADER TOP ROW WITH BURGER MENU
+   BURGER MENU BUTTON
    =========================== */
 
-.header-top-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  margin-bottom: var(--spacing-md);
-}
-
-.header-top-row h1 {
-  margin: 0;
-}
-
-.header-spacer {
-  width: 44px;
-  flex-shrink: 0;
-}
-
 .burger-menu-button {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  position: fixed;
+  right: var(--spacing-lg);
+  top: var(--spacing-lg);
   width: 44px;
   height: 44px;
   border: none;
@@ -503,6 +484,7 @@ body::before {
   justify-content: center;
   transition: all var(--transition);
   padding: 0;
+  z-index: 100;
 }
 
 .burger-menu-button:hover {
@@ -511,7 +493,7 @@ body::before {
 }
 
 .burger-menu-button:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: scale(0.95);
 }
 
 .burger-icon {
