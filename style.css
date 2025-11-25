@@ -678,7 +678,7 @@ body::before {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   margin-bottom: var(--spacing-md);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  /* Prevent zoom on iOS when focusing input */
+  /* Prevent auto-zoom on iOS Safari - minimum 16px font-size required */
   font-size: 16px;
 }
 

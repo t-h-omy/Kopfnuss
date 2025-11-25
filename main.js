@@ -33,7 +33,7 @@ window.addEventListener('resize', () => {
     const isInputFocused = activeElement && (
       activeElement.tagName === 'INPUT' || 
       activeElement.tagName === 'TEXTAREA' ||
-      activeElement.isContentEditable === true
+      activeElement.contentEditable === 'true'
     );
     
     if (!isInputFocused) {
@@ -368,7 +368,7 @@ async function loadTaskScreen(container, challengeIndex) {
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
           <div class="task-question" id="task-question"></div>
-          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort">
+          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
           <button id="submit-answer">Prüfen</button>
         </div>
         <div class="task-feedback" id="task-feedback"></div>
