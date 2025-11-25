@@ -520,6 +520,7 @@ body::before {
 .settings-actions {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
 }
@@ -535,7 +536,6 @@ body::before {
   color: var(--color-blue);
   cursor: pointer;
   transition: all var(--transition);
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
