@@ -145,17 +145,18 @@ export function nextTask() {
   // Update progress immediately when task is solved correctly
   // This ensures diamond progress updates in real-time
   const progress = loadProgress();
+  const today = new Date().toISOString().split('T')[0];
+  
   progress.totalTasksCompleted = (progress.totalTasksCompleted || 0) + 1;
-  progress.lastPlayedDate = new Date().toISOString().split('T')[0];
   
   // Update tasks completed today
-  const today = new Date().toISOString().split('T')[0];
   if (progress.lastPlayedDate === today) {
     progress.tasksCompletedToday = (progress.tasksCompletedToday || 0) + 1;
   } else {
     progress.tasksCompletedToday = 1;
   }
   
+  progress.lastPlayedDate = today;
   saveProgress(progress);
   
   const hasNext = currentTaskIndex < challenge.tasks.length;
