@@ -1,5 +1,6 @@
 // Service Worker für Kopfnuss PWA
 // Offline-Funktionalität und Caching mit Versionskontrolle
+// BUILD_TIMESTAMP: 2025-11-25T13:06:25Z - Forces browser to detect SW changes
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
