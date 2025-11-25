@@ -463,6 +463,174 @@ body::before {
 }
 
 /* ===========================
+   HEADER TOP ROW WITH BURGER MENU
+   =========================== */
+
+.header-top-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+}
+
+.header-top-row h1 {
+  margin: 0;
+}
+
+.header-spacer {
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.burger-menu-button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  padding: 0;
+}
+
+.burger-menu-button:hover {
+  background: var(--color-off-white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.burger-menu-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.burger-icon {
+  font-size: 24px;
+  color: var(--color-blue);
+}
+
+/* ===========================
+   SETTINGS POPUP STYLES
+   =========================== */
+
+.settings-popup-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.settings-popup-card {
+  animation: scaleIn 0.3s ease;
+}
+
+.settings-popup-card h2 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.settings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.btn-settings {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--color-blue);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  width: 100%;
+}
+
+.btn-settings:hover {
+  background: var(--color-blue);
+  color: white;
+}
+
+.btn-settings:active {
+  transform: scale(0.98);
+}
+
+.btn-settings.btn-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.btn-settings.btn-danger:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.settings-close-button {
+  width: 100%;
+  max-width: none;
+  padding: var(--spacing-md);
+}
+
+/* ===========================
+   CONFIRMATION POPUP STYLES
+   =========================== */
+
+.confirmation-popup-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.confirmation-popup-card {
+  animation: scaleIn 0.3s ease;
+}
+
+.confirmation-popup-card h2 {
+  color: #dc3545;
+}
+
+.confirmation-popup-card p {
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.5;
+}
+
+.confirmation-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.confirmation-buttons button {
+  flex: 1;
+  max-width: 120px;
+  padding: var(--spacing-md);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c82333 0%, #a71d2a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+}
+
+/* ===========================
    REWARD SECTION STYLES
    =========================== */
 
