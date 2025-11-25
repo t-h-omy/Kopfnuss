@@ -33,7 +33,7 @@ export const BALANCING = {
   // Squared: z² where z is between min and max
   squared: {
     min: 2,
-    max: 12
+    max: 20
   }
 };
 
