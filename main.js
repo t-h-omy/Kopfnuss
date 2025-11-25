@@ -559,10 +559,12 @@ function showSettingsPopup() {
     <h2>⚙️ Einstellungen</h2>
     <div class="settings-actions">
       <button id="regenerate-challenges-button" class="btn-settings">
-        🔄 Neue Herausforderungen generieren
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">Neue Herausforderungen generieren</span>
       </button>
       <button id="reset-all-data-button" class="btn-settings btn-danger">
-        🗑️ Speicherstand löschen und neu beginnen
+        <span class="btn-icon">🗑️</span>
+        <span class="btn-text">Speicherstand löschen und neu beginnen</span>
       </button>
     </div>
     <button id="close-settings-button" class="btn-secondary settings-close-button">Schließen</button>

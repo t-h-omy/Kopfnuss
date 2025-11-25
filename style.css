@@ -535,8 +535,19 @@ body::before {
   color: var(--color-blue);
   cursor: pointer;
   transition: all var(--transition);
-  text-align: center;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.btn-settings .btn-icon {
+  flex-shrink: 0;
+}
+
+.btn-settings .btn-text {
+  text-align: center;
 }
 
 .btn-settings:hover {
