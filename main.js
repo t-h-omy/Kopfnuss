@@ -112,6 +112,66 @@ let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 
 /**
+ * Find the index of the currently unlocked (available or in_progress) challenge
+ * @param {Array} challenges - Array of challenge objects
+ * @returns {number} Index of the current unlocked challenge, or -1 if none found
+ */
+function findCurrentUnlockedChallengeIndex(challenges) {
+  // First, look for an in_progress challenge
+  const inProgressIndex = challenges.findIndex(c => c.state === 'in_progress');
+  if (inProgressIndex !== -1) {
+    return inProgressIndex;
+  }
+  
+  // Then, look for the first available challenge
+  const availableIndex = challenges.findIndex(c => c.state === 'available');
+  if (availableIndex !== -1) {
+    return availableIndex;
+  }
+  
+  // If no unlocked challenge found, return -1
+  return -1;
+}
+
+/**
+ * Scroll to and highlight the specified challenge
+ * @param {number} challengeIndex - Index of the challenge to scroll to
+ */
+function scrollToAndHighlightChallenge(challengeIndex) {
+  if (challengeIndex < 0) {
+    return;
+  }
+  
+  // Wait for DOM to be fully rendered
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const challengeRow = document.querySelector(`.challenge-row[data-index="${challengeIndex}"]`);
+      if (challengeRow) {
+        // Smooth scroll to the challenge
+        challengeRow.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        
+        // Add highlight animation class after scroll completes
+        setTimeout(() => {
+          // Check if there's no popup currently visible (don't highlight during celebrations)
+          const hasPopup = document.querySelector('.popup-overlay');
+          if (!hasPopup) {
+            challengeRow.classList.add('challenge-focus-highlight');
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+              challengeRow.classList.remove('challenge-focus-highlight');
+            }, 800);
+          }
+        }, 300);
+      }
+    }, 100);
+  });
+}
+
+/**
  * Show a screen by name
  * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats')
  * @param {*} data - Optional data to pass to screen (e.g., challengeIndex)
@@ -186,21 +246,30 @@ function loadChallengesScreen(container) {
   
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first diamond, then streak (or vice versa)
+  // After all popups close, scroll to the current unlocked challenge
   if (returningFromTaskScreen) {
     returningFromTaskScreen = false;
     
     const showDiamond = diamondResult.awarded > 0;
     const showStreak = streakIncreased && streakInfo.currentStreak > 0;
     
+    // Create a scroll callback that will be called after the last popup closes
+    const scrollAfterPopups = () => {
+      const unlockedIdx = findCurrentUnlockedChallengeIndex(challenges);
+      if (unlockedIdx >= 0) {
+        scrollToAndHighlightChallenge(unlockedIdx);
+      }
+    };
+    
     if (showDiamond && showStreak) {
-      // Show both popups sequentially - diamond first, then streak
+      // Show both popups sequentially - diamond first, then streak, then scroll
       showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, () => {
-        showStreakCelebrationPopup(streakInfo.currentStreak);
+        showStreakCelebrationPopup(streakInfo.currentStreak, scrollAfterPopups);
       });
     } else if (showDiamond) {
-      showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND);
+      showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, scrollAfterPopups);
     } else if (showStreak) {
-      showStreakCelebrationPopup(streakInfo.currentStreak);
+      showStreakCelebrationPopup(streakInfo.currentStreak, scrollAfterPopups);
     }
   }
   
@@ -386,6 +455,19 @@ function loadChallengesScreen(container) {
       drawConnectionPaths(svg, challengesList, nodePositions);
     }
   });
+  
+  // Auto-scroll to current unlocked challenge
+  // Find the current unlocked challenge and scroll to it
+  const unlockedIndex = findCurrentUnlockedChallengeIndex(challenges);
+  if (unlockedIndex >= 0) {
+    // Check if any celebration popup is being shown
+    const hasCelebrationPopup = document.querySelector('.popup-overlay');
+    if (!hasCelebrationPopup) {
+      // No popup, scroll immediately
+      scrollToAndHighlightChallenge(unlockedIndex);
+    }
+    // If popup exists, the scroll will happen when popup closes (handled in popup close handlers)
+  }
 }
 
 /**
