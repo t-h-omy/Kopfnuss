@@ -192,7 +192,8 @@ function loadChallengesScreen(container) {
       const ray = document.createElement('div');
       ray.className = 'splash-ray';
       const angle = (i * 360 / numRays);
-      const length = 25 + Math.random() * 12;
+      // Use deterministic length based on ray index for consistent appearance
+      const length = 25 + ((i % 3) * 6);
       ray.style.transform = `translate(-50%, 0) rotate(${angle}deg)`;
       ray.style.height = `${length}px`;
       splash.appendChild(ray);
@@ -265,7 +266,10 @@ function loadChallengesScreen(container) {
   
   // Draw SVG paths after DOM is rendered
   requestAnimationFrame(() => {
-    drawConnectionPaths(svg, challengesList, nodePositions);
+    // Check if elements still exist in the DOM before drawing
+    if (document.body.contains(svg) && document.body.contains(challengesList)) {
+      drawConnectionPaths(svg, challengesList, nodePositions);
+    }
   });
 }
 
@@ -276,45 +280,51 @@ function loadChallengesScreen(container) {
  * @param {Array} nodePositions - Array of node position info
  */
 function drawConnectionPaths(svg, challengesList, nodePositions) {
-  const rows = challengesList.querySelectorAll('.challenge-row');
-  if (rows.length < 2) return;
-  
-  // Get container dimensions
-  const containerRect = challengesList.getBoundingClientRect();
-  svg.setAttribute('width', '100%');
-  svg.setAttribute('height', containerRect.height + 'px');
-  svg.style.height = containerRect.height + 'px';
-  
-  const svgNS = 'http://www.w3.org/2000/svg';
-  
-  // Draw paths between consecutive nodes
-  for (let i = 0; i < rows.length - 1; i++) {
-    const currentRow = rows[i];
-    const nextRow = rows[i + 1];
+  try {
+    const rows = challengesList.querySelectorAll('.challenge-row');
+    if (rows.length < 2) return;
     
-    const currentNode = currentRow.querySelector('.challenge-node');
-    const nextNode = nextRow.querySelector('.challenge-node');
+    // Get container dimensions
+    const containerRect = challengesList.getBoundingClientRect();
+    if (containerRect.height === 0) return; // Element not visible
     
-    if (!currentNode || !nextNode) continue;
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', containerRect.height + 'px');
+    svg.style.height = containerRect.height + 'px';
     
-    const currentRect = currentNode.getBoundingClientRect();
-    const nextRect = nextNode.getBoundingClientRect();
+    const svgNS = 'http://www.w3.org/2000/svg';
     
-    // Calculate positions relative to container
-    const x1 = currentRect.left + currentRect.width / 2 - containerRect.left;
-    const y1 = currentRect.top + currentRect.height / 2 - containerRect.top;
-    const x2 = nextRect.left + nextRect.width / 2 - containerRect.left;
-    const y2 = nextRect.top + nextRect.height / 2 - containerRect.top;
-    
-    // Control points for quadratic bezier curve
-    const midY = (y1 + y2) / 2;
-    const controlX = (x1 + x2) / 2;
-    
-    // Create path
-    const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('class', 'path-line');
-    path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${midY} ${x2} ${y2}`);
-    svg.appendChild(path);
+    // Draw paths between consecutive nodes
+    for (let i = 0; i < rows.length - 1; i++) {
+      const currentRow = rows[i];
+      const nextRow = rows[i + 1];
+      
+      const currentNode = currentRow.querySelector('.challenge-node');
+      const nextNode = nextRow.querySelector('.challenge-node');
+      
+      if (!currentNode || !nextNode) continue;
+      
+      const currentRect = currentNode.getBoundingClientRect();
+      const nextRect = nextNode.getBoundingClientRect();
+      
+      // Calculate positions relative to container
+      const x1 = currentRect.left + currentRect.width / 2 - containerRect.left;
+      const y1 = currentRect.top + currentRect.height / 2 - containerRect.top;
+      const x2 = nextRect.left + nextRect.width / 2 - containerRect.left;
+      const y2 = nextRect.top + nextRect.height / 2 - containerRect.top;
+      
+      // Control points for quadratic bezier curve
+      const midY = (y1 + y2) / 2;
+      const controlX = (x1 + x2) / 2;
+      
+      // Create path
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('class', 'path-line');
+      path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${midY} ${x2} ${y2}`);
+      svg.appendChild(path);
+    }
+  } catch (error) {
+    console.error('Error drawing connection paths:', error);
   }
 }
 

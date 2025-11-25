@@ -347,7 +347,7 @@ body::before {
 
 .challenge-available .challenge-node:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(242, 140, 40, 0.4);
+  box-shadow: 0 6px 20px rgba(30, 107, 184, 0.4);
 }
 
 .challenge-available .challenge-node:active {
@@ -389,6 +389,7 @@ body::before {
 
 /* Info Card - Positioned opposite to node */
 .challenge-info-card {
+  --card-overlap: -25px;
   background: #FFFFFF;
   border-radius: 16px;
   padding: 14px 18px;
@@ -398,18 +399,16 @@ body::before {
   max-width: 240px;
   position: relative;
   z-index: 2;
-  margin-left: -25px;
-  margin-right: -25px;
 }
 
 /* Card positioning based on row position */
 .challenge-row.position-left .challenge-info-card {
-  margin-left: -25px;
+  margin-left: var(--card-overlap);
   margin-right: 0;
 }
 
 .challenge-row.position-right .challenge-info-card {
-  margin-right: -25px;
+  margin-right: var(--card-overlap);
   margin-left: 0;
 }
 
