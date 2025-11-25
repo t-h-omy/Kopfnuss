@@ -125,32 +125,47 @@ function loadChallengesScreen(container) {
   // Update diamonds based on progress
   updateDiamonds();
   
+  // Create main container
+  const challengesContainer = document.createElement('div');
+  challengesContainer.className = 'challenges-container';
+  
   // Create header with streak and diamonds
   const header = document.createElement('div');
   header.className = 'challenges-header';
   header.innerHTML = `
     <h1>Tägliche Herausforderungen</h1>
-    <div class="header-info">
-      <div class="streak-display">
-        🔥 Streak: ${streakInfo.currentStreak} ${streakInfo.isFrozen ? '(Eingefroren)' : ''}
+    <div class="header-stats">
+      <div class="stat-capsule">
+        <span class="stat-icon">🔥</span>
+        <span class="stat-value">${streakInfo.currentStreak}${streakInfo.isFrozen ? ' ❄️' : ''}</span>
       </div>
-      <div class="diamond-display">
-        💎 Diamanten: ${diamondInfo.current}
-      </div>
-      <div class="version-display" style="font-size: 0.8em; opacity: 0.7;">
-        v${VERSION.string}
+      <div class="stat-capsule">
+        <span class="stat-icon">💎</span>
+        <span class="stat-value">${diamondInfo.current}</span>
       </div>
     </div>
   `;
+  
+  // Create challenges map container
+  const challengesMap = document.createElement('div');
+  challengesMap.className = 'challenges-map';
+  
+  // Create SVG for connection lines
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'challenges-path-svg');
+  svg.setAttribute('preserveAspectRatio', 'none');
   
   // Create challenges list
   const challengesList = document.createElement('div');
   challengesList.className = 'challenges-list';
   
+  // Store node positions for SVG path calculation
+  const nodePositions = [];
+  
   challenges.forEach((challenge, index) => {
-    const challengeCard = document.createElement('div');
-    challengeCard.className = `challenge-card challenge-${challenge.state}`;
-    challengeCard.dataset.index = index;
+    const isLeftPosition = index % 2 === 0;
+    const positionClass = isLeftPosition ? 'position-left' : 'position-right';
     
     const statusText = {
       'locked': 'Gesperrt',
@@ -160,28 +175,157 @@ function loadChallengesScreen(container) {
       'failed': 'Fehlgeschlagen'
     }[challenge.state];
     
-    challengeCard.innerHTML = `
-      <div class="challenge-icon">${challenge.icon}</div>
-      <div class="challenge-info">
-        <h3>${challenge.name}</h3>
-        <p>Status: ${statusText}</p>
-        ${challenge.state === 'completed' ? `<p>Fehler: ${challenge.errors}</p>` : ''}
-      </div>
+    // Create challenge row
+    const challengeRow = document.createElement('div');
+    challengeRow.className = `challenge-row ${positionClass} challenge-${challenge.state}`;
+    challengeRow.dataset.index = index;
+    
+    // Create node container with splash effect
+    const nodeContainer = document.createElement('div');
+    nodeContainer.className = 'challenge-node-container';
+    
+    // Create splash effect (12 rays for comic-style effect)
+    const splash = document.createElement('div');
+    splash.className = 'challenge-splash';
+    const numRays = 12;
+    for (let i = 0; i < numRays; i++) {
+      const ray = document.createElement('div');
+      ray.className = 'splash-ray';
+      const angle = (i * 360 / numRays);
+      // Use deterministic length based on ray index for consistent appearance
+      const length = 25 + ((i % 3) * 6);
+      ray.style.transform = `translate(-50%, 0) rotate(${angle}deg)`;
+      ray.style.height = `${length}px`;
+      splash.appendChild(ray);
+    }
+    nodeContainer.appendChild(splash);
+    
+    // Create the circular node
+    const node = document.createElement('div');
+    node.className = 'challenge-node';
+    node.innerHTML = challenge.icon;
+    
+    // Add status icon
+    if (challenge.state === 'completed') {
+      const statusIcon = document.createElement('span');
+      statusIcon.className = 'status-icon';
+      statusIcon.innerHTML = '⭐';
+      node.appendChild(statusIcon);
+    } else if (challenge.state === 'locked') {
+      const statusIcon = document.createElement('span');
+      statusIcon.className = 'status-icon';
+      statusIcon.innerHTML = '🔒';
+      node.appendChild(statusIcon);
+    }
+    
+    nodeContainer.appendChild(node);
+    
+    // Create info card
+    const infoCard = document.createElement('div');
+    infoCard.className = 'challenge-info-card';
+    infoCard.innerHTML = `
+      <h3>${challenge.name}</h3>
+      <p class="challenge-status">${statusText}</p>
+      ${challenge.state === 'completed' ? `<p class="challenge-errors">Fehler: ${challenge.errors}</p>` : ''}
     `;
+    
+    // Append elements in correct order based on position
+    challengeRow.appendChild(nodeContainer);
+    challengeRow.appendChild(infoCard);
     
     // Add click handler for available challenges
     if (challenge.state === 'available' || challenge.state === 'in_progress') {
-      challengeCard.style.cursor = 'pointer';
-      challengeCard.addEventListener('click', () => {
+      nodeContainer.style.cursor = 'pointer';
+      nodeContainer.addEventListener('click', () => {
         showScreen('taskScreen', index);
       });
     }
     
-    challengesList.appendChild(challengeCard);
+    challengesList.appendChild(challengeRow);
+    
+    // Store position info for path calculation
+    nodePositions.push({
+      index,
+      isLeft: isLeftPosition
+    });
   });
   
-  container.appendChild(header);
-  container.appendChild(challengesList);
+  challengesMap.appendChild(svg);
+  challengesMap.appendChild(challengesList);
+  
+  // Create footer with version
+  const footer = document.createElement('div');
+  footer.className = 'challenges-footer';
+  footer.innerHTML = `v${VERSION.string}`;
+  
+  challengesContainer.appendChild(header);
+  challengesContainer.appendChild(challengesMap);
+  challengesContainer.appendChild(footer);
+  
+  container.appendChild(challengesContainer);
+  
+  // Draw SVG paths after DOM is rendered
+  requestAnimationFrame(() => {
+    // Check if elements still exist in the DOM before drawing
+    if (document.body.contains(svg) && document.body.contains(challengesList)) {
+      drawConnectionPaths(svg, challengesList, nodePositions);
+    }
+  });
+}
+
+/**
+ * Draw SVG connection paths between challenge nodes
+ * @param {SVGElement} svg - The SVG element
+ * @param {HTMLElement} challengesList - The challenges list container
+ * @param {Array} nodePositions - Array of node position info
+ */
+function drawConnectionPaths(svg, challengesList, nodePositions) {
+  try {
+    const rows = challengesList.querySelectorAll('.challenge-row');
+    if (rows.length < 2) return;
+    
+    // Get container dimensions
+    const containerRect = challengesList.getBoundingClientRect();
+    if (containerRect.height === 0) return; // Element not visible
+    
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', containerRect.height + 'px');
+    svg.style.height = containerRect.height + 'px';
+    
+    const svgNS = 'http://www.w3.org/2000/svg';
+    
+    // Draw paths between consecutive nodes
+    for (let i = 0; i < rows.length - 1; i++) {
+      const currentRow = rows[i];
+      const nextRow = rows[i + 1];
+      
+      const currentNode = currentRow.querySelector('.challenge-node');
+      const nextNode = nextRow.querySelector('.challenge-node');
+      
+      if (!currentNode || !nextNode) continue;
+      
+      const currentRect = currentNode.getBoundingClientRect();
+      const nextRect = nextNode.getBoundingClientRect();
+      
+      // Calculate positions relative to container
+      const x1 = currentRect.left + currentRect.width / 2 - containerRect.left;
+      const y1 = currentRect.top + currentRect.height / 2 - containerRect.top;
+      const x2 = nextRect.left + nextRect.width / 2 - containerRect.left;
+      const y2 = nextRect.top + nextRect.height / 2 - containerRect.top;
+      
+      // Control points for quadratic bezier curve
+      const midY = (y1 + y2) / 2;
+      const controlX = (x1 + x2) / 2;
+      
+      // Create path
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('class', 'path-line');
+      path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${midY} ${x2} ${y2}`);
+      svg.appendChild(path);
+    }
+  } catch (error) {
+    console.error('Error drawing connection paths:', error);
+  }
 }
 
 /**
