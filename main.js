@@ -4,7 +4,7 @@
 import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges } from './logic/challengeGenerator.js';
 import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds, addDiamonds } from './logic/diamondManager.js';
-import { clearAllData } from './logic/storageManager.js';
+import { clearAllData, loadStreak } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
 
@@ -166,19 +166,42 @@ export function showScreen(screenName, data = null) {
 function loadChallengesScreen(container) {
   // Get data
   const challenges = getTodaysChallenges();
+  
+  // Get previous streak data BEFORE updating
+  const previousStreakData = loadStreak();
+  const previousStreakCount = previousStreakData.currentStreak;
+  
+  // Update streak and get new data (this also calls updateStreak internally)
   const streakInfo = getStreakInfo();
+  
+  // Check if streak genuinely increased
+  // When a streak is rescued (unfrozen), the count stays the same, so this check
+  // automatically excludes rescued streaks from triggering the celebration popup.
+  // The popup only shows when currentStreak > previousStreak (genuine new day achievement)
+  const streakIncreased = streakInfo.currentStreak > previousStreakCount;
   
   // Update diamonds based on progress and check if any were awarded
   const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
   
-  // Check if we should show diamond celebration popup
-  // Only show when returning from task screen AND diamonds were awarded
-  if (returningFromTaskScreen && diamondResult.awarded > 0) {
+  // Handle popup display when returning from task screen
+  // Queue popups to show sequentially: first diamond, then streak (or vice versa)
+  if (returningFromTaskScreen) {
     returningFromTaskScreen = false;
-    showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND);
-  } else {
-    returningFromTaskScreen = false;
+    
+    const showDiamond = diamondResult.awarded > 0;
+    const showStreak = streakIncreased && streakInfo.currentStreak > 0;
+    
+    if (showDiamond && showStreak) {
+      // Show both popups sequentially - diamond first, then streak
+      showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, () => {
+        showStreakCelebrationPopup(streakInfo.currentStreak);
+      });
+    } else if (showDiamond) {
+      showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND);
+    } else if (showStreak) {
+      showStreakCelebrationPopup(streakInfo.currentStreak);
+    }
   }
   
   // Create main container
@@ -534,8 +557,9 @@ function closeRewardPopup() {
  * Show diamond celebration popup when player earns diamonds from task completion
  * @param {number} diamondsAwarded - Number of diamonds awarded
  * @param {number} tasksPerDiamond - Number of tasks needed to earn one diamond
+ * @param {Function} onClose - Optional callback to run after popup closes
  */
-function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond) {
+function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond, onClose = null) {
   // Create popup overlay
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay reward-popup-overlay';
@@ -576,6 +600,10 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond) {
   const closeButton = document.getElementById('diamond-celebration-close-button');
   closeButton.addEventListener('click', () => {
     closeDiamondCelebrationPopup();
+    // Call onClose callback if provided (for sequential popups)
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
   });
 }
 
@@ -584,6 +612,73 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond) {
  */
 function closeDiamondCelebrationPopup() {
   const overlay = document.getElementById('diamond-celebration-popup-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+  
+  // Remove any remaining confetti
+  const confettiPieces = document.querySelectorAll('.confetti-piece');
+  confettiPieces.forEach(piece => piece.remove());
+}
+
+/**
+ * Show streak celebration popup when player achieves a new streak milestone
+ * @param {number} streakCount - Current streak count
+ * @param {Function} onClose - Optional callback to run after popup closes
+ */
+function showStreakCelebrationPopup(streakCount, onClose = null) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'streak-celebration-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card';
+  
+  // Create message based on streak count
+  const streakText = streakCount === 1 
+    ? `Tag 1` 
+    : `${streakCount} Tage`;
+  
+  // Create description text
+  const descriptionText = streakCount === 1
+    ? `Du hast deinen ersten Streak-Tag erreicht! Mach morgen weiter!`
+    : `Du hast ${streakCount} Tage in Folge geübt! Weiter so!`;
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🎉</div>
+    <h2>Neuer Streak!</h2>
+    <div class="reward-streak-display">
+      <span class="reward-streak-icon">🔥</span>
+      <span class="reward-streak-text">${streakText}</span>
+    </div>
+    <p>${descriptionText}</p>
+    <button id="streak-celebration-close-button" class="btn-primary">Super!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add confetti effect
+  createConfettiEffect();
+  
+  // Add event listener for close button
+  const closeButton = document.getElementById('streak-celebration-close-button');
+  closeButton.addEventListener('click', () => {
+    closeStreakCelebrationPopup();
+    // Call onClose callback if provided (for sequential popups)
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+  });
+}
+
+/**
+ * Close the streak celebration popup
+ */
+function closeStreakCelebrationPopup() {
+  const overlay = document.getElementById('streak-celebration-popup-overlay');
   if (overlay) {
     overlay.remove();
   }

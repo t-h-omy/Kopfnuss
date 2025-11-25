@@ -728,6 +728,31 @@ body::before {
   color: var(--color-blue);
 }
 
+/* Streak Celebration Display */
+.reward-streak-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFCC80 100%);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  animation: fadeIn 0.5s ease 0.3s both;
+}
+
+.reward-streak-icon {
+  font-size: 32px;
+  animation: starBurst 1s ease 3;
+}
+
+.reward-streak-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
 #new-challenge-button {
   margin-top: var(--spacing-md);
   width: 100%;
