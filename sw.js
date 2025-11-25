@@ -3,7 +3,7 @@
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.2.1';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
