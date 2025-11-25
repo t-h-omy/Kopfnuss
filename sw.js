@@ -3,7 +3,7 @@
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.2.1';
+const APP_VERSION = '1.2.2';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
@@ -33,7 +33,19 @@ self.addEventListener('install', (event) => {
   console.log('[SW] Installing version:', APP_VERSION);
   
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    // First, delete ALL old caches to ensure clean slate
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('[SW] Deleting old cache during install:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => caches.open(CACHE_NAME))
       .then((cache) => {
         console.log('[SW] Caching app files for version:', APP_VERSION);
         return cache.addAll(urlsToCache);

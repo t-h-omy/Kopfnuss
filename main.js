@@ -48,13 +48,17 @@ window.addEventListener('orientationchange', () => {
   setTimeout(setAppHeight, 100);
 });
 
-// Service Worker Registrierung mit Version Logging
+// Service Worker Registrierung mit Version Logging und automatischem Cache-Reset
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    // Register SW with updateViaCache: 'none' to bypass HTTP cache for SW file
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
       .then((registration) => {
         console.log('ServiceWorker registriert:', registration.scope);
         console.log('App Version:', VERSION.string);
+        
+        // Force update check immediately
+        registration.update();
         
         // Prüfe auf Updates
         registration.addEventListener('updatefound', () => {
@@ -63,9 +67,19 @@ if ('serviceWorker' in navigator) {
           
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Neue Version verfügbar! Automatisches Neuladen...');
-              // Automatically reload to get the new version
-              window.location.reload();
+              console.log('Neue Version verfügbar! Cache wird geleert und Seite neu geladen...');
+              // Clear all caches before reloading
+              caches.keys().then((cacheNames) => {
+                return Promise.all(
+                  cacheNames.map((cacheName) => {
+                    console.log('Lösche Cache:', cacheName);
+                    return caches.delete(cacheName);
+                  })
+                );
+              }).then(() => {
+                // Tell SW to skip waiting
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              });
             }
           });
         });
