@@ -577,9 +577,13 @@ function showSettingsPopup() {
   document.body.appendChild(overlay);
   
   // Add event listeners
-  document.getElementById('close-settings-button').addEventListener('click', closeSettingsPopup);
-  document.getElementById('regenerate-challenges-button').addEventListener('click', handleRegenerateChallenges);
-  document.getElementById('reset-all-data-button').addEventListener('click', handleResetAllData);
+  const closeBtn = document.getElementById('close-settings-button');
+  const regenerateBtn = document.getElementById('regenerate-challenges-button');
+  const resetBtn = document.getElementById('reset-all-data-button');
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeSettingsPopup);
+  if (regenerateBtn) regenerateBtn.addEventListener('click', handleRegenerateChallenges);
+  if (resetBtn) resetBtn.addEventListener('click', handleResetAllData);
 }
 
 /**
@@ -645,8 +649,11 @@ function showResetConfirmationPopup() {
   document.body.appendChild(overlay);
   
   // Add event listeners
-  document.getElementById('confirm-reset-button').addEventListener('click', executeFullReset);
-  document.getElementById('cancel-reset-button').addEventListener('click', closeResetConfirmationPopup);
+  const confirmBtn = document.getElementById('confirm-reset-button');
+  const cancelBtn = document.getElementById('cancel-reset-button');
+  
+  if (confirmBtn) confirmBtn.addEventListener('click', executeFullReset);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeResetConfirmationPopup);
 }
 
 /**
