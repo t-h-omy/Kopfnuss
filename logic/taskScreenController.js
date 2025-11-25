@@ -15,6 +15,38 @@ import { showScreen } from '../main.js';
 let taskFlowState = null;
 
 /**
+ * Motivation phrases for perfect completion (0 errors)
+ */
+const PERFECT_PHRASES = [
+  'Bist du ein Mathe-Genie?',
+  'Brillant gelöst!',
+  'Null Fehler – das ist Spitzenklasse!',
+  'Perfekt! Du bist unschlagbar!',
+  'Mathe-Meister! Fantastisch!'
+];
+
+/**
+ * General motivation phrases (when errors were made)
+ */
+const GENERAL_PHRASES = [
+  'Stark gekämpft!',
+  'Du bist super! Weiter so!',
+  'Gute Arbeit – dranbleiben lohnt sich!',
+  'Toll gemacht! Übung macht den Meister!',
+  'Klasse Einsatz! Bleib am Ball!'
+];
+
+/**
+ * Get a random phrase from a pool
+ * @param {Array} pool - Array of phrases
+ * @returns {string} Random phrase
+ */
+function getRandomPhrase(pool) {
+  const index = Math.floor(Math.random() * pool.length);
+  return pool[index];
+}
+
+/**
  * Initialize task screen for a challenge
  * @param {number} challengeIndex - Index of challenge
  */
@@ -56,10 +88,10 @@ function displayCurrentTask() {
     questionElement.textContent = `${currentTask.task.question} = ?`;
   }
   
-  // Update progress display
+  // Update progress display (no error count shown during task)
   const progressElement = document.getElementById('task-progress');
   if (progressElement) {
-    progressElement.textContent = `Aufgabe ${currentTask.taskNumber} von ${currentTask.totalTasks} | Fehler: ${currentTask.errors}`;
+    progressElement.textContent = `Aufgabe ${currentTask.taskNumber} von ${currentTask.totalTasks}`;
   }
   
   // Clear input
@@ -109,21 +141,37 @@ function handleAnswerSubmit() {
   if (result.isCorrect) {
     feedbackElement.textContent = '✓ Richtig!';
     feedbackElement.className = 'task-feedback feedback-correct';
-  } else {
-    feedbackElement.textContent = `✗ Falsch! Richtige Antwort: ${result.correctAnswer}`;
-    feedbackElement.className = 'task-feedback feedback-incorrect';
-  }
-  
-  // Move to next task after a short delay
-  setTimeout(() => {
-    const nextTaskResult = nextTask();
     
-    if (nextTaskResult.isComplete) {
-      handleChallengeCompletion();
-    } else {
-      displayCurrentTask();
-    }
-  }, 1500);
+    // Move to next task after a short delay (only on correct answer)
+    setTimeout(() => {
+      const nextTaskResult = nextTask();
+      
+      if (nextTaskResult.isComplete) {
+        handleChallengeCompletion();
+      } else {
+        displayCurrentTask();
+      }
+    }, 1500);
+  } else {
+    feedbackElement.textContent = `✗ Falsch! Versuche es nochmal.`;
+    feedbackElement.className = 'task-feedback feedback-incorrect';
+    
+    // Clear input and let user retry after a short delay
+    setTimeout(() => {
+      inputElement.value = '';
+      inputElement.focus();
+      feedbackElement.textContent = '';
+      feedbackElement.className = 'task-feedback';
+      // Update progress display to show new error count
+      const currentTask = getCurrentTask();
+      if (currentTask) {
+        const progressElement = document.getElementById('task-progress');
+        if (progressElement) {
+          progressElement.textContent = `Aufgabe ${currentTask.taskNumber} von ${currentTask.totalTasks}`;
+        }
+      }
+    }, 1500);
+  }
 }
 
 /**
@@ -137,21 +185,43 @@ function handleChallengeCompletion() {
     return;
   }
   
-  // Display results
-  const container = document.getElementById('task-screen-content');
-  if (container) {
-    container.innerHTML = `
+  // Get appropriate motivation phrase
+  const isPerfect = results.errorAnalysis.isPerfect;
+  const motivationPhrase = isPerfect 
+    ? getRandomPhrase(PERFECT_PHRASES) 
+    : getRandomPhrase(GENERAL_PHRASES);
+  
+  // Build results content based on whether it was perfect or not
+  let resultContent;
+  if (isPerfect) {
+    // Perfect completion: show perfect phrase, no error count
+    resultContent = `
       <div class="task-results">
         <h2>Challenge Abgeschlossen!</h2>
         <div class="results-summary">
-          <p>Aufgaben: ${results.totalTasks}</p>
-          <p>Fehler: ${results.errors}</p>
-          <p>Bewertung: ${results.errorAnalysis.rating}</p>
-          ${results.errorAnalysis.isPerfect ? '<p class="perfect">🌟 Perfekt! Keine Fehler!</p>' : ''}
+          <p class="perfect">🌟 ${motivationPhrase}</p>
         </div>
         <button id="back-to-challenges">Zurück zu Herausforderungen</button>
       </div>
     `;
+  } else {
+    // With errors: show error count and general motivation phrase
+    resultContent = `
+      <div class="task-results">
+        <h2>Challenge Abgeschlossen!</h2>
+        <div class="results-summary">
+          <p>Fehler: ${results.errors}</p>
+          <p class="motivation">${motivationPhrase}</p>
+        </div>
+        <button id="back-to-challenges">Zurück zu Herausforderungen</button>
+      </div>
+    `;
+  }
+  
+  // Display results
+  const container = document.getElementById('task-screen-content');
+  if (container) {
+    container.innerHTML = resultContent;
     
     // Add event listener for back button
     const backButton = document.getElementById('back-to-challenges');
