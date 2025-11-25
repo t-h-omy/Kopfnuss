@@ -79,6 +79,10 @@ if ('serviceWorker' in navigator) {
               }).then(() => {
                 // Tell SW to skip waiting
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }).catch((error) => {
+                console.error('Cache löschen fehlgeschlagen:', error);
+                // Still try to skip waiting even if cache deletion failed
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
               });
             }
           });

@@ -36,12 +36,11 @@ self.addEventListener('install', (event) => {
     // First, delete ALL old caches to ensure clean slate
     caches.keys()
       .then((cacheNames) => {
+        const oldCaches = cacheNames.filter((cacheName) => cacheName !== CACHE_NAME);
         return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              console.log('[SW] Deleting old cache during install:', cacheName);
-              return caches.delete(cacheName);
-            }
+          oldCaches.map((cacheName) => {
+            console.log('[SW] Deleting old cache during install:', cacheName);
+            return caches.delete(cacheName);
           })
         );
       })
