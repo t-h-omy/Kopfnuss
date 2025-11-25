@@ -1304,7 +1304,9 @@ button,
   animation: unlockBounce 0.6s ease;
 }
 
-/* Focus highlight animation for auto-scrolled challenge */
+/* Focus highlight animation for auto-scrolled challenge
+ * Duration: 0.8s (800ms) - must match FOCUS_HIGHLIGHT_DURATION in main.js
+ */
 .challenge-focus-highlight .challenge-node {
   animation: focusHighlight 0.8s ease-out;
 }

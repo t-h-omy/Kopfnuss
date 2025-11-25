@@ -111,6 +111,12 @@ let currentScreen = null;
 let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 
+// Animation timing constants (in milliseconds)
+// FOCUS_HIGHLIGHT_DURATION must match the CSS animation duration in style.css (.challenge-focus-highlight)
+const FOCUS_HIGHLIGHT_DURATION = 800;
+const SCROLL_SETTLE_DELAY = 300; // Time to wait for smooth scroll to settle before showing highlight
+const DOM_RENDER_DELAY = 100; // Time to wait for DOM to be fully rendered after requestAnimationFrame
+
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
  * @param {Array} challenges - Array of challenge objects
@@ -142,7 +148,7 @@ function scrollToAndHighlightChallenge(challengeIndex) {
     return;
   }
   
-  // Wait for DOM to be fully rendered
+  // Wait for DOM to be fully rendered using requestAnimationFrame + small delay
   requestAnimationFrame(() => {
     setTimeout(() => {
       const challengeRow = document.querySelector(`.challenge-row[data-index="${challengeIndex}"]`);
@@ -163,11 +169,11 @@ function scrollToAndHighlightChallenge(challengeIndex) {
             // Remove the class after animation completes
             setTimeout(() => {
               challengeRow.classList.remove('challenge-focus-highlight');
-            }, 800);
+            }, FOCUS_HIGHLIGHT_DURATION);
           }
-        }, 300);
+        }, SCROLL_SETTLE_DELAY);
       }
-    }, 100);
+    }, DOM_RENDER_DELAY);
   });
 }
 
