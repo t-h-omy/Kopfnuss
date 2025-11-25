@@ -6,6 +6,48 @@ import { getStreakInfo } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds } from './logic/diamondManager.js';
 import { VERSION } from './version.js';
 
+/**
+ * Set the --app-height CSS custom property for mobile keyboard stability
+ * This prevents layout shifts when mobile keyboard appears/disappears
+ */
+function setAppHeight() {
+  const appHeight = window.innerHeight;
+  document.documentElement.style.setProperty('--app-height', `${appHeight}px`);
+}
+
+// Initialize app height on load
+setAppHeight();
+
+// Update app height on resize (but NOT on focus/blur to prevent keyboard-related jumps)
+// Use a debounced resize handler to avoid excessive updates
+let resizeTimeout = null;
+window.addEventListener('resize', () => {
+  // Clear existing timeout
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
+  // Debounce resize events to prevent rapid updates
+  resizeTimeout = setTimeout(() => {
+    // Only update if we're not in a focused input state (keyboard likely showing)
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+      activeElement.tagName === 'INPUT' || 
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.contentEditable === 'true'
+    );
+    
+    if (!isInputFocused) {
+      setAppHeight();
+    }
+  }, 100);
+});
+
+// Also set on orientation change (more reliable than resize for orientation)
+window.addEventListener('orientationchange', () => {
+  // Wait for orientation change to complete
+  setTimeout(setAppHeight, 100);
+});
+
 // Service Worker Registrierung mit Version Logging
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -334,19 +376,25 @@ function drawConnectionPaths(svg, challengesList, nodePositions) {
  * @param {number} challengeIndex - Index of challenge
  */
 async function loadTaskScreen(container, challengeIndex) {
+  // Update app height when entering task screen to ensure proper sizing
+  setAppHeight();
+  
   container.innerHTML = `
     <div class="task-screen" id="task-screen-content">
-      <div class="task-header">
-        <h2>Challenge ${challengeIndex + 1}</h2>
-        <button id="back-button">Zurück</button>
+      <div class="task-screen-main">
+        <div class="task-header">
+          <h2>Challenge ${challengeIndex + 1}</h2>
+          <button id="back-button">Zurück</button>
+        </div>
+        <div class="task-progress" id="task-progress"></div>
+        <div class="task-content">
+          <div class="task-question" id="task-question"></div>
+          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort">
+          <button id="submit-answer">Prüfen</button>
+        </div>
+        <div class="task-feedback" id="task-feedback"></div>
       </div>
-      <div class="task-content">
-        <div class="task-question" id="task-question"></div>
-        <input type="number" id="task-input" placeholder="Deine Antwort">
-        <button id="submit-answer">Prüfen</button>
-      </div>
-      <div class="task-progress" id="task-progress"></div>
-      <div class="task-feedback" id="task-feedback"></div>
+      <div class="task-screen-footer">v${VERSION.string}</div>
     </div>
   `;
   
