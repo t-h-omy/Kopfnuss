@@ -78,3 +78,18 @@ export const RESIZE_CONFIG = {
   // Delay after orientation change (ms)
   ORIENTATION_CHANGE_DELAY: 100
 };
+
+/**
+ * Visual effects configuration for challenge states
+ */
+export const VISUAL_CONFIG = {
+  // Size of the celebration background graphic behind completed challenges (in pixels)
+  // Base size for mobile, will scale up for tablet/desktop
+  CELEBRATION_GRAPHIC_SIZE: 168,
+  
+  // Scale factor for tablet (768px+)
+  CELEBRATION_GRAPHIC_SCALE_TABLET: 1.07,
+  
+  // Scale factor for desktop (1024px+)
+  CELEBRATION_GRAPHIC_SCALE_DESKTOP: 1.14
+};

@@ -435,8 +435,8 @@ body::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 140px;
-  height: 140px;
+  width: 168px;
+  height: 168px;
   z-index: 1;
   pointer-events: none;
   opacity: 0.9;
@@ -934,8 +934,8 @@ body::before {
   }
   
   .challenge-bg-graphic {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
   }
   
   .challenge-info-card {
@@ -965,8 +965,8 @@ body::before {
   }
   
   .challenge-bg-graphic {
-    width: 160px;
-    height: 160px;
+    width: 192px;
+    height: 192px;
   }
   
   .splash-ray {

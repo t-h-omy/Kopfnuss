@@ -16,7 +16,7 @@ import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './log
 import { clearAllData } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
-import { ANIMATION_TIMING, RESIZE_CONFIG } from './data/constants.js';
+import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
   scrollToAndHighlightRewardButton 
@@ -386,6 +386,11 @@ function loadChallengesScreen(container) {
     if (challenge.state === 'completed') {
       const bgGraphic = document.createElement('div');
       bgGraphic.className = 'challenge-bg-graphic';
+      
+      // Apply size from balancing constant
+      const size = VISUAL_CONFIG.CELEBRATION_GRAPHIC_SIZE;
+      bgGraphic.style.width = `${size}px`;
+      bgGraphic.style.height = `${size}px`;
       
       // Select graphic using circular selection to ensure variety
       // Use modulo to cycle through graphics and add 1 to avoid same as last used
