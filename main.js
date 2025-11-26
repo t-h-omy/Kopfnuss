@@ -220,8 +220,9 @@ function loadChallengesScreen(container) {
   const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
   
-  // Store flag value for animation before resetting
+  // Store flag value and challenge index for animation before resetting
   const shouldAnimateBackground = returningFromTaskScreen;
+  const justCompletedChallengeIndex = currentChallengeIndex;
   
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first diamond, then streak (or vice versa)
@@ -406,9 +407,12 @@ function loadChallengesScreen(container) {
       img.setAttribute('aria-hidden', 'true');
       bgGraphic.appendChild(img);
       
-      // Add animation class if returning from task screen
-      if (shouldAnimateBackground) {
-        bgGraphic.classList.add('challenge-bg-animate');
+      // Only animate the newly completed challenge (not previously completed ones)
+      // Add delay so animation plays after auto-scrolling is complete
+      if (shouldAnimateBackground && index === justCompletedChallengeIndex) {
+        setTimeout(() => {
+          bgGraphic.classList.add('challenge-bg-animate');
+        }, VISUAL_CONFIG.CELEBRATION_ANIMATION_DELAY);
       }
       
       nodeContainer.appendChild(bgGraphic);

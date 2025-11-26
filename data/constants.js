@@ -91,5 +91,9 @@ export const VISUAL_CONFIG = {
   CELEBRATION_GRAPHIC_SCALE_TABLET: 1.07,
   
   // Scale factor for desktop (1024px+)
-  CELEBRATION_GRAPHIC_SCALE_DESKTOP: 1.14
+  CELEBRATION_GRAPHIC_SCALE_DESKTOP: 1.14,
+  
+  // Delay before celebration animation plays (in milliseconds)
+  // Should be set to start after auto-scrolling is complete
+  CELEBRATION_ANIMATION_DELAY: 800
 };
