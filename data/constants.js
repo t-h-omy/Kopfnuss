@@ -39,10 +39,10 @@ export const ANIMATION_TIMING = {
  */
 export const SPARKLE_CONFIG = {
   // Number of sparkle particles per wave
-  COUNT: 12,
+  COUNT: 15,
   
   // Distance in pixels that sparkles move outward
-  MOVE_DISTANCE: 40,
+  MOVE_DISTANCE: 30,
   
   // Delay between each sparkle appearing (in seconds)
   DELAY_MULTIPLIER: 0.08
@@ -56,7 +56,7 @@ export const CONFETTI_CONFIG = {
   COLORS: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'],
   
   // Number of confetti pieces
-  COUNT: 50,
+  COUNT: 80,
   
   // Minimum animation duration in seconds
   MIN_DURATION: 1.5,
@@ -85,7 +85,7 @@ export const RESIZE_CONFIG = {
 export const VISUAL_CONFIG = {
   // Size of the celebration background graphic behind completed challenges (in pixels)
   // Base size for mobile, will scale up for tablet/desktop
-  CELEBRATION_GRAPHIC_SIZE: 168,
+  CELEBRATION_GRAPHIC_SIZE: 200,
   
   // Scale factor for tablet (768px+)
   CELEBRATION_GRAPHIC_SCALE_TABLET: 1.07,
