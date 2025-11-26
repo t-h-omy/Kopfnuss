@@ -1439,14 +1439,30 @@ class KopfnussApp {
   }
   
   loadInitialRoute() {
+    // Check streak status BEFORE loading the challenges screen
+    // This must happen first so we know what popup to show
+    const streakStatus = checkStreakStatusOnLoad();
+    
     // Load challenges screen by default
     showScreen('challenges');
     
-    // Check and show streak status popups after initial load
+    // Show streak status popups after initial load if needed
     // This handles frozen/lost streaks on app open
-    setTimeout(() => {
-      checkAndShowStreakPopups();
-    }, 100);
+    if (streakStatus.showPopup && !wasStreakStatusHandledToday()) {
+      setTimeout(() => {
+        switch (streakStatus.lossReason) {
+          case STREAK_LOSS_REASON.FROZEN:
+            queuePopup(() => showFrozenStreakPopup(streakStatus.previousStreak));
+            break;
+          case STREAK_LOSS_REASON.EXPIRED_RESTORABLE:
+            queuePopup(() => showStreakRestorablePopup(streakStatus.previousStreak));
+            break;
+          case STREAK_LOSS_REASON.EXPIRED_PERMANENT:
+            queuePopup(() => showStreakLostPopup(streakStatus.previousStreak));
+            break;
+        }
+      }, 100);
+    }
   }
   
   handleOfflineStatus() {
