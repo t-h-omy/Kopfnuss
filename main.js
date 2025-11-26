@@ -133,6 +133,7 @@ let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
@@ -335,9 +336,8 @@ function loadChallengesScreen(container) {
   // Store node positions for SVG path calculation
   const nodePositions = [];
   
-  // Track which background graphics have been used for random selection
+  // Background graphics for completed challenges
   const celebrationGraphics = ['burst-1.svg', 'burst-2.svg', 'burst-3.svg', 'burst-4.svg'];
-  let lastUsedGraphicIndex = -1;
   
   challenges.forEach((challenge, index) => {
     const isLeftPosition = index % 2 === 0;
@@ -381,11 +381,9 @@ function loadChallengesScreen(container) {
       const bgGraphic = document.createElement('div');
       bgGraphic.className = 'challenge-bg-graphic';
       
-      // Select a random graphic that is different from the last one used
-      let graphicIndex;
-      do {
-        graphicIndex = Math.floor(Math.random() * celebrationGraphics.length);
-      } while (graphicIndex === lastUsedGraphicIndex && celebrationGraphics.length > 1);
+      // Select graphic using circular selection to ensure variety
+      // Use modulo to cycle through graphics and add 1 to avoid same as last used
+      const graphicIndex = (lastUsedGraphicIndex + 1 + Math.floor(Math.random() * (celebrationGraphics.length - 1))) % celebrationGraphics.length;
       lastUsedGraphicIndex = graphicIndex;
       
       const img = document.createElement('img');
