@@ -4,7 +4,7 @@
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.11.0';
+const APP_VERSION = '1.11.1';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
@@ -16,6 +16,7 @@ const urlsToCache = [
   './manifest.json',
   './version.js',
   './data/balancing.js',
+  './data/constants.js',
   './logic/taskGenerators.js',
   './logic/challengeGenerator.js',
   './logic/challengeStateManager.js',
@@ -23,7 +24,9 @@ const urlsToCache = [
   './logic/streakManager.js',
   './logic/diamondManager.js',
   './logic/storageManager.js',
-  './logic/taskScreenController.js'
+  './logic/taskScreenController.js',
+  './logic/popupManager.js',
+  './logic/visualEffects.js'
 ];
 
 /**

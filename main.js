@@ -16,6 +16,18 @@ import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './log
 import { clearAllData, loadStreak } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
+import { ANIMATION_TIMING, RESIZE_CONFIG } from './data/constants.js';
+import { 
+  scrollToAndHighlightChallenge, 
+  scrollToAndHighlightRewardButton 
+} from './logic/visualEffects.js';
+import { 
+  createConfettiEffect, 
+  processPopupQueue, 
+  queuePopup,
+  closePopup,
+  removeConfettiPieces
+} from './logic/popupManager.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -50,13 +62,13 @@ window.addEventListener('resize', () => {
     if (!isInputFocused) {
       setAppHeight();
     }
-  }, 100);
+  }, RESIZE_CONFIG.DEBOUNCE_DELAY);
 });
 
 // Also set on orientation change (more reliable than resize for orientation)
 window.addEventListener('orientationchange', () => {
   // Wait for orientation change to complete
-  setTimeout(setAppHeight, 100);
+  setTimeout(setAppHeight, RESIZE_CONFIG.ORIENTATION_CHANGE_DELAY);
 });
 
 // Service Worker Registrierung mit Version Logging und automatischem Cache-Reset
@@ -121,25 +133,6 @@ let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 
-// Popup queue system for sequential popup display
-const popupQueue = [];
-let isShowingPopup = false;
-
-// Animation timing constants (in milliseconds)
-// FOCUS_HIGHLIGHT_DURATION must match the CSS animation duration in style.css (.challenge-focus-highlight)
-const FOCUS_HIGHLIGHT_DURATION = 800;
-const REWARD_HIGHLIGHT_DURATION = 1500; // Must match CSS animation duration for .reward-button-focus-highlight
-const SPARKLE_ANIMATION_DURATION = 1500; // Duration before sparkle elements are removed
-const SPARKLE_WAVE_DELAY_1 = 400; // First additional sparkle wave delay
-const SPARKLE_WAVE_DELAY_2 = 800; // Second additional sparkle wave delay
-const SCROLL_SETTLE_DELAY = 300; // Time to wait for smooth scroll to settle before showing highlight
-const DOM_RENDER_DELAY = 100; // Time to wait for DOM to be fully rendered after requestAnimationFrame
-
-// Sparkle effect constants
-const SPARKLE_COUNT = 12; // Number of sparkle particles per wave
-const SPARKLE_MOVE_DISTANCE = 40; // Distance in pixels that sparkles move outward
-const SPARKLE_DELAY_MULTIPLIER = 0.08; // Delay between each sparkle appearing (in seconds)
-
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
  * @param {Array} challenges - Array of challenge objects
@@ -160,125 +153,6 @@ function findCurrentUnlockedChallengeIndex(challenges) {
   
   // If no unlocked challenge found, return -1
   return -1;
-}
-
-/**
- * Scroll to and highlight the specified challenge
- * @param {number} challengeIndex - Index of the challenge to scroll to
- */
-function scrollToAndHighlightChallenge(challengeIndex) {
-  if (challengeIndex < 0) {
-    return;
-  }
-  
-  // Wait for DOM to be fully rendered using requestAnimationFrame + small delay
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      const challengeRow = document.querySelector(`.challenge-row[data-index="${challengeIndex}"]`);
-      if (challengeRow) {
-        // Smooth scroll to the challenge
-        challengeRow.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-        
-        // Add highlight animation class after scroll completes
-        setTimeout(() => {
-          // Check if there's no popup currently visible (don't highlight during celebrations)
-          const hasPopup = document.querySelector('.popup-overlay');
-          if (!hasPopup) {
-            challengeRow.classList.add('challenge-focus-highlight');
-            
-            // Remove the class after animation completes
-            setTimeout(() => {
-              challengeRow.classList.remove('challenge-focus-highlight');
-            }, FOCUS_HIGHLIGHT_DURATION);
-          }
-        }, SCROLL_SETTLE_DELAY);
-      }
-    }, DOM_RENDER_DELAY);
-  });
-}
-
-/**
- * Create sparkle effects around an element
- * @param {HTMLElement} element - The element to create sparkles around
- */
-function createSparklesAroundElement(element) {
-  if (!element) return;
-  
-  const rect = element.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  const radius = Math.max(rect.width, rect.height) / 2 + 20;
-  
-  for (let i = 0; i < SPARKLE_COUNT; i++) {
-    const sparkle = document.createElement('div');
-    sparkle.className = 'reward-sparkle';
-    
-    // Calculate position around the button
-    const angle = (i / SPARKLE_COUNT) * 2 * Math.PI;
-    const startX = centerX + Math.cos(angle) * (radius * 0.5);
-    const startY = centerY + Math.sin(angle) * (radius * 0.5);
-    
-    // Set CSS custom properties for animation direction
-    const moveX = Math.cos(angle) * SPARKLE_MOVE_DISTANCE;
-    const moveY = Math.sin(angle) * SPARKLE_MOVE_DISTANCE;
-    sparkle.style.setProperty('--sparkle-x', `${moveX}px`);
-    sparkle.style.setProperty('--sparkle-y', `${moveY}px`);
-    
-    sparkle.style.left = `${startX}px`;
-    sparkle.style.top = `${startY}px`;
-    sparkle.style.animationDelay = `${i * SPARKLE_DELAY_MULTIPLIER}s`;
-    
-    document.body.appendChild(sparkle);
-    
-    // Remove sparkle after animation
-    setTimeout(() => {
-      sparkle.remove();
-    }, SPARKLE_ANIMATION_DURATION);
-  }
-}
-
-/**
- * Scroll to and highlight the reward button with glamorous sparkle effect
- */
-function scrollToAndHighlightRewardButton() {
-  // Wait for DOM to be fully rendered using requestAnimationFrame + small delay
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      const rewardButton = document.getElementById('reward-button');
-      if (rewardButton && rewardButton.classList.contains('active')) {
-        // Smooth scroll to the reward button
-        rewardButton.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-        
-        // Add highlight animation and sparkles after scroll completes
-        setTimeout(() => {
-          // Check if there's no popup currently visible
-          const hasPopup = document.querySelector('.popup-overlay');
-          if (!hasPopup) {
-            // Add glamorous highlight animation
-            rewardButton.classList.add('reward-button-focus-highlight');
-            
-            // Create sparkle effects
-            createSparklesAroundElement(rewardButton);
-            
-            // Create additional sparkle waves
-            setTimeout(() => createSparklesAroundElement(rewardButton), SPARKLE_WAVE_DELAY_1);
-            setTimeout(() => createSparklesAroundElement(rewardButton), SPARKLE_WAVE_DELAY_2);
-            
-            // Remove the highlight class after animation completes
-            setTimeout(() => {
-              rewardButton.classList.remove('reward-button-focus-highlight');
-            }, REWARD_HIGHLIGHT_DURATION);
-          }
-        }, SCROLL_SETTLE_DELAY);
-      }
-    }, DOM_RENDER_DELAY);
-  });
 }
 
 /**
@@ -775,14 +649,7 @@ function showRewardPopup() {
  * Close the reward popup
  */
 function closeRewardPopup() {
-  const overlay = document.getElementById('reward-popup-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-  
-  // Remove any remaining confetti
-  const confettiPieces = document.querySelectorAll('.confetti-piece');
-  confettiPieces.forEach(piece => piece.remove());
+  closePopup('reward-popup-overlay', true);
 }
 
 /**
@@ -843,14 +710,7 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond, onClose =
  * Close the diamond celebration popup
  */
 function closeDiamondCelebrationPopup() {
-  const overlay = document.getElementById('diamond-celebration-popup-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-  
-  // Remove any remaining confetti
-  const confettiPieces = document.querySelectorAll('.confetti-piece');
-  confettiPieces.forEach(piece => piece.remove());
+  closePopup('diamond-celebration-popup-overlay', true);
 }
 
 /**
@@ -910,39 +770,7 @@ function showStreakCelebrationPopup(streakCount, onClose = null) {
  * Close the streak celebration popup
  */
 function closeStreakCelebrationPopup() {
-  const overlay = document.getElementById('streak-celebration-popup-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-  
-  // Remove any remaining confetti
-  const confettiPieces = document.querySelectorAll('.confetti-piece');
-  confettiPieces.forEach(piece => piece.remove());
-}
-
-/**
- * Popup queue system - process next popup in queue
- */
-function processPopupQueue() {
-  if (popupQueue.length === 0) {
-    isShowingPopup = false;
-    return;
-  }
-  
-  isShowingPopup = true;
-  const nextPopup = popupQueue.shift();
-  nextPopup();
-}
-
-/**
- * Add popup to queue and process if not already showing
- * @param {Function} popupFn - Function that shows the popup
- */
-function queuePopup(popupFn) {
-  popupQueue.push(popupFn);
-  if (!isShowingPopup) {
-    processPopupQueue();
-  }
+  closePopup('streak-celebration-popup-overlay', true);
 }
 
 /**
@@ -1222,34 +1050,6 @@ function checkAndShowStreakPopups(onAllPopupsClosed = null) {
  */
 export function notifyStreakUnfrozen(newStreak) {
   streakWasUnfrozen = newStreak;
-}
-
-/**
- * Create confetti celebration effect
- */
-function createConfettiEffect() {
-  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
-  const confettiCount = 50;
-  const minDuration = 1.5;
-  const durationVariance = 1;
-  const cleanupDelay = 3000;
-  
-  for (let i = 0; i < confettiCount; i++) {
-    const confetti = document.createElement('div');
-    confetti.className = 'confetti-piece';
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.top = '-20px';
-    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-    confetti.style.animationDuration = (Math.random() * durationVariance + minDuration) + 's';
-    
-    document.body.appendChild(confetti);
-    
-    // Remove confetti after animation
-    setTimeout(() => {
-      confetti.remove();
-    }, cleanupDelay);
-  }
 }
 
 /**
