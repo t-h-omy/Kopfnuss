@@ -365,7 +365,7 @@ body::before {
 /* Gradient border wrapper for challenge nodes */
 .challenge-node-wrapper {
   border-radius: 50%;
-  padding: 5px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -375,7 +375,7 @@ body::before {
 
 /* Node States */
 .challenge-available .challenge-node-wrapper {
-  background: linear-gradient(135deg, #1E6BB8 0%, #4A90D9 50%, #1E6BB8 100%);
+  background: linear-gradient(135deg, #0D5BA8 0%, #5AA3E8 50%, #0D5BA8 100%);
 }
 
 .challenge-available .challenge-node {
@@ -393,7 +393,7 @@ body::before {
 }
 
 .challenge-in_progress .challenge-node-wrapper {
-  background: linear-gradient(135deg, #1E6BB8 0%, #4A90D9 50%, #1E6BB8 100%);
+  background: linear-gradient(135deg, #0D5BA8 0%, #5AA3E8 50%, #0D5BA8 100%);
 }
 
 .challenge-in_progress .challenge-node {
@@ -407,7 +407,7 @@ body::before {
 }
 
 .challenge-completed .challenge-node-wrapper {
-  background: linear-gradient(135deg, #F28C28 0%, #FFB347 50%, #F28C28 100%);
+  background: linear-gradient(135deg, #E07818 0%, #FFB347 50%, #E07818 100%);
 }
 
 .challenge-completed .challenge-node {
@@ -415,7 +415,7 @@ body::before {
 }
 
 .challenge-locked .challenge-node-wrapper {
-  background: linear-gradient(135deg, #A2A2A2 0%, #C8C8C8 50%, #A2A2A2 100%);
+  background: linear-gradient(135deg, #888888 0%, #C8C8C8 50%, #888888 100%);
 }
 
 .challenge-locked .challenge-node {

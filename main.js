@@ -220,6 +220,9 @@ function loadChallengesScreen(container) {
   const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
   
+  // Store flag value for animation before resetting
+  const shouldAnimateBackground = returningFromTaskScreen;
+  
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first diamond, then streak (or vice versa)
   // After all popups close, scroll to the current unlocked challenge or reward button
@@ -404,7 +407,7 @@ function loadChallengesScreen(container) {
       bgGraphic.appendChild(img);
       
       // Add animation class if returning from task screen
-      if (returningFromTaskScreen) {
+      if (shouldAnimateBackground) {
         bgGraphic.classList.add('challenge-bg-animate');
       }
       
