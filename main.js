@@ -226,8 +226,10 @@ function loadChallengesScreen(container) {
     returningFromTaskScreen = false;
     
     const showDiamond = diamondResult.awarded > 0;
-    const showUnfrozen = streakWasUnfrozen !== false;
-    const showStreakIncremented = streakWasIncremented !== false && !showUnfrozen;
+    // Check if streak was unfrozen during challenge (streakWasUnfrozen is the new streak value or false)
+    const showUnfrozen = typeof streakWasUnfrozen === 'number' && streakWasUnfrozen > 0;
+    // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
+    const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
     
     // Reset the flags
     const unfrozenStreakValue = streakWasUnfrozen;
