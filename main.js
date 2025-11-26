@@ -13,7 +13,7 @@ import {
   STREAK_LOSS_REASON
 } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './logic/diamondManager.js';
-import { clearAllData, loadStreak } from './logic/storageManager.js';
+import { clearAllData } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG } from './data/constants.js';
@@ -132,6 +132,7 @@ let currentScreen = null;
 let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
+let streakWasIncremented = false; // Track if streak was incremented during challenge completion
 
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
@@ -211,18 +212,8 @@ function loadChallengesScreen(container) {
   // Get data
   const challenges = getTodaysChallenges();
   
-  // Get previous streak data BEFORE updating
-  const previousStreakData = loadStreak();
-  const previousStreakCount = previousStreakData.currentStreak;
-  
-  // Update streak and get new data (this also calls updateStreak internally)
+  // Update streak status (this checks for freezing/expiration, but does not increment streak)
   const streakInfo = getStreakInfo();
-  
-  // Check if streak genuinely increased
-  // When a streak is rescued (unfrozen), the count stays the same, so this check
-  // automatically excludes rescued streaks from triggering the celebration popup.
-  // The popup only shows when currentStreak > previousStreak (genuine new day achievement)
-  const streakIncreased = streakInfo.currentStreak > previousStreakCount;
   
   // Update diamonds based on progress and check if any were awarded
   const diamondResult = updateDiamonds();
@@ -235,12 +226,16 @@ function loadChallengesScreen(container) {
     returningFromTaskScreen = false;
     
     const showDiamond = diamondResult.awarded > 0;
-    const showStreak = streakIncreased && streakInfo.currentStreak > 0;
-    const showUnfrozen = streakWasUnfrozen !== false;
+    // Check if streak was unfrozen during challenge (streakWasUnfrozen is the new streak value or false)
+    const showUnfrozen = typeof streakWasUnfrozen === 'number' && streakWasUnfrozen > 0;
+    // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
+    const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
     
-    // Reset the unfrozen flag
+    // Reset the flags
     const unfrozenStreakValue = streakWasUnfrozen;
+    const incrementedStreakValue = streakWasIncremented;
     streakWasUnfrozen = false;
+    streakWasIncremented = false;
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
@@ -265,9 +260,9 @@ function loadChallengesScreen(container) {
     if (showDiamond) {
       popupsToShow.push((next) => showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, next));
     }
-    if (showStreak && !showUnfrozen) {
-      // Only show streak celebration if we didn't just unfreeze (to avoid duplicate celebration)
-      popupsToShow.push((next) => showStreakCelebrationPopup(streakInfo.currentStreak, next));
+    if (showStreakIncremented) {
+      // Show streak celebration popup when streak was incremented by challenge completion
+      popupsToShow.push((next) => showStreakCelebrationPopup(incrementedStreakValue, next));
     }
     
     // Chain popups together
@@ -1050,6 +1045,15 @@ function checkAndShowStreakPopups(onAllPopupsClosed = null) {
  */
 export function notifyStreakUnfrozen(newStreak) {
   streakWasUnfrozen = newStreak;
+}
+
+/**
+ * Notify that streak was incremented by completing a challenge
+ * This sets a flag that will trigger the streak celebration popup when returning to challenges screen
+ * @param {number} newStreak - New streak count after incrementing
+ */
+export function notifyStreakIncremented(newStreak) {
+  streakWasIncremented = newStreak;
 }
 
 /**

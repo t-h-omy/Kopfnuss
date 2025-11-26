@@ -5,7 +5,6 @@ import { CONFIG } from '../data/balancing.js';
 import { 
   loadStreak, 
   saveStreak, 
-  loadProgress, 
   getTodayDate 
 } from './storageManager.js';
 import { loadDiamonds, saveDiamonds } from './diamondManager.js';
@@ -126,56 +125,31 @@ export function wasStreakStatusHandledToday() {
 }
 
 /**
- * Update streak based on current progress
+ * Update streak status based on time elapsed (does NOT increment streak)
+ * This function handles streak freezing and loss detection only.
+ * Streak progression is handled by incrementStreakByChallenge() when a challenge is completed.
  * @returns {Object} Updated streak object
  */
 export function updateStreak() {
   const streak = loadStreak();
-  const progress = loadProgress();
   const today = getTodayDate();
   const lastActiveDate = streak.lastActiveDate;
   
-  // Check if player completed enough tasks today
-  const tasksCompletedToday = progress.tasksCompletedToday || 0;
-  const hasCompletedMinimum = tasksCompletedToday >= CONFIG.TASKS_FOR_STREAK;
-  
-  // If no previous date, initialize
+  // If no previous date, just return current streak (will be initialized on first challenge completion)
   if (!lastActiveDate) {
-    if (hasCompletedMinimum) {
-      streak.currentStreak = 1;
-      streak.longestStreak = 1;
-      streak.lastActiveDate = today;
-      streak.isFrozen = false;
-      streak.lossReason = null;
-    }
     saveStreak(streak);
     return streak;
   }
   
   const daysSinceLastActive = daysBetween(lastActiveDate, today);
   
-  // Same day - just update if completed minimum
+  // Same day - no changes needed
   if (daysSinceLastActive === 0) {
-    if (hasCompletedMinimum && streak.currentStreak === 0) {
-      streak.currentStreak = 1;
-      streak.isFrozen = false;
-      streak.lossReason = null;
-    }
+    // No changes needed, streak status stays the same
   }
-  // Next day - increment streak if minimum completed
+  // Next day - freeze streak if not already frozen (player needs to complete a challenge to unfreeze)
   else if (daysSinceLastActive === 1) {
-    if (hasCompletedMinimum) {
-      streak.currentStreak += 1;
-      streak.isFrozen = false;
-      streak.lossReason = null;
-      streak.lastActiveDate = today;
-      
-      // Update longest streak if necessary
-      if (streak.currentStreak > streak.longestStreak) {
-        streak.longestStreak = streak.currentStreak;
-      }
-    } else {
-      // Freeze streak after 1 day of inactivity
+    if (!streak.isFrozen && streak.currentStreak > 0) {
       streak.isFrozen = true;
       streak.lossReason = STREAK_LOSS_REASON.FROZEN;
     }
@@ -185,39 +159,127 @@ export function updateStreak() {
     if (streak.currentStreak > 0 && !streak.lossReason) {
       streak.lossReason = STREAK_LOSS_REASON.EXPIRED_RESTORABLE;
     }
-    // Don't reset streak yet, allow restoration
-    if (!streak.lossReason || streak.lossReason === STREAK_LOSS_REASON.FROZEN) {
-      streak.currentStreak = 0;
-      streak.isFrozen = false;
+    // Don't reset streak yet, allow restoration via popup
+    if (streak.lossReason === STREAK_LOSS_REASON.FROZEN) {
+      streak.lossReason = STREAK_LOSS_REASON.EXPIRED_RESTORABLE;
     }
-    // If player completes minimum today AND hasn't chosen to restore the old streak,
-    // start a new streak. We don't auto-start a new streak when the old one is restorable
-    // because the player needs to see the popup and choose whether to restore or start fresh.
-    if (hasCompletedMinimum && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_RESTORABLE) {
-      streak.currentStreak = 1;
-      streak.lastActiveDate = today;
-      streak.isFrozen = false;
-      streak.lossReason = null;
-    }
+    streak.isFrozen = false;
   }
   // More than 2 days - streak definitely lost
   else if (daysSinceLastActive > 2) {
-    if (streak.currentStreak > 0) {
+    if (streak.currentStreak > 0 && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_PERMANENT) {
       streak.lossReason = STREAK_LOSS_REASON.EXPIRED_PERMANENT;
     }
     streak.currentStreak = 0;
     streak.isFrozen = false;
-    
-    // If player completes minimum today, start new streak
-    if (hasCompletedMinimum) {
-      streak.currentStreak = 1;
-      streak.lastActiveDate = today;
-      streak.lossReason = null;
-    }
   }
   
   saveStreak(streak);
   return streak;
+}
+
+/**
+ * Increment streak by completing a challenge
+ * This is called when player completes a full challenge
+ * @returns {Object} Result with success status and whether streak was incremented
+ */
+export function incrementStreakByChallenge() {
+  const streak = loadStreak();
+  const today = getTodayDate();
+  const lastActiveDate = streak.lastActiveDate;
+  
+  // If streak is frozen, don't increment here - use unfreezeStreakByChallenge instead
+  if (streak.isFrozen) {
+    return {
+      success: false,
+      wasIncremented: false,
+      message: 'Streak is frozen, use unfreezeStreakByChallenge instead'
+    };
+  }
+  
+  // If streak has a loss reason (expired), don't auto-increment
+  // Player needs to handle this via popup first
+  if (streak.lossReason) {
+    return {
+      success: false,
+      wasIncremented: false,
+      message: 'Streak has a loss reason, must be handled first'
+    };
+  }
+  
+  // Check if already active today (already completed a challenge today)
+  if (lastActiveDate === today) {
+    return {
+      success: true,
+      wasIncremented: false,
+      message: 'Already completed a challenge today',
+      currentStreak: streak.currentStreak
+    };
+  }
+  
+  // If no previous date, start first streak
+  if (!lastActiveDate) {
+    streak.currentStreak = 1;
+    streak.longestStreak = Math.max(streak.longestStreak || 0, 1);
+    streak.lastActiveDate = today;
+    streak.isFrozen = false;
+    streak.lossReason = null;
+    saveStreak(streak);
+    
+    return {
+      success: true,
+      wasIncremented: true,
+      message: 'First streak day started!',
+      newStreak: streak.currentStreak
+    };
+  }
+  
+  const daysSinceLastActive = daysBetween(lastActiveDate, today);
+  
+  // Next day - increment streak
+  if (daysSinceLastActive === 1) {
+    streak.currentStreak += 1;
+    streak.isFrozen = false;
+    streak.lossReason = null;
+    streak.lastActiveDate = today;
+    
+    // Update longest streak if necessary
+    if (streak.currentStreak > streak.longestStreak) {
+      streak.longestStreak = streak.currentStreak;
+    }
+    
+    saveStreak(streak);
+    
+    return {
+      success: true,
+      wasIncremented: true,
+      message: 'Streak incremented!',
+      newStreak: streak.currentStreak
+    };
+  }
+  
+  // More than 1 day gap - this shouldn't happen if updateStreak was called correctly
+  // But handle it by starting a new streak
+  if (daysSinceLastActive > 1) {
+    streak.currentStreak = 1;
+    streak.lastActiveDate = today;
+    streak.isFrozen = false;
+    streak.lossReason = null;
+    saveStreak(streak);
+    
+    return {
+      success: true,
+      wasIncremented: true,
+      message: 'New streak started after gap',
+      newStreak: streak.currentStreak
+    };
+  }
+  
+  return {
+    success: false,
+    wasIncremented: false,
+    message: 'Unexpected state'
+  };
 }
 
 /**
@@ -227,7 +289,6 @@ export function updateStreak() {
 export function getStreakInfo() {
   const streak = updateStreak();
   const today = getTodayDate();
-  const progress = loadProgress();
   
   const daysSinceLastActive = streak.lastActiveDate 
     ? daysBetween(streak.lastActiveDate, today)
@@ -237,8 +298,8 @@ export function getStreakInfo() {
   if (streak.isFrozen) status = 'frozen';
   if (streak.currentStreak === 0) status = 'inactive';
   
-  const tasksCompletedToday = progress.tasksCompletedToday || 0;
-  const tasksNeeded = Math.max(0, CONFIG.TASKS_FOR_STREAK - tasksCompletedToday);
+  // Check if player has already completed a challenge today
+  const hasCompletedChallengeToday = streak.lastActiveDate === today;
   
   return {
     currentStreak: streak.currentStreak,
@@ -246,8 +307,7 @@ export function getStreakInfo() {
     status: status,
     isFrozen: streak.isFrozen,
     daysSinceLastActive: daysSinceLastActive,
-    tasksCompletedToday: tasksCompletedToday,
-    tasksNeededForStreak: tasksNeeded,
+    hasCompletedChallengeToday: hasCompletedChallengeToday,
     canRescue: streak.isFrozen && daysSinceLastActive === 1,
     lossReason: streak.lossReason
   };
@@ -442,11 +502,11 @@ export function resetStreak() {
 }
 
 /**
- * Check if player has met daily streak requirement
- * @returns {boolean} True if minimum tasks completed today
+ * Check if player has met daily streak requirement (completed a challenge today)
+ * @returns {boolean} True if a challenge was completed today
  */
 export function hasMetDailyRequirement() {
-  const progress = loadProgress();
-  const tasksCompletedToday = progress.tasksCompletedToday || 0;
-  return tasksCompletedToday >= CONFIG.TASKS_FOR_STREAK;
+  const streak = loadStreak();
+  const today = getTodayDate();
+  return streak.lastActiveDate === today;
 }
