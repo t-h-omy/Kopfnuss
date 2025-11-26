@@ -2,8 +2,17 @@
 // Routing und App-Initialisierung
 
 import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges } from './logic/challengeGenerator.js';
-import { getStreakInfo } from './logic/streakManager.js';
-import { getDiamondInfo, updateDiamonds, addDiamonds } from './logic/diamondManager.js';
+import { 
+  getStreakInfo, 
+  checkStreakStatusOnLoad, 
+  markStreakStatusHandled, 
+  wasStreakStatusHandledToday,
+  restoreExpiredStreak,
+  acceptStreakLoss,
+  unfreezeStreakByChallenge,
+  STREAK_LOSS_REASON
+} from './logic/streakManager.js';
+import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './logic/diamondManager.js';
 import { clearAllData, loadStreak } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
@@ -110,6 +119,11 @@ if ('serviceWorker' in navigator) {
 let currentScreen = null;
 let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
+let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
+
+// Popup queue system for sequential popup display
+const popupQueue = [];
+let isShowingPopup = false;
 
 // Animation timing constants (in milliseconds)
 // FOCUS_HIGHLIGHT_DURATION must match the CSS animation duration in style.css (.challenge-focus-highlight)
@@ -348,6 +362,11 @@ function loadChallengesScreen(container) {
     
     const showDiamond = diamondResult.awarded > 0;
     const showStreak = streakIncreased && streakInfo.currentStreak > 0;
+    const showUnfrozen = streakWasUnfrozen !== false;
+    
+    // Reset the unfrozen flag
+    const unfrozenStreakValue = streakWasUnfrozen;
+    streakWasUnfrozen = false;
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
@@ -363,15 +382,29 @@ function loadChallengesScreen(container) {
       }
     };
     
-    if (showDiamond && showStreak) {
-      // Show both popups sequentially - diamond first, then streak, then scroll
-      showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, () => {
-        showStreakCelebrationPopup(streakInfo.currentStreak, scrollAfterPopups);
-      });
-    } else if (showDiamond) {
-      showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, scrollAfterPopups);
-    } else if (showStreak) {
-      showStreakCelebrationPopup(streakInfo.currentStreak, scrollAfterPopups);
+    // Queue popups: unfrozen first (if applicable), then diamond, then streak
+    const popupsToShow = [];
+    
+    if (showUnfrozen) {
+      popupsToShow.push((next) => showStreakUnfrozenPopup(unfrozenStreakValue, next));
+    }
+    if (showDiamond) {
+      popupsToShow.push((next) => showDiamondCelebrationPopup(diamondResult.awarded, CONFIG.TASKS_PER_DIAMOND, next));
+    }
+    if (showStreak && !showUnfrozen) {
+      // Only show streak celebration if we didn't just unfreeze (to avoid duplicate celebration)
+      popupsToShow.push((next) => showStreakCelebrationPopup(streakInfo.currentStreak, next));
+    }
+    
+    // Chain popups together
+    if (popupsToShow.length > 0) {
+      let chain = scrollAfterPopups;
+      for (let i = popupsToShow.length - 1; i >= 0; i--) {
+        const popup = popupsToShow[i];
+        const nextInChain = chain;
+        chain = () => popup(nextInChain);
+      }
+      chain();
     }
   }
   
@@ -397,12 +430,16 @@ function loadChallengesScreen(container) {
     ? 'Noch 1 Aufgabe bis +1 💎' 
     : `Noch ${tasksUntilNext} Aufgaben bis +1 💎`;
   
+  // Use blue flame (frozen) icon when streak is frozen, normal fire otherwise
+  const streakIcon = streakInfo.isFrozen ? '🧊' : '🔥';
+  const streakClass = streakInfo.isFrozen ? 'stat-capsule streak-frozen' : 'stat-capsule';
+  
   header.innerHTML = `
     <h1>Tägliche Herausforderungen</h1>
     <div class="header-stats">
-      <div class="stat-capsule">
-        <span class="stat-icon">🔥</span>
-        <span class="stat-value">${streakInfo.currentStreak}${streakInfo.isFrozen ? ' ❄️' : ''}</span>
+      <div class="${streakClass}">
+        <span class="stat-icon">${streakIcon}</span>
+        <span class="stat-value">${streakInfo.currentStreak}</span>
       </div>
       <div class="stat-capsule">
         <span class="stat-icon">💎</span>
@@ -884,6 +921,302 @@ function closeStreakCelebrationPopup() {
 }
 
 /**
+ * Popup queue system - process next popup in queue
+ */
+function processPopupQueue() {
+  if (popupQueue.length === 0) {
+    isShowingPopup = false;
+    return;
+  }
+  
+  isShowingPopup = true;
+  const nextPopup = popupQueue.shift();
+  nextPopup();
+}
+
+/**
+ * Add popup to queue and process if not already showing
+ * @param {Function} popupFn - Function that shows the popup
+ */
+function queuePopup(popupFn) {
+  popupQueue.push(popupFn);
+  if (!isShowingPopup) {
+    processPopupQueue();
+  }
+}
+
+/**
+ * Show frozen streak information popup
+ * Displayed when app opens and streak is frozen
+ * @param {number} currentStreak - Current streak count
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showFrozenStreakPopup(currentStreak, onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay streak-popup-overlay';
+  overlay.id = 'frozen-streak-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card streak-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="streak-popup-icon frozen-icon">🥶</div>
+    <h2>Dein Streak ist eingefroren!</h2>
+    <div class="streak-info-display frozen">
+      <span class="streak-frozen-icon">🧊</span>
+      <span class="streak-count">${currentStreak} Tage</span>
+    </div>
+    <p>Du hast gestern keine Challenge gemacht.</p>
+    <p class="streak-hint">Schließe eine Challenge ab, um deinen Streak aufzutauen!</p>
+    <button id="frozen-streak-close-button" class="btn-primary">Zeit zum Auftauen!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('frozen-streak-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    markStreakStatusHandled();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show streak unfrozen success popup
+ * Displayed when player completes a challenge that unfreezes the streak
+ * @param {number} newStreak - New streak count after unfreezing
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showStreakUnfrozenPopup(newStreak, onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay streak-popup-overlay';
+  overlay.id = 'streak-unfrozen-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card streak-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="streak-popup-icon">🔥</div>
+    <h2>Streak aufgetaut!</h2>
+    <div class="streak-info-display active">
+      <span class="streak-fire-icon">🔥</span>
+      <span class="streak-count">${newStreak} Tage</span>
+    </div>
+    <p>Du hast eine Challenge abgeschlossen und deinen Streak gerettet!</p>
+    <button id="streak-unfrozen-close-button" class="btn-primary">Super!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  createConfettiEffect();
+  
+  const closeButton = document.getElementById('streak-unfrozen-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    const confettiPieces = document.querySelectorAll('.confetti-piece');
+    confettiPieces.forEach(piece => piece.remove());
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show streak restorable popup (2-day gap)
+ * Player can pay 1 diamond to restore streak
+ * @param {number} previousStreak - Streak count before it was lost
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showStreakRestorablePopup(previousStreak, onClose = null) {
+  const diamonds = loadDiamonds();
+  const hasDiamond = diamonds >= CONFIG.STREAK_RESCUE_COST;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay streak-popup-overlay';
+  overlay.id = 'streak-restorable-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card streak-popup-card';
+  
+  let buttonHtml, extraText;
+  if (hasDiamond) {
+    buttonHtml = `<button id="restore-streak-button" class="btn-primary">-1💎 Streak zurückholen</button>`;
+    extraText = '';
+  } else {
+    buttonHtml = `<button id="restore-streak-button" class="btn-primary">Ich schaffe das!</button>`;
+    extraText = `<p class="no-diamond-text">Du hast keinen Diamanten. Starte einen neuen Streak!</p>`;
+  }
+  
+  popupCard.innerHTML = `
+    <div class="streak-popup-icon lost-icon">😢</div>
+    <h2>Streak verloren!</h2>
+    <div class="streak-info-display lost">
+      <span class="streak-lost-icon">💔</span>
+      <span class="streak-count">${previousStreak} Tage</span>
+    </div>
+    <p>Du hast 2 Tage keine Challenge gemacht.</p>
+    ${hasDiamond ? '<p class="streak-hint">Hole deinen Streak mit einem Diamanten zurück!</p>' : ''}
+    ${extraText}
+    ${buttonHtml}
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const restoreButton = document.getElementById('restore-streak-button');
+  restoreButton.addEventListener('click', () => {
+    if (hasDiamond) {
+      const result = restoreExpiredStreak();
+      if (result.success) {
+        overlay.remove();
+        markStreakStatusHandled();
+        // Show success feedback
+        showStreakRestoredSuccessPopup(result.newStreak, onClose);
+      }
+    } else {
+      // Accept loss and start fresh
+      acceptStreakLoss();
+      overlay.remove();
+      markStreakStatusHandled();
+      if (onClose && typeof onClose === 'function') {
+        onClose();
+      }
+      processPopupQueue();
+    }
+  });
+}
+
+/**
+ * Show streak restored success popup
+ * @param {number} newStreak - New streak count after restoration
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showStreakRestoredSuccessPopup(newStreak, onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay streak-popup-overlay';
+  overlay.id = 'streak-restored-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card streak-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="streak-popup-icon">🎉</div>
+    <h2>Streak gerettet!</h2>
+    <div class="streak-info-display active">
+      <span class="streak-fire-icon">🔥</span>
+      <span class="streak-count">${newStreak} Tage</span>
+    </div>
+    <p>Dein Streak ist wieder aktiv!</p>
+    <button id="streak-restored-close-button" class="btn-primary">Weiter!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  createConfettiEffect();
+  
+  const closeButton = document.getElementById('streak-restored-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    const confettiPieces = document.querySelectorAll('.confetti-piece');
+    confettiPieces.forEach(piece => piece.remove());
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show streak permanently lost popup (3+ days gap)
+ * @param {number} previousStreak - Streak count before it was lost
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showStreakLostPopup(previousStreak, onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay streak-popup-overlay';
+  overlay.id = 'streak-lost-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card streak-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="streak-popup-icon lost-icon">😞</div>
+    <h2>Streak verloren!</h2>
+    <div class="streak-info-display lost">
+      <span class="streak-lost-icon">💔</span>
+      <span class="streak-count">${previousStreak} Tage</span>
+    </div>
+    <p>Du hast 3 oder mehr Tage pausiert.</p>
+    <p class="streak-hint">Der Streak kann nicht wiederhergestellt werden.</p>
+    <p class="motivation-text">🚀 Rocke den nächsten Streak!</p>
+    <button id="streak-lost-close-button" class="btn-primary">Ich schaffe das!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('streak-lost-close-button');
+  closeButton.addEventListener('click', () => {
+    acceptStreakLoss();
+    overlay.remove();
+    markStreakStatusHandled();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Check and show appropriate streak popup on app load
+ * @param {Function} onAllPopupsClosed - Callback when all popups are closed
+ */
+function checkAndShowStreakPopups(onAllPopupsClosed = null) {
+  // Skip if already handled today
+  if (wasStreakStatusHandledToday()) {
+    if (onAllPopupsClosed) onAllPopupsClosed();
+    return;
+  }
+  
+  const streakStatus = checkStreakStatusOnLoad();
+  
+  if (!streakStatus.showPopup) {
+    if (onAllPopupsClosed) onAllPopupsClosed();
+    return;
+  }
+  
+  switch (streakStatus.lossReason) {
+    case STREAK_LOSS_REASON.FROZEN:
+      queuePopup(() => showFrozenStreakPopup(streakStatus.previousStreak, onAllPopupsClosed));
+      break;
+    case STREAK_LOSS_REASON.EXPIRED_RESTORABLE:
+      queuePopup(() => showStreakRestorablePopup(streakStatus.previousStreak, onAllPopupsClosed));
+      break;
+    case STREAK_LOSS_REASON.EXPIRED_PERMANENT:
+      queuePopup(() => showStreakLostPopup(streakStatus.previousStreak, onAllPopupsClosed));
+      break;
+    default:
+      if (onAllPopupsClosed) onAllPopupsClosed();
+  }
+}
+
+/**
+ * Notify that streak was unfrozen by completing a challenge
+ * This sets a flag that will trigger the unfreeze popup when returning to challenges screen
+ * @param {number} newStreak - New streak count after unfreezing
+ */
+export function notifyStreakUnfrozen(newStreak) {
+  streakWasUnfrozen = newStreak;
+}
+
+/**
  * Create confetti celebration effect
  */
 function createConfettiEffect() {
@@ -1108,6 +1441,12 @@ class KopfnussApp {
   loadInitialRoute() {
     // Load challenges screen by default
     showScreen('challenges');
+    
+    // Check and show streak status popups after initial load
+    // This handles frozen/lost streaks on app open
+    setTimeout(() => {
+      checkAndShowStreakPopups();
+    }, 100);
   }
   
   handleOfflineStatus() {

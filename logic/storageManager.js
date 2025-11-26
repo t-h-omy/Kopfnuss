@@ -131,7 +131,8 @@ export function loadStreak() {
     currentStreak: 0,
     longestStreak: 0,
     lastActiveDate: null,
-    isFrozen: false
+    isFrozen: false,
+    lossReason: null // null, 'frozen', 'expired_restorable', 'expired_permanent'
   });
 }
 

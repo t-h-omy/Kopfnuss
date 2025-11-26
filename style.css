@@ -1547,3 +1547,100 @@ button,
     display: none;
   }
 }
+
+/* ===========================
+   STREAK POPUP STYLES
+   =========================== */
+
+.streak-popup-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.streak-popup-card {
+  animation: scaleIn 0.4s ease;
+}
+
+.streak-popup-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-md);
+  animation: bounceIn 0.8s ease;
+}
+
+.streak-popup-icon.frozen-icon {
+  animation: shake 0.8s ease;
+}
+
+.streak-popup-icon.lost-icon {
+  animation: fadeIn 0.8s ease;
+}
+
+.streak-info-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  animation: fadeIn 0.5s ease 0.3s both;
+}
+
+.streak-info-display.active {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFCC80 100%);
+}
+
+.streak-info-display.frozen {
+  background: linear-gradient(135deg, #E3F2FD 0%, #90CAF9 100%);
+}
+
+.streak-info-display.lost {
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+}
+
+.streak-fire-icon,
+.streak-frozen-icon,
+.streak-lost-icon {
+  font-size: 32px;
+}
+
+.streak-count {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.streak-hint {
+  font-size: 14px;
+  color: var(--color-blue);
+  font-weight: 500;
+  margin-bottom: var(--spacing-md);
+}
+
+.no-diamond-text {
+  font-size: 14px;
+  color: var(--color-danger);
+  font-weight: 500;
+  margin-bottom: var(--spacing-md);
+}
+
+.motivation-text {
+  font-size: 16px;
+  color: var(--color-orange);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Frozen streak capsule style */
+.stat-capsule.streak-frozen {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border: 2px solid #64B5F6;
+}
+
+.stat-capsule.streak-frozen .stat-icon {
+  animation: pulse 2s infinite;
+}
+
+.stat-capsule.streak-frozen .stat-value {
+  color: #1976D2;
+}
