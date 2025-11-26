@@ -9,18 +9,18 @@ export const BALANCING = {
   // Addition
   addition: {
     min: 10,
-    max: 999
+    max: 1500
   },
   
   // Subtraction: Ensure positive results
   subtraction: {
     min: 10,
-    max: 99
+    max: 999
   },
   
-  // Multiplication: One factor 2-12, other 2-20
+  // Multiplication:
   multiplication: {
-    factor1: { min: 2, max: 12 },
+    factor1: { min: 2, max: 20 },
     factor2: { min: 2, max: 20 }
   },
   
