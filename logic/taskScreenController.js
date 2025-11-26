@@ -10,7 +10,7 @@ import {
   abandonChallenge 
 } from './taskFlow.js';
 import { startChallenge } from './challengeStateManager.js';
-import { showScreen } from '../main.js';
+import { showScreen, notifyStreakUnfrozen } from '../main.js';
 
 let taskFlowState = null;
 
@@ -183,6 +183,11 @@ function handleChallengeCompletion() {
   if (!results) {
     console.error('Failed to complete challenge');
     return;
+  }
+  
+  // Notify main.js if streak was unfrozen during this challenge
+  if (results.streakUnfrozen) {
+    notifyStreakUnfrozen(results.streakUnfrozen);
   }
   
   // Get appropriate motivation phrase

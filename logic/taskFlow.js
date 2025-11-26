@@ -8,7 +8,8 @@ import {
   completeChallenge,
   analyzeErrors 
 } from './challengeStateManager.js';
-import { saveProgress, loadProgress } from './storageManager.js';
+import { saveProgress, loadProgress, loadStreak } from './storageManager.js';
+import { unfreezeStreakByChallenge } from './streakManager.js';
 
 /**
  * Task flow state
@@ -17,6 +18,7 @@ let currentChallengeIndex = null;
 let currentTaskIndex = 0;
 let errors = 0;
 let answers = []; // Store user answers for review
+let streakUnfrozenDuringChallenge = false; // Track if streak was unfrozen
 
 /**
  * Initialize task flow for a challenge
@@ -34,6 +36,7 @@ export function initializeTaskFlow(challengeIndex) {
   currentTaskIndex = challenge.currentTaskIndex || 0;
   errors = challenge.errors || 0;
   answers = [];
+  streakUnfrozenDuringChallenge = false; // Reset the flag for new challenge
   
   return {
     challengeIndex,
@@ -200,6 +203,16 @@ export function completeCurrentChallenge() {
   
   saveProgress(progress);
   
+  // Check if streak needs to be unfrozen
+  let streakUnfrozenResult = null;
+  const streak = loadStreak();
+  if (streak.isFrozen) {
+    streakUnfrozenResult = unfreezeStreakByChallenge();
+    if (streakUnfrozenResult.wasUnfrozen) {
+      streakUnfrozenDuringChallenge = true;
+    }
+  }
+  
   // Get error analysis
   const errorAnalysis = analyzeErrors(currentChallengeIndex);
   
@@ -209,7 +222,8 @@ export function completeCurrentChallenge() {
     errors: errors,
     errorAnalysis: errorAnalysis,
     answers: answers,
-    progress: progress
+    progress: progress,
+    streakUnfrozen: streakUnfrozenResult && streakUnfrozenResult.wasUnfrozen ? streakUnfrozenResult.newStreak : null
   };
   
   // Reset task flow state
