@@ -2,18 +2,15 @@
 // Dieser Ordner enthält wiederverwendbare UI-Komponenten
 
 /*
- * Geplante Komponenten:
+ * Hinweis: Die App verwendet derzeit eine dynamische Rendering-Architektur.
+ * UI-Komponenten werden in main.js und den Logic-Modulen erstellt.
  * 
+ * Die Popup-Komponenten wurden zu logic/popupManager.js extrahiert.
+ * Visuelle Effekte wurden zu logic/visualEffects.js extrahiert.
+ * 
+ * Zukünftige Erweiterungen könnten hier als separate Module implementiert werden:
  * - navigation.js: Hauptnavigation der App
- * - challengeCard.js: Karte für eine Challenge (Aufgabentyp)
- * - taskDisplay.js: Anzeige einer einzelnen Aufgabe
+ * - challengeCard.js: Karte für eine Challenge
  * - numpad.js: Virtuelles Nummernpad für mobile Eingabe
- * - progressBar.js: Fortschrittsanzeige
- * - streakIndicator.js: Streak-Anzeige mit Icon
- * - diamondCounter.js: Diamanten-Zähler
- * - feedbackMessage.js: Feedback bei richtigen/falschen Antworten
  * - statsChart.js: Charts für Statistiken
- * - offlineIndicator.js: Offline-Status Anzeige
  */
-
-// TODO: Komponenten implementieren

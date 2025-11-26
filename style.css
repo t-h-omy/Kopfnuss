@@ -833,19 +833,6 @@ body::before {
   font-size: 18px;
 }
 
-/* Legacy Support - Keep old classes functional but hidden */
-.challenge-card {
-  display: none;
-}
-
-.challenge-icon {
-  display: none;
-}
-
-.challenge-info {
-  display: none;
-}
-
 /* ===========================
    RESPONSIVE - TABLET
    =========================== */
