@@ -347,15 +347,15 @@ body::before {
 
 /* Challenge Node (Circle) */
 .challenge-node {
-  width: 100px;
-  height: 100px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   background: #FFFFFF;
   border: 5px solid var(--color-gray);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 42px;
+  font-size: 38px;
   position: relative;
   transition: all var(--transition);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -495,7 +495,7 @@ body::before {
   --card-overlap: -25px;
   background: #FFFFFF;
   border-radius: 16px;
-  padding: 14px 18px;
+  padding: 10px 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   text-align: center;
   width: 62%;
@@ -923,9 +923,9 @@ body::before {
   }
   
   .challenge-node {
-    width: 105px;
-    height: 105px;
-    font-size: 45px;
+    width: 94px;
+    height: 94px;
+    font-size: 40px;
   }
   
   .challenge-splash {
@@ -940,7 +940,7 @@ body::before {
   
   .challenge-info-card {
     max-width: 280px;
-    padding: 16px 20px;
+    padding: 12px 18px;
   }
   
   .challenge-info-card h3 {
@@ -954,9 +954,9 @@ body::before {
 
 @media (min-width: 1024px) {
   .challenge-node {
-    width: 110px;
-    height: 110px;
-    font-size: 48px;
+    width: 100px;
+    height: 100px;
+    font-size: 44px;
   }
   
   .challenge-splash {
