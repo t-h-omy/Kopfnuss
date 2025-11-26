@@ -2,32 +2,47 @@
 // Dieser Ordner enthält die Geschäftslogik der Anwendung
 
 /*
- * Geplante Module:
+ * Aktuelle Module:
  * 
- * - taskGenerator.js: Generierung von Rechenaufgaben
- *   - Addition (6. Klasse Niveau)
- *   - Subtraktion (6. Klasse Niveau)
- *   - Multiplikation (6. Klasse Niveau)
- *   - Division (6. Klasse Niveau)
- *   - Zweierpotenzen
+ * - taskGenerators.js: Generierung von Rechenaufgaben
+ *   - Addition, Subtraktion, Multiplikation, Division
+ *   - Quadratzahlen
+ *   - Gemischte Aufgaben
+ * 
+ * - challengeGenerator.js: Tägliche Herausforderungen
+ *   - Generierung der 5 täglichen Challenges
+ *   - Challenge-Status-Verwaltung
+ * 
+ * - challengeStateManager.js: Challenge-Zustandsübergänge
+ *   - Start/Complete/Fail einer Challenge
+ *   - Freischaltung der nächsten Challenge
+ * 
+ * - taskFlow.js: Aufgabenfluss innerhalb einer Challenge
+ *   - Aufgabenfortschritt
+ *   - Antwortvalidierung
+ * 
+ * - taskScreenController.js: UI-Controller für den Aufgabenbildschirm
+ *   - Event-Handling
+ *   - UI-Updates
  * 
  * - streakManager.js: Verwaltung des Streak-Systems
  *   - Tägliche Streak-Prüfung
- *   - Streak-Berechnung
- *   - Streak-Reset bei Pause
+ *   - Streak einfrieren/auftauen
+ *   - Streak wiederherstellen
  * 
- * - scoreCalculator.js: Punkteberechnung
- *   - Diamanten-Vergabe
- *   - Bonus für Streak
- *   - Geschwindigkeitsbonus
+ * - diamondManager.js: Diamanten-Verwaltung
+ *   - Diamanten verdienen (alle 9 Aufgaben)
+ *   - Diamanten ausgeben
  * 
- * - validator.js: Validierung von Antworten
- *   - Antwort prüfen
- *   - Fehlertoleranz
- * 
- * - storageManager.js: LocalStorage/IndexedDB Verwaltung
+ * - storageManager.js: LocalStorage-Verwaltung
  *   - Persistierung von Fortschritt
- *   - Offline-Datenverwaltung
+ *   - Challenges, Streak, Diamanten speichern
+ * 
+ * - popupManager.js: Popup-Verwaltung
+ *   - Popup-Warteschlange
+ *   - Konfetti-Effekte
+ * 
+ * - visualEffects.js: Visuelle Effekte
+ *   - Sparkle-Animationen
+ *   - Scroll-und-Highlight-Funktionen
  */
-
-// TODO: Logik-Module implementieren

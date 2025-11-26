@@ -1,22 +1,13 @@
 // Kopfnuss - Popup Manager
 // Centralized popup handling utilities
 
+import { CONFETTI_CONFIG } from '../data/constants.js';
+
 /**
  * Popup queue system for sequential popup display
  */
 const popupQueue = [];
 let isShowingPopup = false;
-
-/**
- * Confetti effect configuration
- */
-const CONFETTI_CONFIG = {
-  colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'],
-  count: 50,
-  minDuration: 1.5,
-  durationVariance: 1,
-  cleanupDelay: 3000
-};
 
 /**
  * Process next popup in queue
@@ -95,23 +86,23 @@ export function removeConfettiPieces() {
  * Create confetti celebration effect
  */
 export function createConfettiEffect() {
-  const { colors, count, minDuration, durationVariance, cleanupDelay } = CONFETTI_CONFIG;
+  const { COLORS, COUNT, MIN_DURATION, DURATION_VARIANCE, CLEANUP_DELAY } = CONFETTI_CONFIG;
   
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < COUNT; i++) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti-piece';
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.backgroundColor = COLORS[Math.floor(Math.random() * COLORS.length)];
     confetti.style.left = Math.random() * 100 + 'vw';
     confetti.style.top = '-20px';
     confetti.style.animationDelay = Math.random() * 0.5 + 's';
-    confetti.style.animationDuration = (Math.random() * durationVariance + minDuration) + 's';
+    confetti.style.animationDuration = (Math.random() * DURATION_VARIANCE + MIN_DURATION) + 's';
     
     document.body.appendChild(confetti);
     
     // Remove confetti after animation
     setTimeout(() => {
       confetti.remove();
-    }, cleanupDelay);
+    }, CLEANUP_DELAY);
   }
 }
 

@@ -1259,7 +1259,7 @@ class KopfnussApp {
     if (streakStatus.showPopup && !wasStreakStatusHandledToday()) {
       setTimeout(() => {
         showStreakPopupForStatus(streakStatus);
-      }, 100);
+      }, ANIMATION_TIMING.INITIAL_POPUP_DELAY);
     }
   }
   

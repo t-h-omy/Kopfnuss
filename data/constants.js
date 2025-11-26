@@ -28,7 +28,10 @@ export const ANIMATION_TIMING = {
   DOM_RENDER_DELAY: 100,
   
   // Delay before showing answer feedback
-  ANSWER_FEEDBACK_DELAY: 1500
+  ANSWER_FEEDBACK_DELAY: 1500,
+  
+  // Delay before showing popup after initial load
+  INITIAL_POPUP_DELAY: 100
 };
 
 /**

@@ -2,28 +2,22 @@
 // Dieser Ordner enthält Datenmodelle und Konfiguration
 
 /*
- * Geplante Datenstrukturen:
+ * Aktuelle Module:
  * 
- * - challengeTypes.json: Definition der Challenge-Typen
- *   {
- *     "addition": { "name": "Addition", "icon": "➕", "difficulty": 1 },
- *     "subtraction": { "name": "Subtraktion", "icon": "➖", "difficulty": 1 },
- *     "multiplication": { "name": "Multiplikation", "icon": "✖️", "difficulty": 2 },
- *     "division": { "name": "Division", "icon": "➗", "difficulty": 2 },
- *     "powers": { "name": "Zweierpotenzen", "icon": "²", "difficulty": 3 }
- *   }
+ * - balancing.js: Spielbalancing und Konfiguration
+ *   - BALANCING: Zahlenbereiche für jede Rechenart
+ *   - CONFIG: Spielkonfiguration (Aufgaben pro Challenge, etc.)
+ *   - CHALLENGE_TYPES: Definition der Challenge-Typen mit Icons
  * 
- * - userProgress.schema.json: Schema für Nutzerdaten
- *   - Streak-Daten
- *   - Gesammelte Diamanten
- *   - Abgeschlossene Challenges
- *   - Leistungsstatistiken
+ * - constants.js: Anwendungskonstanten
+ *   - ANIMATION_TIMING: Zeitkonstanten für Animationen
+ *   - SPARKLE_CONFIG: Konfiguration für Sparkle-Effekte
+ *   - CONFETTI_CONFIG: Konfiguration für Konfetti-Effekte
+ *   - RESIZE_CONFIG: Konfiguration für Resize-Verhalten
  * 
- * - config.json: App-Konfiguration
- *   - Schwierigkeitsgrade
- *   - Anzahl Aufgaben pro Challenge
- *   - Diamanten-Vergabe Regeln
- *   - Timer-Einstellungen
+ * Datenstrukturen im LocalStorage (verwaltet durch storageManager.js):
+ * - kopfnuss_challenges_YYYY-MM-DD: Tägliche Challenges
+ * - kopfnuss_progress: Gesamtfortschritt
+ * - kopfnuss_streak: Streak-Daten
+ * - kopfnuss_diamonds: Diamanten-Anzahl
  */
-
-// TODO: Datenmodelle definieren
