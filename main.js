@@ -114,8 +114,17 @@ let returningFromTaskScreen = false;
 // Animation timing constants (in milliseconds)
 // FOCUS_HIGHLIGHT_DURATION must match the CSS animation duration in style.css (.challenge-focus-highlight)
 const FOCUS_HIGHLIGHT_DURATION = 800;
+const REWARD_HIGHLIGHT_DURATION = 1500; // Must match CSS animation duration for .reward-button-focus-highlight
+const SPARKLE_ANIMATION_DURATION = 1500; // Duration before sparkle elements are removed
+const SPARKLE_WAVE_DELAY_1 = 400; // First additional sparkle wave delay
+const SPARKLE_WAVE_DELAY_2 = 800; // Second additional sparkle wave delay
 const SCROLL_SETTLE_DELAY = 300; // Time to wait for smooth scroll to settle before showing highlight
 const DOM_RENDER_DELAY = 100; // Time to wait for DOM to be fully rendered after requestAnimationFrame
+
+// Sparkle effect constants
+const SPARKLE_COUNT = 12; // Number of sparkle particles per wave
+const SPARKLE_MOVE_DISTANCE = 40; // Distance in pixels that sparkles move outward
+const SPARKLE_DELAY_MULTIPLIER = 0.08; // Delay between each sparkle appearing (in seconds)
 
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
@@ -170,6 +179,87 @@ function scrollToAndHighlightChallenge(challengeIndex) {
             setTimeout(() => {
               challengeRow.classList.remove('challenge-focus-highlight');
             }, FOCUS_HIGHLIGHT_DURATION);
+          }
+        }, SCROLL_SETTLE_DELAY);
+      }
+    }, DOM_RENDER_DELAY);
+  });
+}
+
+/**
+ * Create sparkle effects around an element
+ * @param {HTMLElement} element - The element to create sparkles around
+ */
+function createSparklesAroundElement(element) {
+  if (!element) return;
+  
+  const rect = element.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const radius = Math.max(rect.width, rect.height) / 2 + 20;
+  
+  for (let i = 0; i < SPARKLE_COUNT; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'reward-sparkle';
+    
+    // Calculate position around the button
+    const angle = (i / SPARKLE_COUNT) * 2 * Math.PI;
+    const startX = centerX + Math.cos(angle) * (radius * 0.5);
+    const startY = centerY + Math.sin(angle) * (radius * 0.5);
+    
+    // Set CSS custom properties for animation direction
+    const moveX = Math.cos(angle) * SPARKLE_MOVE_DISTANCE;
+    const moveY = Math.sin(angle) * SPARKLE_MOVE_DISTANCE;
+    sparkle.style.setProperty('--sparkle-x', `${moveX}px`);
+    sparkle.style.setProperty('--sparkle-y', `${moveY}px`);
+    
+    sparkle.style.left = `${startX}px`;
+    sparkle.style.top = `${startY}px`;
+    sparkle.style.animationDelay = `${i * SPARKLE_DELAY_MULTIPLIER}s`;
+    
+    document.body.appendChild(sparkle);
+    
+    // Remove sparkle after animation
+    setTimeout(() => {
+      sparkle.remove();
+    }, SPARKLE_ANIMATION_DURATION);
+  }
+}
+
+/**
+ * Scroll to and highlight the reward button with glamorous sparkle effect
+ */
+function scrollToAndHighlightRewardButton() {
+  // Wait for DOM to be fully rendered using requestAnimationFrame + small delay
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const rewardButton = document.getElementById('reward-button');
+      if (rewardButton && rewardButton.classList.contains('active')) {
+        // Smooth scroll to the reward button
+        rewardButton.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        
+        // Add highlight animation and sparkles after scroll completes
+        setTimeout(() => {
+          // Check if there's no popup currently visible
+          const hasPopup = document.querySelector('.popup-overlay');
+          if (!hasPopup) {
+            // Add glamorous highlight animation
+            rewardButton.classList.add('reward-button-focus-highlight');
+            
+            // Create sparkle effects
+            createSparklesAroundElement(rewardButton);
+            
+            // Create additional sparkle waves
+            setTimeout(() => createSparklesAroundElement(rewardButton), SPARKLE_WAVE_DELAY_1);
+            setTimeout(() => createSparklesAroundElement(rewardButton), SPARKLE_WAVE_DELAY_2);
+            
+            // Remove the highlight class after animation completes
+            setTimeout(() => {
+              rewardButton.classList.remove('reward-button-focus-highlight');
+            }, REWARD_HIGHLIGHT_DURATION);
           }
         }, SCROLL_SETTLE_DELAY);
       }
@@ -252,7 +342,7 @@ function loadChallengesScreen(container) {
   
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first diamond, then streak (or vice versa)
-  // After all popups close, scroll to the current unlocked challenge
+  // After all popups close, scroll to the current unlocked challenge or reward button
   if (returningFromTaskScreen) {
     returningFromTaskScreen = false;
     
@@ -261,9 +351,15 @@ function loadChallengesScreen(container) {
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
-      const unlockedIdx = findCurrentUnlockedChallengeIndex(challenges);
-      if (unlockedIdx >= 0) {
-        scrollToAndHighlightChallenge(unlockedIdx);
+      const allChallengesCompleted = areAllChallengesCompleted();
+      if (allChallengesCompleted) {
+        // All challenges completed - scroll to reward button with sparkle effect
+        scrollToAndHighlightRewardButton();
+      } else {
+        const unlockedIdx = findCurrentUnlockedChallengeIndex(challenges);
+        if (unlockedIdx >= 0) {
+          scrollToAndHighlightChallenge(unlockedIdx);
+        }
       }
     };
     
@@ -462,18 +558,21 @@ function loadChallengesScreen(container) {
     }
   });
   
-  // Auto-scroll to current unlocked challenge
-  // Find the current unlocked challenge and scroll to it
-  const unlockedIndex = findCurrentUnlockedChallengeIndex(challenges);
-  if (unlockedIndex >= 0) {
-    // Check if any celebration popup is being shown
-    const hasCelebrationPopup = document.querySelector('.popup-overlay');
-    if (!hasCelebrationPopup) {
-      // No popup, scroll immediately
-      scrollToAndHighlightChallenge(unlockedIndex);
+  // Auto-scroll logic: scroll to current unlocked challenge OR reward button if all completed
+  const hasCelebrationPopup = document.querySelector('.popup-overlay');
+  if (!hasCelebrationPopup) {
+    if (allCompleted) {
+      // All challenges completed - scroll to reward button with sparkle effect
+      scrollToAndHighlightRewardButton();
+    } else {
+      // Find the current unlocked challenge and scroll to it
+      const unlockedIndex = findCurrentUnlockedChallengeIndex(challenges);
+      if (unlockedIndex >= 0) {
+        scrollToAndHighlightChallenge(unlockedIndex);
+      }
     }
-    // If popup exists, the scroll will happen when popup closes (handled in popup close handlers)
   }
+  // If popup exists, the scroll will happen when popup closes (handled in popup close handlers)
 }
 
 /**
