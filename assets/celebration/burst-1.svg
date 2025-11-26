@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="burstGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F28C28" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FFD966" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <!-- Star burst pattern -->
+  <path d="M60 10 L65 45 L100 40 L70 55 L95 85 L60 65 L25 85 L50 55 L20 40 L55 45 Z" fill="url(#burstGrad1)"/>
+  <circle cx="60" cy="60" r="15" fill="url(#burstGrad1)" opacity="0.6"/>
+</svg>

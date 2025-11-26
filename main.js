@@ -335,6 +335,10 @@ function loadChallengesScreen(container) {
   // Store node positions for SVG path calculation
   const nodePositions = [];
   
+  // Track which background graphics have been used for random selection
+  const celebrationGraphics = ['burst-1.svg', 'burst-2.svg', 'burst-3.svg', 'burst-4.svg'];
+  let lastUsedGraphicIndex = -1;
+  
   challenges.forEach((challenge, index) => {
     const isLeftPosition = index % 2 === 0;
     const positionClass = isLeftPosition ? 'position-left' : 'position-right';
@@ -372,10 +376,45 @@ function loadChallengesScreen(container) {
     }
     nodeContainer.appendChild(splash);
     
+    // Add background graphic for completed challenges
+    if (challenge.state === 'completed') {
+      const bgGraphic = document.createElement('div');
+      bgGraphic.className = 'challenge-bg-graphic';
+      
+      // Select a random graphic that is different from the last one used
+      let graphicIndex;
+      do {
+        graphicIndex = Math.floor(Math.random() * celebrationGraphics.length);
+      } while (graphicIndex === lastUsedGraphicIndex && celebrationGraphics.length > 1);
+      lastUsedGraphicIndex = graphicIndex;
+      
+      const img = document.createElement('img');
+      img.src = `./assets/celebration/${celebrationGraphics[graphicIndex]}`;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      bgGraphic.appendChild(img);
+      
+      // Add animation class if returning from task screen
+      if (returningFromTaskScreen) {
+        bgGraphic.classList.add('challenge-bg-animate');
+      }
+      
+      nodeContainer.appendChild(bgGraphic);
+    }
+    
+    // Create gradient wrapper for the node
+    const nodeWrapper = document.createElement('div');
+    nodeWrapper.className = 'challenge-node-wrapper';
+    
     // Create the circular node
     const node = document.createElement('div');
     node.className = 'challenge-node';
-    node.innerHTML = challenge.icon;
+    
+    // Create icon span for potential grayscale filter on locked challenges
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'node-icon';
+    iconSpan.innerHTML = challenge.icon;
+    node.appendChild(iconSpan);
     
     // Add status icon
     if (challenge.state === 'completed') {
@@ -390,7 +429,8 @@ function loadChallengesScreen(container) {
       node.appendChild(statusIcon);
     }
     
-    nodeContainer.appendChild(node);
+    nodeWrapper.appendChild(node);
+    nodeContainer.appendChild(nodeWrapper);
     
     // Create info card
     const infoCard = document.createElement('div');

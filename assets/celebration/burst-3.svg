@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <radialGradient id="burstGrad3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F28C28" stop-opacity="0.3"/>
+      <stop offset="70%" stop-color="#FFD966" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#FFD966" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Circular rays pattern -->
+  <circle cx="60" cy="60" r="55" fill="url(#burstGrad3)"/>
+  <polygon points="60,5 65,40 60,45 55,40" fill="#F28C28" opacity="0.25"/>
+  <polygon points="60,115 55,80 60,75 65,80" fill="#F28C28" opacity="0.25"/>
+  <polygon points="5,60 40,55 45,60 40,65" fill="#F28C28" opacity="0.25"/>
+  <polygon points="115,60 80,65 75,60 80,55" fill="#F28C28" opacity="0.25"/>
+</svg>
