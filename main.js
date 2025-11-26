@@ -1175,6 +1175,32 @@ function showStreakLostPopup(previousStreak, onClose = null) {
 }
 
 /**
+ * Show streak popup based on status
+ * @param {Object} streakStatus - Status object from checkStreakStatusOnLoad
+ * @param {Function} onClose - Optional callback when popup closes
+ */
+function showStreakPopupForStatus(streakStatus, onClose = null) {
+  if (!streakStatus.showPopup) {
+    if (onClose) onClose();
+    return;
+  }
+  
+  switch (streakStatus.lossReason) {
+    case STREAK_LOSS_REASON.FROZEN:
+      queuePopup(() => showFrozenStreakPopup(streakStatus.previousStreak, onClose));
+      break;
+    case STREAK_LOSS_REASON.EXPIRED_RESTORABLE:
+      queuePopup(() => showStreakRestorablePopup(streakStatus.previousStreak, onClose));
+      break;
+    case STREAK_LOSS_REASON.EXPIRED_PERMANENT:
+      queuePopup(() => showStreakLostPopup(streakStatus.previousStreak, onClose));
+      break;
+    default:
+      if (onClose) onClose();
+  }
+}
+
+/**
  * Check and show appropriate streak popup on app load
  * @param {Function} onAllPopupsClosed - Callback when all popups are closed
  */
@@ -1186,25 +1212,7 @@ function checkAndShowStreakPopups(onAllPopupsClosed = null) {
   }
   
   const streakStatus = checkStreakStatusOnLoad();
-  
-  if (!streakStatus.showPopup) {
-    if (onAllPopupsClosed) onAllPopupsClosed();
-    return;
-  }
-  
-  switch (streakStatus.lossReason) {
-    case STREAK_LOSS_REASON.FROZEN:
-      queuePopup(() => showFrozenStreakPopup(streakStatus.previousStreak, onAllPopupsClosed));
-      break;
-    case STREAK_LOSS_REASON.EXPIRED_RESTORABLE:
-      queuePopup(() => showStreakRestorablePopup(streakStatus.previousStreak, onAllPopupsClosed));
-      break;
-    case STREAK_LOSS_REASON.EXPIRED_PERMANENT:
-      queuePopup(() => showStreakLostPopup(streakStatus.previousStreak, onAllPopupsClosed));
-      break;
-    default:
-      if (onAllPopupsClosed) onAllPopupsClosed();
-  }
+  showStreakPopupForStatus(streakStatus, onAllPopupsClosed);
 }
 
 /**
@@ -1450,17 +1458,7 @@ class KopfnussApp {
     // This handles frozen/lost streaks on app open
     if (streakStatus.showPopup && !wasStreakStatusHandledToday()) {
       setTimeout(() => {
-        switch (streakStatus.lossReason) {
-          case STREAK_LOSS_REASON.FROZEN:
-            queuePopup(() => showFrozenStreakPopup(streakStatus.previousStreak));
-            break;
-          case STREAK_LOSS_REASON.EXPIRED_RESTORABLE:
-            queuePopup(() => showStreakRestorablePopup(streakStatus.previousStreak));
-            break;
-          case STREAK_LOSS_REASON.EXPIRED_PERMANENT:
-            queuePopup(() => showStreakLostPopup(streakStatus.previousStreak));
-            break;
-        }
+        showStreakPopupForStatus(streakStatus);
       }, 100);
     }
   }

@@ -36,6 +36,7 @@ export function initializeTaskFlow(challengeIndex) {
   currentTaskIndex = challenge.currentTaskIndex || 0;
   errors = challenge.errors || 0;
   answers = [];
+  streakUnfrozenDuringChallenge = false; // Reset the flag for new challenge
   
   return {
     challengeIndex,

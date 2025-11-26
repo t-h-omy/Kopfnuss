@@ -190,7 +190,9 @@ export function updateStreak() {
       streak.currentStreak = 0;
       streak.isFrozen = false;
     }
-    // If player completes minimum today, start new streak
+    // If player completes minimum today AND hasn't chosen to restore the old streak,
+    // start a new streak. We don't auto-start a new streak when the old one is restorable
+    // because the player needs to see the popup and choose whether to restore or start fresh.
     if (hasCompletedMinimum && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_RESTORABLE) {
       streak.currentStreak = 1;
       streak.lastActiveDate = today;
