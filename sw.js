@@ -27,10 +27,11 @@ const urlsToCache = [
   './logic/taskScreenController.js',
   './logic/popupManager.js',
   './logic/visualEffects.js',
-  './assets/celebration/burst-1.svg',
-  './assets/celebration/burst-2.svg',
-  './assets/celebration/burst-3.svg',
-  './assets/celebration/burst-4.svg'
+  './assets/celebration-burst-1.png',
+  './assets/celebration-burst-2.png',
+  './assets/celebration-burst-3.png',
+  './assets/celebration-burst-4.png',
+  './assets/celebration-burst-5.png'
 ];
 
 /**

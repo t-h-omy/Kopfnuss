@@ -336,8 +336,14 @@ function loadChallengesScreen(container) {
   // Store node positions for SVG path calculation
   const nodePositions = [];
   
-  // Background graphics for completed challenges
-  const celebrationGraphics = ['burst-1.svg', 'burst-2.svg', 'burst-3.svg', 'burst-4.svg'];
+  // Background graphics for completed challenges (PNG images from assets folder)
+  const celebrationGraphics = [
+    'celebration-burst-1.png', 
+    'celebration-burst-2.png', 
+    'celebration-burst-3.png', 
+    'celebration-burst-4.png', 
+    'celebration-burst-5.png'
+  ];
   
   challenges.forEach((challenge, index) => {
     const isLeftPosition = index % 2 === 0;
@@ -387,7 +393,7 @@ function loadChallengesScreen(container) {
       lastUsedGraphicIndex = graphicIndex;
       
       const img = document.createElement('img');
-      img.src = `./assets/celebration/${celebrationGraphics[graphicIndex]}`;
+      img.src = `./assets/${celebrationGraphics[graphicIndex]}`;
       img.alt = '';
       img.setAttribute('aria-hidden', 'true');
       bgGraphic.appendChild(img);
