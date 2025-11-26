@@ -9,7 +9,7 @@ import {
   analyzeErrors 
 } from './challengeStateManager.js';
 import { saveProgress, loadProgress, loadStreak } from './storageManager.js';
-import { unfreezeStreakByChallenge } from './streakManager.js';
+import { unfreezeStreakByChallenge, incrementStreakByChallenge } from './streakManager.js';
 
 /**
  * Task flow state
@@ -203,15 +203,23 @@ export function completeCurrentChallenge() {
   
   saveProgress(progress);
   
-  // Check if streak needs to be unfrozen
+  // Handle streak progression
   let streakUnfrozenResult = null;
+  let streakIncrementedResult = null;
   const streak = loadStreak();
+  
   if (streak.isFrozen) {
+    // Unfreeze streak if frozen
     streakUnfrozenResult = unfreezeStreakByChallenge();
     if (streakUnfrozenResult.wasUnfrozen) {
       streakUnfrozenDuringChallenge = true;
     }
+  } else if (!streak.lossReason) {
+    // If not frozen and no loss reason, increment streak by challenge completion
+    streakIncrementedResult = incrementStreakByChallenge();
   }
+  // Note: If there's a loss reason (expired streak), don't auto-increment
+  // The player needs to handle this via the popup first
   
   // Get error analysis
   const errorAnalysis = analyzeErrors(currentChallengeIndex);
@@ -223,7 +231,8 @@ export function completeCurrentChallenge() {
     errorAnalysis: errorAnalysis,
     answers: answers,
     progress: progress,
-    streakUnfrozen: streakUnfrozenResult && streakUnfrozenResult.wasUnfrozen ? streakUnfrozenResult.newStreak : null
+    streakUnfrozen: streakUnfrozenResult && streakUnfrozenResult.wasUnfrozen ? streakUnfrozenResult.newStreak : null,
+    streakIncremented: streakIncrementedResult && streakIncrementedResult.wasIncremented ? streakIncrementedResult.newStreak : null
   };
   
   // Reset task flow state
