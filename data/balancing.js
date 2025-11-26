@@ -42,7 +42,7 @@ export const BALANCING = {
  */
 export const CONFIG = {
   // Number of tasks per challenge
-  TASKS_PER_CHALLENGE: 10,
+  TASKS_PER_CHALLENGE: 3,
   
   // Number of daily challenges
   DAILY_CHALLENGES: 5,
