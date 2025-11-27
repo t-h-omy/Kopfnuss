@@ -41,6 +41,9 @@ function setAppHeight() {
 // Initialize app height on load
 setAppHeight();
 
+// Set background opacity from balancing config
+document.documentElement.style.setProperty('--background-opacity', VISUAL_CONFIG.BACKGROUND_OPACITY);
+
 // Update app height on resize (but NOT on focus/blur to prevent keyboard-related jumps)
 // Use a debounced resize handler to avoid excessive updates
 let resizeTimeout = null;

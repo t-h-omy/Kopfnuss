@@ -8,6 +8,9 @@
   /* App Height for mobile keyboard stability */
   --app-height: 100vh;
   
+  /* Background opacity (set via JavaScript from VISUAL_CONFIG.BACKGROUND_OPACITY) */
+  --background-opacity: 0.35;
+  
   /* Primary Colors */
   --color-blue: #1E6BB8;
   --color-orange: #F28C28;
@@ -188,7 +191,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.35;
+  opacity: var(--background-opacity);
   z-index: 0;
   pointer-events: none;
 }
@@ -1037,7 +1040,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.35;
+  opacity: var(--background-opacity);
   z-index: 0;
   pointer-events: none;
 }
