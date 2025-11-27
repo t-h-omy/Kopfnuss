@@ -177,6 +177,7 @@ body::before {
   min-height: 100vh;
   padding-bottom: 60px;
   position: relative;
+  z-index: 1;
 }
 
 /* Fullscreen background for challenges screen */
@@ -192,7 +193,7 @@ body::before {
   background-position: center;
   background-repeat: no-repeat;
   opacity: var(--background-opacity);
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 }
 
@@ -1026,6 +1027,7 @@ body::before {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 /* Fullscreen background for task screen */
@@ -1041,7 +1043,7 @@ body::before {
   background-position: center;
   background-repeat: no-repeat;
   opacity: var(--background-opacity);
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 }
 
