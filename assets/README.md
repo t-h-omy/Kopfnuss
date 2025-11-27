@@ -24,7 +24,23 @@ Dieser Ordner enthält alle statischen Assets für die Kopfnuss PWA
 - desktop_256.png (256x256) - Standard Desktop
 - desktop_512.png (512x512) - High-res Desktop
 
-### UI Icons
+### Challenge Node Backgrounds (512×512 WebP)
+Displayed behind completed challenge nodes on the challenges screen.
+- challenge-node-bg-1.webp
+- challenge-node-bg-2.webp
+- challenge-node-bg-3.webp
+- challenge-node-bg-4.webp
+- challenge-node-bg-5.webp
+
+Applied in: main.js - loadChallengesScreen()
+
+### App Background
+- background_compressed.webp (1024x1536) - Fullscreen background image
+
+Applied in: style.css - .challenges-container::before, .task-screen::before
+Opacity controlled by: data/constants.js - VISUAL_CONFIG.BACKGROUND_OPACITY
+
+### UI Icons (planned)
 - diamond.svg (Diamant-Icon)
 - streak-fire.svg (Streak-Icon)
 - challenge-icons/ (Icons für verschiedene Challenge-Typen)
@@ -34,13 +50,11 @@ Dieser Ordner enthält alle statischen Assets für die Kopfnuss PWA
   - division.svg
   - powers.svg
 
-### Bilder
+### Bilder (planned)
 - splash-screen.png (PWA Splash Screen)
 - logo.svg (App Logo)
 
-### Sounds (optional)
+### Sounds (optional, planned)
 - correct.mp3 (Richtige Antwort)
 - wrong.mp3 (Falsche Antwort)
 - achievement.mp3 (Streak erreicht)
-
-## TODO: Assets erstellen und optimieren

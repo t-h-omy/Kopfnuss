@@ -8,6 +8,9 @@
   /* App Height for mobile keyboard stability */
   --app-height: 100vh;
   
+  /* Background opacity (set via JavaScript from VISUAL_CONFIG.BACKGROUND_OPACITY) */
+  --background-opacity: 0.35;
+  
   /* Primary Colors */
   --color-blue: #1E6BB8;
   --color-orange: #F28C28;
@@ -174,6 +177,24 @@ body::before {
   min-height: 100vh;
   padding-bottom: 60px;
   position: relative;
+  z-index: 1;
+}
+
+/* Fullscreen background for challenges screen */
+.challenges-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./assets/background_compressed.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--background-opacity);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Header Section */
@@ -1006,6 +1027,24 @@ body::before {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  z-index: 1;
+}
+
+/* Fullscreen background for task screen */
+.task-screen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./assets/background_compressed.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--background-opacity);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Main interaction area - positioned to stay above keyboard */

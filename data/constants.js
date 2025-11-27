@@ -1,99 +1,122 @@
 // Kopfnuss - Application Constants
 // Centralized constants for animation timing, sparkle effects, and UI configuration
+// Used by: main.js, logic/visualEffects.js, logic/popupManager.js, logic/taskScreenController.js
 
 /**
  * Animation timing constants (in milliseconds)
- * These values should match corresponding CSS animation durations
+ * These values control animation durations and delays throughout the app
  */
 export const ANIMATION_TIMING = {
-  // Focus highlight for challenge nodes - must match .challenge-focus-highlight in style.css
+  // Duration of the pulsing highlight effect on challenge nodes after auto-scroll
+  // Applied in: logic/visualEffects.js - scrollToAndHighlightChallenge()
+  // CSS match: style.css - .challenge-focus-highlight animation
   FOCUS_HIGHLIGHT_DURATION: 800,
   
-  // Reward button highlight - must match .reward-button-focus-highlight in style.css
+  // Duration of the glamorous highlight effect on the reward button
+  // Applied in: logic/visualEffects.js - scrollToAndHighlightRewardButton()
+  // CSS match: style.css - .reward-button-focus-highlight animation
   REWARD_HIGHLIGHT_DURATION: 1500,
   
-  // Time before sparkle elements are removed
+  // Time before sparkle particle elements are removed from DOM
+  // Applied in: logic/visualEffects.js - createSparkles()
   SPARKLE_ANIMATION_DURATION: 1500,
   
-  // First additional sparkle wave delay
+  // Delay before first additional sparkle wave appears
+  // Applied in: logic/visualEffects.js - scrollToAndHighlightRewardButton()
   SPARKLE_WAVE_DELAY_1: 400,
   
-  // Second additional sparkle wave delay
+  // Delay before second additional sparkle wave appears
+  // Applied in: logic/visualEffects.js - scrollToAndHighlightRewardButton()
   SPARKLE_WAVE_DELAY_2: 800,
   
-  // Time to wait for smooth scroll to settle before showing highlight
+  // Time to wait for smooth scroll animation to complete before showing highlight
+  // Applied in: logic/visualEffects.js - scrollToAndHighlightChallenge()
   SCROLL_SETTLE_DELAY: 300,
   
-  // Time to wait for DOM to be fully rendered after requestAnimationFrame
+  // Time to wait for DOM rendering after requestAnimationFrame
+  // Applied in: logic/visualEffects.js - scrollToAndHighlightChallenge()
   DOM_RENDER_DELAY: 100,
   
-  // Delay before showing answer feedback
+  // Delay before advancing to next task after showing correct/incorrect feedback
+  // Applied in: logic/taskScreenController.js - handleSubmit()
   ANSWER_FEEDBACK_DELAY: 1500,
   
-  // Delay before showing popup after initial load
+  // Delay before showing streak popup after initial app load
+  // Applied in: main.js - loadInitialRoute()
   INITIAL_POPUP_DELAY: 100
 };
 
 /**
  * Sparkle effect configuration
+ * Applied in: logic/visualEffects.js - createSparkles()
  */
 export const SPARKLE_CONFIG = {
-  // Number of sparkle particles per wave
+  // Number of sparkle particles created per wave around the reward button
   COUNT: 15,
   
-  // Distance in pixels that sparkles move outward
+  // Maximum distance in pixels that sparkles travel outward from center
   MOVE_DISTANCE: 30,
   
-  // Delay between each sparkle appearing (in seconds)
+  // Delay multiplier between each sparkle appearing (in seconds)
   DELAY_MULTIPLIER: 0.08
 };
 
 /**
  * Confetti effect configuration
+ * Applied in: logic/popupManager.js - createConfettiEffect()
  */
 export const CONFETTI_CONFIG = {
-  // Colors for confetti pieces
+  // Array of hex colors used for confetti pieces
   COLORS: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'],
   
-  // Number of confetti pieces
+  // Total number of confetti pieces spawned per celebration
   COUNT: 80,
   
-  // Minimum animation duration in seconds
+  // Minimum fall animation duration in seconds
   MIN_DURATION: 1.5,
   
-  // Variance in animation duration
+  // Random variance added to animation duration (0 to this value)
   DURATION_VARIANCE: 1,
   
-  // Time before confetti is removed (ms)
+  // Time in ms before confetti elements are removed from DOM
   CLEANUP_DELAY: 3000
 };
 
 /**
  * Resize behavior configuration
+ * Applied in: main.js - window resize event handler
  */
 export const RESIZE_CONFIG = {
-  // Debounce delay for resize events (ms)
+  // Debounce delay for resize events to prevent rapid updates (ms)
   DEBOUNCE_DELAY: 100,
   
-  // Delay after orientation change (ms)
+  // Delay after orientation change before updating app height (ms)
   ORIENTATION_CHANGE_DELAY: 100
 };
 
 /**
- * Visual effects configuration for challenge states
+ * Visual effects configuration for challenge states and backgrounds
+ * Applied in: main.js - loadChallengesScreen(), style.css via CSS variables
  */
 export const VISUAL_CONFIG = {
-  // Size of the celebration background graphic behind completed challenges (in pixels)
-  // Base size for mobile, will scale up for tablet/desktop
+  // Size in pixels of the celebration graphic behind completed challenge nodes
+  // Applied in: main.js - loadChallengesScreen() challenge completion display
   CELEBRATION_GRAPHIC_SIZE: 200,
   
-  // Scale factor for tablet (768px+)
+  // Scale multiplier for celebration graphic on tablet screens (768px+)
+  // Applied in: main.js - loadChallengesScreen()
   CELEBRATION_GRAPHIC_SCALE_TABLET: 1.07,
   
-  // Scale factor for desktop (1024px+)
+  // Scale multiplier for celebration graphic on desktop screens (1024px+)
+  // Applied in: main.js - loadChallengesScreen()
   CELEBRATION_GRAPHIC_SCALE_DESKTOP: 1.14,
   
-  // Delay before celebration animation plays (in milliseconds)
-  // Should be set to start after auto-scrolling is complete
-  CELEBRATION_ANIMATION_DELAY: 800
+  // Delay in ms before celebration graphic animation starts (after scroll completes)
+  // Applied in: main.js - loadChallengesScreen()
+  CELEBRATION_ANIMATION_DELAY: 800,
+  
+  // Opacity of the fullscreen background image (0.0 = invisible, 1.0 = fully visible)
+  // Applied in: main.js → sets CSS variable --background-opacity
+  // Affects: style.css - .challenges-container::before, .task-screen::before
+  BACKGROUND_OPACITY: 1.00
 };
