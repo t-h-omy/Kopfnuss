@@ -1401,6 +1401,51 @@ function showDevModeReloadPopup(newDevMode) {
 }
 
 /**
+ * Show reload popup after dev settings change
+ * @param {string} message - Message to display
+ */
+function showDevSettingsReloadPopup(message) {
+  // Close settings popup first
+  closeSettingsPopup();
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay confirmation-popup-overlay';
+  overlay.id = 'dev-settings-reload-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card confirmation-popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>🔄 Neustart erforderlich</h2>
+    <p>${message}</p>
+    <div class="confirmation-buttons">
+      <button id="confirm-dev-reload-button" class="btn-primary">Neu starten</button>
+      <button id="cancel-dev-reload-button" class="btn-secondary">Abbrechen</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const confirmBtn = document.getElementById('confirm-dev-reload-button');
+  const cancelBtn = document.getElementById('cancel-dev-reload-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      window.location.reload();
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+      // Re-open settings popup
+      showSettingsPopup();
+    });
+  }
+}
+
+/**
  * Setup event listeners for dev settings controls
  */
 function setupDevSettingsListeners() {
@@ -1415,6 +1460,7 @@ function setupDevSettingsListeners() {
       const newValue = Math.max(0, current - 1);
       saveDiamonds(newValue);
       if (diamondsValue) diamondsValue.textContent = newValue;
+      showDevSettingsReloadPopup('Diamanten geändert. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1424,6 +1470,7 @@ function setupDevSettingsListeners() {
       const newValue = current + 1;
       saveDiamonds(newValue);
       if (diamondsValue) diamondsValue.textContent = newValue;
+      showDevSettingsReloadPopup('Diamanten geändert. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1438,6 +1485,7 @@ function setupDevSettingsListeners() {
       streak.currentStreak = Math.max(0, streak.currentStreak - 1);
       saveStreak(streak);
       if (streakValue) streakValue.textContent = streak.currentStreak;
+      showDevSettingsReloadPopup('Streak geändert. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1450,6 +1498,7 @@ function setupDevSettingsListeners() {
       }
       saveStreak(streak);
       if (streakValue) streakValue.textContent = streak.currentStreak;
+      showDevSettingsReloadPopup('Streak geändert. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1462,7 +1511,7 @@ function setupDevSettingsListeners() {
       const streak = loadStreak();
       streak.isFrozen = true;
       saveStreak(streak);
-      showDevFeedback('Streak eingefroren 🧊');
+      showDevSettingsReloadPopup('Streak eingefroren. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1472,7 +1521,7 @@ function setupDevSettingsListeners() {
       streak.isFrozen = false;
       streak.lossReason = null;
       saveStreak(streak);
-      showDevFeedback('Streak aufgetaut 🔥');
+      showDevSettingsReloadPopup('Streak aufgetaut. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1489,7 +1538,7 @@ function setupDevSettingsListeners() {
         lastDate.setTime(lastDate.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
         streak.lastActiveDate = lastDate.toISOString().split('T')[0];
         saveStreak(streak);
-        showDevFeedback('1 Tag simuliert (Streak-Test) 📅');
+        showDevSettingsReloadPopup('1 Tag simuliert. App neu starten, damit die Streak-Logik ausgeführt wird?');
       } else {
         showDevFeedback('Keine Aktivität vorhanden');
       }
@@ -1507,6 +1556,7 @@ function setupDevSettingsListeners() {
       progress.totalTasksCompleted = Math.max(0, (progress.totalTasksCompleted || 0) - 10);
       saveProgress(progress);
       if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
+      showDevSettingsReloadPopup('Aufgaben geändert. App neu starten, um die Änderung anzuwenden?');
     });
   }
   
@@ -1516,6 +1566,7 @@ function setupDevSettingsListeners() {
       progress.totalTasksCompleted = (progress.totalTasksCompleted || 0) + 10;
       saveProgress(progress);
       if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
+      showDevSettingsReloadPopup('Aufgaben geändert. App neu starten, um die Änderung anzuwenden?');
     });
   }
 }
