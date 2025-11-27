@@ -1492,8 +1492,12 @@ function setupDevSettingsListeners() {
       const streak = loadStreak();
       streak.currentStreak = Math.max(0, streak.currentStreak - 1);
       saveStreak(streak);
+      // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
-      showDevSettingsReloadPopup('Streak geändert. App neu starten, um die Änderung anzuwenden?');
+      // Update main UI streak display
+      const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
+      if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
+      showDevFeedback('🔥 ' + streak.currentStreak);
     });
   }
   
@@ -1505,12 +1509,16 @@ function setupDevSettingsListeners() {
         streak.longestStreak = streak.currentStreak;
       }
       saveStreak(streak);
+      // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
-      showDevSettingsReloadPopup('Streak geändert. App neu starten, um die Änderung anzuwenden?');
+      // Update main UI streak display
+      const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
+      if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
+      showDevFeedback('🔥 ' + streak.currentStreak);
     });
   }
   
-  // Freeze/Unfreeze streak
+  // Freeze/Unfreeze streak - update UI immediately
   const freezeBtn = document.getElementById('dev-freeze-streak');
   const unfreezeBtn = document.getElementById('dev-unfreeze-streak');
   
@@ -1519,7 +1527,12 @@ function setupDevSettingsListeners() {
       const streak = loadStreak();
       streak.isFrozen = true;
       saveStreak(streak);
-      showDevSettingsReloadPopup('Streak eingefroren. App neu starten, um die Änderung anzuwenden?');
+      // Update main UI streak icon to frozen
+      const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
+      const streakIcon = streakCapsule?.querySelector('.stat-icon');
+      if (streakCapsule) streakCapsule.classList.add('streak-frozen');
+      if (streakIcon) streakIcon.textContent = '🧊';
+      showDevFeedback('Streak eingefroren 🧊');
     });
   }
   
@@ -1529,7 +1542,12 @@ function setupDevSettingsListeners() {
       streak.isFrozen = false;
       streak.lossReason = null;
       saveStreak(streak);
-      showDevSettingsReloadPopup('Streak aufgetaut. App neu starten, um die Änderung anzuwenden?');
+      // Update main UI streak icon to normal
+      const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
+      const streakIcon = streakCapsule?.querySelector('.stat-icon');
+      if (streakCapsule) streakCapsule.classList.remove('streak-frozen');
+      if (streakIcon) streakIcon.textContent = '🔥';
+      showDevFeedback('Streak aufgetaut 🔥');
     });
   }
   
@@ -1553,7 +1571,7 @@ function setupDevSettingsListeners() {
     });
   }
   
-  // Total tasks controls
+  // Total tasks controls - update UI immediately
   const tasksMinus = document.getElementById('dev-tasks-minus');
   const tasksPlus = document.getElementById('dev-tasks-plus');
   const tasksValue = document.getElementById('dev-tasks-value');
@@ -1564,7 +1582,9 @@ function setupDevSettingsListeners() {
       progress.totalTasksCompleted = Math.max(0, (progress.totalTasksCompleted || 0) - 10);
       saveProgress(progress);
       if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
-      showDevSettingsReloadPopup('Aufgaben geändert. App neu starten, um die Änderung anzuwenden?');
+      // Update diamond progress text in main UI
+      updateDiamondProgressText(progress.totalTasksCompleted);
+      showDevFeedback('📊 ' + progress.totalTasksCompleted + ' Aufgaben');
     });
   }
   
@@ -1574,8 +1594,25 @@ function setupDevSettingsListeners() {
       progress.totalTasksCompleted = (progress.totalTasksCompleted || 0) + 10;
       saveProgress(progress);
       if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
-      showDevSettingsReloadPopup('Aufgaben geändert. App neu starten, um die Änderung anzuwenden?');
+      // Update diamond progress text in main UI
+      updateDiamondProgressText(progress.totalTasksCompleted);
+      showDevFeedback('📊 ' + progress.totalTasksCompleted + ' Aufgaben');
     });
+  }
+}
+
+/**
+ * Update the diamond progress text in the main UI
+ * @param {number} totalTasksCompleted - Total tasks completed
+ */
+function updateDiamondProgressText(totalTasksCompleted) {
+  const progressElement = document.querySelector('.diamond-progress-info');
+  if (progressElement) {
+    const tasksUntilNext = CONFIG.TASKS_PER_DIAMOND - (totalTasksCompleted % CONFIG.TASKS_PER_DIAMOND);
+    const progressText = tasksUntilNext === 1 
+      ? 'Noch 1 Aufgabe bis +1 💎' 
+      : `Noch ${tasksUntilNext} Aufgaben bis +1 💎`;
+    progressElement.textContent = progressText;
   }
 }
 

@@ -637,10 +637,14 @@ body::before {
 
 .settings-popup-card {
   animation: scaleIn 0.3s ease;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-popup-card h2 {
   margin-bottom: var(--spacing-lg);
+  flex-shrink: 0;
 }
 
 .settings-actions {
@@ -649,6 +653,29 @@ body::before {
   align-items: center;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: var(--spacing-xs);
+}
+
+/* Scrollbar styling for settings */
+.settings-actions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-actions::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.settings-actions::-webkit-scrollbar-thumb {
+  background: var(--color-gray);
+  border-radius: 3px;
+}
+
+.settings-actions::-webkit-scrollbar-thumb:hover {
+  background: var(--color-blue);
 }
 
 .btn-settings {
@@ -701,6 +728,8 @@ body::before {
   width: 100%;
   max-width: none;
   padding: var(--spacing-md);
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 /* ===========================
