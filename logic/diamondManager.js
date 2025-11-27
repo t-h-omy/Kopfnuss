@@ -5,7 +5,9 @@ import { CONFIG } from '../data/balancing.js';
 import { 
   loadDiamonds, 
   saveDiamonds as saveToStorage,
-  loadProgress 
+  loadProgress,
+  loadDiamondsEarned,
+  saveDiamondsEarned
 } from './storageManager.js';
 
 /**
@@ -19,7 +21,8 @@ function calculateDiamondsEarned(totalTasksCompleted) {
 
 /**
  * Update diamonds based on current progress
- * Awards diamonds for every 100 tasks completed
+ * Awards diamonds for every TASKS_PER_DIAMOND tasks completed
+ * Properly handles spent diamonds by tracking total earned separately
  * @returns {Object} Diamond update result
  */
 export function updateDiamonds() {
@@ -27,17 +30,33 @@ export function updateDiamonds() {
   const currentDiamonds = loadDiamonds();
   const totalTasksCompleted = progress.totalTasksCompleted || 0;
   
-  // Calculate how many diamonds should have been earned
-  const shouldHaveDiamonds = calculateDiamondsEarned(totalTasksCompleted);
+  // Calculate how many diamonds should have been earned in total based on tasks
+  const totalShouldHaveEarned = calculateDiamondsEarned(totalTasksCompleted);
   
-  // If current diamonds is less, award the difference
-  if (shouldHaveDiamonds > currentDiamonds) {
-    const newDiamonds = shouldHaveDiamonds - currentDiamonds;
-    const totalDiamonds = currentDiamonds + newDiamonds;
+  // Load previously tracked earned count from persistent storage
+  let previouslyTrackedEarned = loadDiamondsEarned();
+  
+  // Migration for existing users: if no earned tracking exists but user has completed tasks,
+  // initialize the earned count to match what should have been earned based on tasks
+  // This prevents re-awarding diamonds on first load after update
+  if (previouslyTrackedEarned === 0 && totalShouldHaveEarned > 0) {
+    previouslyTrackedEarned = totalShouldHaveEarned;
+    saveDiamondsEarned(totalShouldHaveEarned);
+  }
+  
+  // Calculate newly earned diamonds since last check
+  const newlyEarned = Math.max(0, totalShouldHaveEarned - previouslyTrackedEarned);
+  
+  if (newlyEarned > 0) {
+    // Add newly earned diamonds to current balance (preserving spent state)
+    const totalDiamonds = currentDiamonds + newlyEarned;
     saveToStorage(totalDiamonds);
     
+    // Persist the new total earned count
+    saveDiamondsEarned(totalShouldHaveEarned);
+    
     return {
-      awarded: newDiamonds,
+      awarded: newlyEarned,
       total: totalDiamonds,
       tasksCompleted: totalTasksCompleted
     };

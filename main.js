@@ -15,7 +15,7 @@ import {
 import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './logic/diamondManager.js';
 import { clearAllData } from './logic/storageManager.js';
 import { VERSION } from './version.js';
-import { CONFIG } from './data/balancing.js';
+import { CONFIG, BACKGROUNDS } from './data/balancing.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
@@ -28,6 +28,14 @@ import {
   closePopup,
   removeConfettiPieces
 } from './logic/popupManager.js';
+import {
+  getAllBackgrounds,
+  getSelectedBackground,
+  applySelectedBackground,
+  unlockBackground,
+  selectBackground,
+  isBackgroundUnlocked
+} from './logic/backgroundManager.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -43,6 +51,9 @@ setAppHeight();
 
 // Set background opacity from balancing config
 document.documentElement.style.setProperty('--background-opacity', VISUAL_CONFIG.BACKGROUND_OPACITY);
+
+// Apply selected background on load
+applySelectedBackground();
 
 // Update app height on resize (but NOT on focus/blur to prevent keyboard-related jumps)
 // Use a debounced resize handler to avoid excessive updates
@@ -142,11 +153,11 @@ let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 const celebrationImageCache = [];
 function preloadCelebrationImages() {
   const celebrationGraphics = [
-    './assets/challenge-node-bg-1.webp',
-    './assets/challenge-node-bg-2.webp',
-    './assets/challenge-node-bg-3.webp',
-    './assets/challenge-node-bg-4.webp',
-    './assets/challenge-node-bg-5.webp'
+    './assets/celebration/challenge-node-bg-1.webp',
+    './assets/celebration/challenge-node-bg-2.webp',
+    './assets/celebration/challenge-node-bg-3.webp',
+    './assets/celebration/challenge-node-bg-4.webp',
+    './assets/celebration/challenge-node-bg-5.webp'
   ];
   
   celebrationGraphics.forEach((src, index) => {
@@ -318,6 +329,14 @@ function loadChallengesScreen(container) {
   burgerButton.innerHTML = '<span class="burger-icon">☰</span>';
   burgerButton.addEventListener('click', showSettingsPopup);
   
+  // Create shop button (positioned below burger menu)
+  const shopButton = document.createElement('button');
+  shopButton.className = 'shop-button';
+  shopButton.id = 'shop-button';
+  shopButton.setAttribute('aria-label', 'Hintergründe anpassen');
+  shopButton.innerHTML = '<span class="shop-icon">🛒</span>';
+  shopButton.addEventListener('click', showBackgroundShopPopup);
+  
   // Create header with streak and diamonds
   const header = document.createElement('div');
   header.className = 'challenges-header';
@@ -366,11 +385,11 @@ function loadChallengesScreen(container) {
   
   // Background graphics for completed challenges (512×512 WebP images from assets folder)
   const celebrationGraphics = [
-    'challenge-node-bg-1.webp', 
-    'challenge-node-bg-2.webp', 
-    'challenge-node-bg-3.webp', 
-    'challenge-node-bg-4.webp', 
-    'challenge-node-bg-5.webp'
+    'celebration/challenge-node-bg-1.webp', 
+    'celebration/challenge-node-bg-2.webp', 
+    'celebration/challenge-node-bg-3.webp', 
+    'celebration/challenge-node-bg-4.webp', 
+    'celebration/challenge-node-bg-5.webp'
   ];
   
   challenges.forEach((challenge, index) => {
@@ -529,6 +548,7 @@ function loadChallengesScreen(container) {
   footer.innerHTML = `v${VERSION.string}`;
   
   challengesContainer.appendChild(burgerButton);
+  challengesContainer.appendChild(shopButton);
   challengesContainer.appendChild(header);
   challengesContainer.appendChild(challengesMap);
   challengesContainer.appendChild(rewardSection);
@@ -1270,8 +1290,350 @@ function executeFullReset() {
   // Generate new challenges
   resetChallenges();
   
+  // Apply default background after reset
+  applySelectedBackground();
+  
   // Refresh challenges screen
   showScreen('challenges');
+}
+
+/**
+ * Show background shop popup with all available backgrounds
+ */
+function showBackgroundShopPopup() {
+  const backgrounds = getAllBackgrounds();
+  const selectedBg = getSelectedBackground();
+  const diamonds = loadDiamonds();
+  
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-shop-overlay';
+  overlay.id = 'background-shop-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-shop-card';
+  
+  // Create header with diamond count
+  let headerHtml = `
+    <h2>🎨 Hintergründe</h2>
+    <div class="background-shop-header">
+      <div class="background-shop-diamonds">
+        <span>💎</span>
+        <span id="shop-diamond-count">${diamonds}</span>
+      </div>
+    </div>
+  `;
+  
+  // Create grid of background tiles
+  let tilesHtml = '<div class="backgrounds-grid">';
+  
+  backgrounds.forEach(bg => {
+    const isSelected = bg.id === selectedBg.id;
+    const isUnlocked = bg.isUnlocked;
+    const isDefault = bg.isDefault;
+    
+    let tileClass = 'background-tile';
+    if (isUnlocked) tileClass += ' unlocked';
+    if (!isUnlocked) tileClass += ' locked';
+    if (isSelected) tileClass += ' selected';
+    
+    let costHtml = '';
+    if (isDefault) {
+      costHtml = '<span class="background-cost">✓ Gratis</span>';
+    } else if (isUnlocked) {
+      costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
+    } else {
+      costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
+    }
+    
+    let selectedBadge = isSelected ? '<div class="background-selected-badge">Aktiv</div>' : '';
+    let lockIcon = !isUnlocked ? '<div class="background-lock-icon">🔒</div>' : '';
+    
+    tilesHtml += `
+      <div class="${tileClass}" data-bg-id="${bg.id}">
+        <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
+        ${lockIcon}
+        ${selectedBadge}
+        <div class="background-info">
+          <div class="background-name">${bg.name}</div>
+          ${costHtml}
+        </div>
+      </div>
+    `;
+  });
+  
+  tilesHtml += '</div>';
+  
+  popupCard.innerHTML = `
+    <div class="background-shop-content">
+      ${headerHtml}
+      ${tilesHtml}
+    </div>
+    <button id="close-background-shop" class="btn-secondary background-shop-close">Schließen</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add click handlers for tiles
+  const tiles = popupCard.querySelectorAll('.background-tile');
+  tiles.forEach(tile => {
+    tile.addEventListener('click', () => {
+      const bgId = tile.dataset.bgId;
+      handleBackgroundTileClick(bgId);
+    });
+  });
+  
+  // Add close button handler
+  const closeBtn = document.getElementById('close-background-shop');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeBackgroundShopPopup);
+  }
+}
+
+/**
+ * Close the background shop popup
+ */
+function closeBackgroundShopPopup() {
+  const overlay = document.getElementById('background-shop-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+/**
+ * Handle click on a background tile
+ * @param {string} bgId - The ID of the clicked background
+ */
+function handleBackgroundTileClick(bgId) {
+  const background = BACKGROUNDS[bgId];
+  if (!background) return;
+  
+  const isUnlocked = isBackgroundUnlocked(bgId);
+  const selectedBg = getSelectedBackground();
+  
+  if (isUnlocked) {
+    // Background is unlocked - show selection confirmation
+    if (bgId !== selectedBg.id) {
+      showBackgroundSelectConfirmPopup(background);
+    }
+  } else {
+    // Background is locked - show unlock confirmation
+    showBackgroundUnlockConfirmPopup(background);
+  }
+}
+
+/**
+ * Show popup to confirm unlocking a background
+ * @param {Object} background - The background object to unlock
+ */
+function showBackgroundUnlockConfirmPopup(background) {
+  const diamonds = loadDiamonds();
+  const canAfford = diamonds >= background.cost;
+  
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-confirm-overlay';
+  overlay.id = 'background-unlock-confirm-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-confirm-card';
+  
+  let buttonHtml;
+  let messageHtml = '';
+  
+  if (canAfford) {
+    buttonHtml = `
+      <button id="confirm-unlock-button" class="btn-primary">Freischalten</button>
+      <button id="cancel-unlock-button" class="btn-secondary">Abbrechen</button>
+    `;
+  } else {
+    buttonHtml = `
+      <button id="cancel-unlock-button" class="btn-secondary">OK</button>
+    `;
+    messageHtml = `<p class="no-diamond-text">Du brauchst ${background.cost - diamonds} weitere 💎</p>`;
+  }
+  
+  popupCard.innerHTML = `
+    <h2>Hintergrund freischalten?</h2>
+    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
+    <p><strong>${background.name}</strong></p>
+    <div class="background-confirm-cost">
+      <span>💎</span>
+      <span>${background.cost} Diamanten</span>
+    </div>
+    ${messageHtml}
+    <div class="background-confirm-buttons">
+      ${buttonHtml}
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add event listeners
+  const confirmBtn = document.getElementById('confirm-unlock-button');
+  const cancelBtn = document.getElementById('cancel-unlock-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      executeBackgroundUnlock(background.id);
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeBackgroundUnlockConfirmPopup);
+  }
+}
+
+/**
+ * Close the background unlock confirmation popup
+ */
+function closeBackgroundUnlockConfirmPopup() {
+  const overlay = document.getElementById('background-unlock-confirm-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+/**
+ * Execute background unlock
+ * @param {string} bgId - The ID of the background to unlock
+ */
+function executeBackgroundUnlock(bgId) {
+  const result = unlockBackground(bgId);
+  
+  // Close the confirmation popup
+  closeBackgroundUnlockConfirmPopup();
+  
+  if (result.success) {
+    // Update the shop display
+    closeBackgroundShopPopup();
+    showBackgroundShopPopup();
+    
+    // Update diamond count in challenges header if visible
+    updateDiamondDisplayInHeader();
+    
+    // Show unlock animation on the tile
+    const tile = document.querySelector(`.background-tile[data-bg-id="${bgId}"]`);
+    if (tile) {
+      tile.classList.add('background-unlock-animation');
+    }
+    
+    // Add confetti celebration
+    createConfettiEffect();
+  } else if (result.notEnoughDiamonds) {
+    showNotEnoughDiamondsHint();
+  }
+}
+
+/**
+ * Show popup to confirm selecting a background
+ * @param {Object} background - The background object to select
+ */
+function showBackgroundSelectConfirmPopup(background) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-confirm-overlay';
+  overlay.id = 'background-select-confirm-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-confirm-card';
+  
+  popupCard.innerHTML = `
+    <h2>Hintergrund wählen?</h2>
+    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
+    <p><strong>${background.name}</strong></p>
+    <p>Möchtest du diesen Hintergrund verwenden?</p>
+    <div class="background-confirm-buttons">
+      <button id="confirm-select-button" class="btn-primary">Ja</button>
+      <button id="cancel-select-button" class="btn-secondary">Nein</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add event listeners
+  const confirmBtn = document.getElementById('confirm-select-button');
+  const cancelBtn = document.getElementById('cancel-select-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      executeBackgroundSelect(background.id);
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeBackgroundSelectConfirmPopup);
+  }
+}
+
+/**
+ * Close the background select confirmation popup
+ */
+function closeBackgroundSelectConfirmPopup() {
+  const overlay = document.getElementById('background-select-confirm-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+/**
+ * Execute background selection
+ * @param {string} bgId - The ID of the background to select
+ */
+function executeBackgroundSelect(bgId) {
+  const result = selectBackground(bgId);
+  
+  // Close the confirmation popup
+  closeBackgroundSelectConfirmPopup();
+  
+  if (result.success) {
+    // Apply the new background immediately
+    applySelectedBackground();
+    
+    // Update the shop display
+    closeBackgroundShopPopup();
+    showBackgroundShopPopup();
+  }
+}
+
+/**
+ * Show a hint when player doesn't have enough diamonds
+ */
+function showNotEnoughDiamondsHint() {
+  // Remove any existing hint
+  const existingHint = document.querySelector('.not-enough-diamonds-hint');
+  if (existingHint) {
+    existingHint.remove();
+  }
+  
+  // Create hint element
+  const hint = document.createElement('div');
+  hint.className = 'not-enough-diamonds-hint';
+  hint.textContent = '💎 Nicht genug Diamanten!';
+  
+  document.body.appendChild(hint);
+  
+  // Remove after animation completes (3 seconds)
+  setTimeout(() => {
+    hint.remove();
+  }, 3000);
+}
+
+/**
+ * Update the diamond display in the challenges header
+ */
+function updateDiamondDisplayInHeader() {
+  const diamondInfo = getDiamondInfo();
+  const diamondValueElement = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+  if (diamondValueElement) {
+    diamondValueElement.textContent = diamondInfo.current;
+  }
 }
 
 // Router Skeleton (kept for future use)

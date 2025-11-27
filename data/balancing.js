@@ -114,3 +114,31 @@ export const CHALLENGE_TYPES = {
     difficulty: 2
   }
 };
+
+/**
+ * Background customization configuration
+ * Applied in: logic/backgroundManager.js, main.js - Background Customization Screen
+ */
+export const BACKGROUNDS = {
+  // Default background - always unlocked, cannot be purchased
+  default: {
+    id: 'default',
+    name: 'Standard',
+    file: 'backgrounds/background_compressed.webp',
+    cost: 0,
+    isDefault: true
+  },
+  // Unlockable backgrounds - can be purchased with diamonds
+  sunset: {
+    id: 'sunset',
+    name: 'Sonnenuntergang',
+    file: 'backgrounds/sunset_background_optimized.webp',
+    cost: 2
+  },
+  unicorn: {
+    id: 'unicorn',
+    name: 'Einhorn',
+    file: 'backgrounds/unicorn_background_optimized.webp',
+    cost: 2
+  }
+};
