@@ -51,7 +51,7 @@ export const BALANCING = {
 export const CONFIG = {
   // Number of tasks shown per challenge session
   // Applied in: logic/challengeGenerator.js, logic/taskFlow.js
-  TASKS_PER_CHALLENGE: 3,
+  TASKS_PER_CHALLENGE: 8,
   
   // Number of challenge nodes displayed on the challenges screen
   // Applied in: logic/challengeGenerator.js - generateDailyChallenges()
@@ -63,7 +63,7 @@ export const CONFIG = {
   
   // Number of completed tasks needed to earn one diamond
   // Applied in: logic/diamondManager.js, main.js - diamond progress display
-  TASKS_PER_DIAMOND: 9,
+  TASKS_PER_DIAMOND: 80,
   
   // Diamond cost to rescue an expired streak
   // Applied in: main.js - showStreakRestorablePopup(), logic/streakManager.js
@@ -118,6 +118,10 @@ export const CHALLENGE_TYPES = {
 /**
  * Background customization configuration
  * Applied in: logic/backgroundManager.js, main.js - Background Customization Screen
+ * 
+ * Each background has a tasksRequired property that determines how many total
+ * completed tasks are needed before the background becomes purchasable.
+ * The default background (tasksRequired: 0) is always available.
  */
 export const BACKGROUNDS = {
   // Default background - always unlocked, cannot be purchased
@@ -126,19 +130,36 @@ export const BACKGROUNDS = {
     name: 'Standard',
     file: 'backgrounds/background_compressed.webp',
     cost: 0,
+    tasksRequired: 0,
     isDefault: true
   },
-  // Unlockable backgrounds - can be purchased with diamonds
+  // Unlockable backgrounds - can be purchased with diamonds after completing enough tasks
   sunset: {
     id: 'sunset',
     name: 'Sonnenuntergang',
     file: 'backgrounds/sunset_background_optimized.webp',
-    cost: 2
+    cost: 2,
+    tasksRequired: 70
   },
   unicorn: {
     id: 'unicorn',
     name: 'Einhorn',
     file: 'backgrounds/unicorn_background_optimized.webp',
-    cost: 2
+    cost: 2,
+    tasksRequired: 210
+  },
+  candy: {
+    id: 'candy',
+    name: 'Süßigkeiten',
+    file: 'backgrounds/candy_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 140
+  },
+  maineCoon: {
+    id: 'maineCoon',
+    name: 'Maine Coon',
+    file: 'backgrounds/maine_coon_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 280
   }
 };
