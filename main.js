@@ -1449,7 +1449,7 @@ function showDevSettingsReloadPopup(message) {
  * Setup event listeners for dev settings controls
  */
 function setupDevSettingsListeners() {
-  // Diamond controls
+  // Diamond controls - update UI immediately without reload
   const diamondsMinus = document.getElementById('dev-diamonds-minus');
   const diamondsPlus = document.getElementById('dev-diamonds-plus');
   const diamondsValue = document.getElementById('dev-diamonds-value');
@@ -1459,8 +1459,12 @@ function setupDevSettingsListeners() {
       const current = loadDiamonds();
       const newValue = Math.max(0, current - 1);
       saveDiamonds(newValue);
+      // Update dev settings display
       if (diamondsValue) diamondsValue.textContent = newValue;
-      showDevSettingsReloadPopup('Diamanten geändert. App neu starten, um die Änderung anzuwenden?');
+      // Update main UI diamond display
+      const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+      if (mainDiamondDisplay) mainDiamondDisplay.textContent = newValue;
+      showDevFeedback('💎 ' + newValue);
     });
   }
   
@@ -1469,8 +1473,12 @@ function setupDevSettingsListeners() {
       const current = loadDiamonds();
       const newValue = current + 1;
       saveDiamonds(newValue);
+      // Update dev settings display
       if (diamondsValue) diamondsValue.textContent = newValue;
-      showDevSettingsReloadPopup('Diamanten geändert. App neu starten, um die Änderung anzuwenden?');
+      // Update main UI diamond display
+      const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+      if (mainDiamondDisplay) mainDiamondDisplay.textContent = newValue;
+      showDevFeedback('💎 ' + newValue);
     });
   }
   
