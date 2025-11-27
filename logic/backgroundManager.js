@@ -101,15 +101,17 @@ export function getPurchasableBackgroundIds() {
 export function checkForNewlyPurchasableBackgrounds() {
   const currentPurchasable = getPurchasableBackgroundIds();
   const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  const unlockedIds = loadUnlockedBackgrounds();
   
   // Find backgrounds that are now purchasable but weren't before
   const newlyPurchasable = currentPurchasable.filter(
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Update the stored list with current purchasable backgrounds
-  // (combine last known with current to handle cases where backgrounds become purchasable over time)
-  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])];
+  // Update the stored list: combine with current purchasable, but remove any that have been purchased
+  // This ensures we don't show celebration popup for backgrounds that were already handled
+  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
+    .filter(id => !unlockedIds.includes(id)); // Remove purchased backgrounds
   saveLastKnownPurchasableBackgrounds(allKnownPurchasable);
   
   // Get the first newly purchasable background object for display
