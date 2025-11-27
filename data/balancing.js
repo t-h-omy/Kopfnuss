@@ -147,5 +147,19 @@ export const BACKGROUNDS = {
     file: 'backgrounds/unicorn_background_optimized.webp',
     cost: 2,
     tasksRequired: 210
+  },
+  candy: {
+    id: 'candy',
+    name: 'Süßigkeiten',
+    file: 'backgrounds/candy_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 140
+  },
+  maineCoon: {
+    id: 'maineCoon',
+    name: 'Maine Coon',
+    file: 'backgrounds/maine_coon_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 280
   }
 };

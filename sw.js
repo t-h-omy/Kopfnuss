@@ -35,7 +35,9 @@ const urlsToCache = [
   './assets/celebration/challenge-node-bg-5.webp',
   './assets/backgrounds/background_compressed.webp',
   './assets/backgrounds/sunset_background_optimized.webp',
-  './assets/backgrounds/unicorn_background_optimized.webp'
+  './assets/backgrounds/unicorn_background_optimized.webp',
+  './assets/backgrounds/candy_background_optimized.webp',
+  './assets/backgrounds/maine_coon_background_optimized.webp'
 ];
 
 /**
