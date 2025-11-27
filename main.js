@@ -1483,13 +1483,13 @@ function setupDevSettingsListeners() {
     advanceDayBtn.addEventListener('click', () => {
       const streak = loadStreak();
       if (streak.lastActiveDate) {
-        // Move lastActiveDate one day back to simulate passing a day
-        // This correctly handles month/year boundaries
+        // Move lastActiveDate one day back to simulate that one day has passed
+        // This makes the streak system think more time has elapsed since last activity
         const lastDate = new Date(streak.lastActiveDate + 'T12:00:00'); // Use noon to avoid timezone issues
         lastDate.setTime(lastDate.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
         streak.lastActiveDate = lastDate.toISOString().split('T')[0];
         saveStreak(streak);
-        showDevFeedback('Zeit um 1 Tag vorgerückt 📅');
+        showDevFeedback('1 Tag simuliert (Streak-Test) 📅');
       } else {
         showDevFeedback('Keine Aktivität vorhanden');
       }
@@ -1520,10 +1520,6 @@ function setupDevSettingsListeners() {
   }
 }
 
-/**
- * Show brief dev feedback message
- * @param {string} message - Message to display
- */
 /**
  * Show brief dev feedback message
  * @param {string} message - Message to display
