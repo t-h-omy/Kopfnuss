@@ -5,7 +5,9 @@ import { CONFIG } from '../data/balancing.js';
 import { 
   loadDiamonds, 
   saveDiamonds as saveToStorage,
-  loadProgress 
+  loadProgress,
+  loadDiamondsEarned,
+  saveDiamondsEarned
 } from './storageManager.js';
 
 /**
@@ -28,33 +30,42 @@ export function updateDiamonds() {
   const currentDiamonds = loadDiamonds();
   const totalTasksCompleted = progress.totalTasksCompleted || 0;
   
-  // Calculate how many diamonds should have been earned in total
-  const totalEarned = calculateDiamondsEarned(totalTasksCompleted);
+  // Calculate how many diamonds should have been earned in total based on tasks
+  const totalShouldHaveEarned = calculateDiamondsEarned(totalTasksCompleted);
   
-  // Load previously tracked earned count (or estimate from current if not tracked)
-  const previouslyTrackedEarned = progress.totalDiamondsEarned || 0;
+  // Load previously tracked earned count from persistent storage
+  let previouslyTrackedEarned = loadDiamondsEarned();
+  
+  // Migration for existing users: if no earned tracking exists but user has completed tasks,
+  // initialize the earned count to match what should have been earned based on tasks
+  // This prevents re-awarding diamonds on first load after update
+  if (previouslyTrackedEarned === 0 && totalShouldHaveEarned > 0) {
+    previouslyTrackedEarned = totalShouldHaveEarned;
+    saveDiamondsEarned(totalShouldHaveEarned);
+  }
   
   // Calculate newly earned diamonds since last check
-  const newlyEarned = Math.max(0, totalEarned - previouslyTrackedEarned);
+  const newlyEarned = Math.max(0, totalShouldHaveEarned - previouslyTrackedEarned);
   
   if (newlyEarned > 0) {
     // Add newly earned diamonds to current balance (preserving spent state)
     const totalDiamonds = currentDiamonds + newlyEarned;
     saveToStorage(totalDiamonds);
     
+    // Persist the new total earned count
+    saveDiamondsEarned(totalShouldHaveEarned);
+    
     return {
       awarded: newlyEarned,
       total: totalDiamonds,
-      tasksCompleted: totalTasksCompleted,
-      totalDiamondsEarned: totalEarned
+      tasksCompleted: totalTasksCompleted
     };
   }
   
   return {
     awarded: 0,
     total: currentDiamonds,
-    tasksCompleted: totalTasksCompleted,
-    totalDiamondsEarned: previouslyTrackedEarned
+    tasksCompleted: totalTasksCompleted
   };
 }
 

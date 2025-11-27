@@ -9,6 +9,7 @@ const STORAGE_KEYS = {
   PROGRESS: 'kopfnuss_progress',
   STREAK: 'kopfnuss_streak',
   DIAMONDS: 'kopfnuss_diamonds',
+  DIAMONDS_EARNED: 'kopfnuss_diamonds_earned',
   UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
   SELECTED_BACKGROUND: 'kopfnuss_selected_background'
 };
@@ -153,6 +154,23 @@ export function saveDiamonds(diamonds) {
  */
 export function loadDiamonds() {
   return loadFromStorage(STORAGE_KEYS.DIAMONDS, 0);
+}
+
+/**
+ * Save total diamonds earned (for tracking spending correctly)
+ * @param {number} count - Total diamonds earned historically
+ * @returns {boolean} Success status
+ */
+export function saveDiamondsEarned(count) {
+  return saveToStorage(STORAGE_KEYS.DIAMONDS_EARNED, count);
+}
+
+/**
+ * Load total diamonds earned
+ * @returns {number} Total diamonds earned historically
+ */
+export function loadDiamondsEarned() {
+  return loadFromStorage(STORAGE_KEYS.DIAMONDS_EARNED, 0);
 }
 
 /**
