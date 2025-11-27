@@ -730,6 +730,7 @@ body::before {
   padding: var(--spacing-md);
   flex-shrink: 0;
   margin-top: auto;
+  align-self: center;
 }
 
 /* ===========================
