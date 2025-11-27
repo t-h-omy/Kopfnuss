@@ -19,7 +19,8 @@ function calculateDiamondsEarned(totalTasksCompleted) {
 
 /**
  * Update diamonds based on current progress
- * Awards diamonds for every 100 tasks completed
+ * Awards diamonds for every TASKS_PER_DIAMOND tasks completed
+ * Properly handles spent diamonds by tracking total earned separately
  * @returns {Object} Diamond update result
  */
 export function updateDiamonds() {
@@ -27,26 +28,33 @@ export function updateDiamonds() {
   const currentDiamonds = loadDiamonds();
   const totalTasksCompleted = progress.totalTasksCompleted || 0;
   
-  // Calculate how many diamonds should have been earned
-  const shouldHaveDiamonds = calculateDiamondsEarned(totalTasksCompleted);
+  // Calculate how many diamonds should have been earned in total
+  const totalEarned = calculateDiamondsEarned(totalTasksCompleted);
   
-  // If current diamonds is less, award the difference
-  if (shouldHaveDiamonds > currentDiamonds) {
-    const newDiamonds = shouldHaveDiamonds - currentDiamonds;
-    const totalDiamonds = currentDiamonds + newDiamonds;
+  // Load previously tracked earned count (or estimate from current if not tracked)
+  const previouslyTrackedEarned = progress.totalDiamondsEarned || 0;
+  
+  // Calculate newly earned diamonds since last check
+  const newlyEarned = Math.max(0, totalEarned - previouslyTrackedEarned);
+  
+  if (newlyEarned > 0) {
+    // Add newly earned diamonds to current balance (preserving spent state)
+    const totalDiamonds = currentDiamonds + newlyEarned;
     saveToStorage(totalDiamonds);
     
     return {
-      awarded: newDiamonds,
+      awarded: newlyEarned,
       total: totalDiamonds,
-      tasksCompleted: totalTasksCompleted
+      tasksCompleted: totalTasksCompleted,
+      totalDiamondsEarned: totalEarned
     };
   }
   
   return {
     awarded: 0,
     total: currentDiamonds,
-    tasksCompleted: totalTasksCompleted
+    tasksCompleted: totalTasksCompleted,
+    totalDiamondsEarned: previouslyTrackedEarned
   };
 }
 

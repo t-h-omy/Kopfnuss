@@ -124,39 +124,21 @@ export const BACKGROUNDS = {
   default: {
     id: 'default',
     name: 'Standard',
-    file: 'background_compressed.webp',
+    file: 'backgrounds/background_compressed.webp',
     cost: 0,
     isDefault: true
   },
-  // Challenge node backgrounds - can be unlocked with diamonds
-  forest: {
-    id: 'forest',
-    name: 'Wald',
-    file: 'challenge-node-bg-1.webp',
-    cost: 2
-  },
+  // Unlockable backgrounds - can be purchased with diamonds
   sunset: {
     id: 'sunset',
     name: 'Sonnenuntergang',
-    file: 'challenge-node-bg-2.webp',
-    cost: 3
-  },
-  mountain: {
-    id: 'mountain',
-    name: 'Berge',
-    file: 'challenge-node-bg-3.webp',
+    file: 'backgrounds/sunset_background_optimized.webp',
     cost: 2
   },
-  ocean: {
-    id: 'ocean',
-    name: 'Ozean',
-    file: 'challenge-node-bg-4.webp',
-    cost: 2
-  },
-  space: {
-    id: 'space',
-    name: 'Weltraum',
-    file: 'challenge-node-bg-5.webp',
+  unicorn: {
+    id: 'unicorn',
+    name: 'Einhorn',
+    file: 'backgrounds/unicorn_background_optimized.webp',
     cost: 2
   }
 };

@@ -188,7 +188,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: var(--selected-background, url('./assets/background_compressed.webp'));
+  background-image: var(--selected-background, url('./assets/backgrounds/background_compressed.webp'));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1038,7 +1038,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: var(--selected-background, url('./assets/background_compressed.webp'));
+  background-image: var(--selected-background, url('./assets/backgrounds/background_compressed.webp'));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1977,11 +1977,13 @@ button,
 
 .background-shop-close {
   width: 100%;
+  max-width: 200px;
   padding: var(--spacing-md);
   flex-shrink: 0;
-  margin-top: var(--spacing-sm);
-  border-top: 1px solid var(--border-color);
+  margin: var(--spacing-sm) auto 0 auto;
+  border-top: none;
   background: var(--color-off-white);
+  display: block;
 }
 
 /* Background unlock animation */
