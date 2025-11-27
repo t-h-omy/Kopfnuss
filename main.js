@@ -1366,8 +1366,10 @@ function showBackgroundShopPopup() {
   tilesHtml += '</div>';
   
   popupCard.innerHTML = `
-    ${headerHtml}
-    ${tilesHtml}
+    <div class="background-shop-content">
+      ${headerHtml}
+      ${tilesHtml}
+    </div>
     <button id="close-background-shop" class="btn-secondary background-shop-close">Schließen</button>
   `;
   

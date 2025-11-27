@@ -1824,8 +1824,15 @@ button,
   max-width: 95%;
   width: 450px;
   max-height: 85vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   animation: scaleIn 0.3s ease;
+}
+
+.background-shop-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: var(--spacing-sm);
 }
 
 .background-shop-card h2 {
@@ -1971,6 +1978,10 @@ button,
 .background-shop-close {
   width: 100%;
   padding: var(--spacing-md);
+  flex-shrink: 0;
+  margin-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-color);
+  background: var(--color-off-white);
 }
 
 /* Background unlock animation */
