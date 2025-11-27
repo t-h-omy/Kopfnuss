@@ -513,8 +513,8 @@ body::before {
   padding: 10px 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   text-align: center;
-  width: 62%;
-  max-width: 240px;
+  width: 68%;
+  max-width: 270px;
   position: relative;
   z-index: 2;
 }
@@ -954,7 +954,7 @@ body::before {
   }
   
   .challenge-info-card {
-    max-width: 280px;
+    max-width: 310px;
     padding: 12px 18px;
   }
   
