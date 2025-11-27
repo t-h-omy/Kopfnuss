@@ -34,7 +34,9 @@ import {
   applySelectedBackground,
   unlockBackground,
   selectBackground,
-  isBackgroundUnlocked
+  isBackgroundUnlocked,
+  BACKGROUND_STATE,
+  checkForNewlyPurchasableBackgrounds
 } from './logic/backgroundManager.js';
 
 /**
@@ -260,7 +262,7 @@ function loadChallengesScreen(container) {
   const justCompletedChallengeIndex = currentChallengeIndex;
   
   // Handle popup display when returning from task screen
-  // Queue popups to show sequentially: first diamond, then streak (or vice versa)
+  // Queue popups to show sequentially: first diamond, then streak, then background unlock
   // After all popups close, scroll to the current unlocked challenge or reward button
   if (returningFromTaskScreen) {
     returningFromTaskScreen = false;
@@ -270,6 +272,11 @@ function loadChallengesScreen(container) {
     const showUnfrozen = typeof streakWasUnfrozen === 'number' && streakWasUnfrozen > 0;
     // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
     const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
+    
+    // Check for newly purchasable backgrounds
+    const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
+    const showBackgroundUnlock = backgroundUnlockResult.hasNew;
+    const newlyPurchasableBackground = backgroundUnlockResult.firstNewBackground;
     
     // Reset the flags
     const unfrozenStreakValue = streakWasUnfrozen;
@@ -291,7 +298,7 @@ function loadChallengesScreen(container) {
       }
     };
     
-    // Queue popups: unfrozen first (if applicable), then diamond, then streak
+    // Queue popups: unfrozen first, then diamond, then streak, then background unlock
     const popupsToShow = [];
     
     if (showUnfrozen) {
@@ -303,6 +310,10 @@ function loadChallengesScreen(container) {
     if (showStreakIncremented) {
       // Show streak celebration popup when streak was incremented by challenge completion
       popupsToShow.push((next) => showStreakCelebrationPopup(incrementedStreakValue, next));
+    }
+    if (showBackgroundUnlock && newlyPurchasableBackground) {
+      // Show background unlock celebration popup when a new background becomes purchasable
+      popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(newlyPurchasableBackground, next));
     }
     
     // Chain popups together
@@ -335,7 +346,13 @@ function loadChallengesScreen(container) {
   shopButton.id = 'shop-button';
   shopButton.setAttribute('aria-label', 'Hintergründe anpassen');
   shopButton.innerHTML = '<span class="shop-icon">🛒</span>';
-  shopButton.addEventListener('click', showBackgroundShopPopup);
+  shopButton.addEventListener('click', () => {
+    // Check for purchasable backgrounds to scroll to
+    const backgrounds = getAllBackgrounds();
+    const purchasableBackground = backgrounds.find(bg => bg.state === BACKGROUND_STATE.PURCHASABLE);
+    const scrollToId = purchasableBackground ? purchasableBackground.id : null;
+    showBackgroundShopPopup(scrollToId);
+  });
   
   // Create header with streak and diamonds
   const header = document.createElement('div');
@@ -869,6 +886,58 @@ function closeStreakCelebrationPopup() {
 }
 
 /**
+ * Show background unlock celebration popup when player reaches enough tasks
+ * to unlock a new background for purchase
+ * @param {Object} background - The newly purchasable background object
+ * @param {Function} onClose - Optional callback to run after popup closes
+ */
+function showBackgroundUnlockCelebrationPopup(background, onClose = null) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay background-unlock-celebration-overlay';
+  overlay.id = 'background-unlock-celebration-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card background-unlock-celebration-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🎉</div>
+    <h2>Neuer Hintergrund verfügbar!</h2>
+    <div class="background-unlock-preview-container">
+      <img src="./assets/${background.file}" alt="${background.name}" class="background-unlock-preview">
+    </div>
+    <p class="background-unlock-name"><strong>${background.name}</strong></p>
+    <p>Du kannst diesen Hintergrund jetzt im Shop kaufen!</p>
+    <button id="background-unlock-celebration-close-button" class="btn-primary">Super!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add confetti effect
+  createConfettiEffect();
+  
+  // Add event listener for close button
+  const closeButton = document.getElementById('background-unlock-celebration-close-button');
+  closeButton.addEventListener('click', () => {
+    closeBackgroundUnlockCelebrationPopup();
+    // Call onClose callback if provided (for sequential popups)
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Close the background unlock celebration popup
+ */
+function closeBackgroundUnlockCelebrationPopup() {
+  closePopup('background-unlock-celebration-popup-overlay', true);
+}
+
+/**
  * Show frozen streak information popup
  * Displayed when app opens and streak is frozen
  * @param {number} currentStreak - Current streak count
@@ -1299,8 +1368,10 @@ function executeFullReset() {
 
 /**
  * Show background shop popup with all available backgrounds
+ * Supports four states: locked, purchasable, unlocked, active
+ * @param {string|null} scrollToBackgroundId - Optional background ID to scroll to and highlight
  */
-function showBackgroundShopPopup() {
+function showBackgroundShopPopup(scrollToBackgroundId = null) {
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
@@ -1326,35 +1397,52 @@ function showBackgroundShopPopup() {
   `;
   
   // Create grid of background tiles
-  let tilesHtml = '<div class="backgrounds-grid">';
+  let tilesHtml = '<div class="backgrounds-grid" id="backgrounds-grid">';
   
   backgrounds.forEach(bg => {
-    const isSelected = bg.id === selectedBg.id;
-    const isUnlocked = bg.isUnlocked;
+    const state = bg.state;
     const isDefault = bg.isDefault;
     
+    // Build tile class based on state
     let tileClass = 'background-tile';
-    if (isUnlocked) tileClass += ' unlocked';
-    if (!isUnlocked) tileClass += ' locked';
-    if (isSelected) tileClass += ' selected';
+    tileClass += ` state-${state}`;
     
+    // Add legacy classes for compatibility
+    if (state === BACKGROUND_STATE.UNLOCKED || state === BACKGROUND_STATE.ACTIVE) {
+      tileClass += ' unlocked';
+    }
+    if (state === BACKGROUND_STATE.LOCKED) {
+      tileClass += ' locked';
+    }
+    if (state === BACKGROUND_STATE.ACTIVE) {
+      tileClass += ' selected';
+    }
+    if (state === BACKGROUND_STATE.PURCHASABLE) {
+      tileClass += ' purchasable';
+    }
+    
+    // Build cost/status HTML based on state
     let costHtml = '';
     if (isDefault) {
       costHtml = '<span class="background-cost">✓ Gratis</span>';
-    } else if (isUnlocked) {
+    } else if (state === BACKGROUND_STATE.ACTIVE || state === BACKGROUND_STATE.UNLOCKED) {
       costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
-    } else {
+    } else if (state === BACKGROUND_STATE.PURCHASABLE) {
       costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
+    } else if (state === BACKGROUND_STATE.LOCKED) {
+      const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
+      costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
     }
     
-    let selectedBadge = isSelected ? '<div class="background-selected-badge">Aktiv</div>' : '';
-    let lockIcon = !isUnlocked ? '<div class="background-lock-icon">🔒</div>' : '';
+    // Build badges and icons
+    let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
+    let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
     
     tilesHtml += `
       <div class="${tileClass}" data-bg-id="${bg.id}">
         <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
         ${lockIcon}
-        ${selectedBadge}
+        ${activeBadge}
         <div class="background-info">
           <div class="background-name">${bg.name}</div>
           ${costHtml}
@@ -1376,19 +1464,50 @@ function showBackgroundShopPopup() {
   overlay.appendChild(popupCard);
   document.body.appendChild(overlay);
   
-  // Add click handlers for tiles
+  // Add click handlers for tiles (only for interactive states)
   const tiles = popupCard.querySelectorAll('.background-tile');
   tiles.forEach(tile => {
-    tile.addEventListener('click', () => {
-      const bgId = tile.dataset.bgId;
-      handleBackgroundTileClick(bgId);
-    });
+    const bgId = tile.dataset.bgId;
+    const bg = backgrounds.find(b => b.id === bgId);
+    
+    // Only make tiles clickable if they are purchasable, unlocked, or active
+    if (bg && bg.state !== BACKGROUND_STATE.LOCKED) {
+      tile.addEventListener('click', () => {
+        handleBackgroundTileClick(bgId);
+      });
+    }
   });
   
   // Add close button handler
   const closeBtn = document.getElementById('close-background-shop');
   if (closeBtn) {
     closeBtn.addEventListener('click', closeBackgroundShopPopup);
+  }
+  
+  // Scroll to and highlight specific background if requested
+  if (scrollToBackgroundId) {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const targetTile = popupCard.querySelector(`.background-tile[data-bg-id="${scrollToBackgroundId}"]`);
+        if (targetTile) {
+          // Scroll tile into view
+          targetTile.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+          
+          // Apply highlight effect (same as reward button effect)
+          setTimeout(() => {
+            targetTile.classList.add('background-newly-purchasable-highlight');
+            
+            // Remove highlight after animation
+            setTimeout(() => {
+              targetTile.classList.remove('background-newly-purchasable-highlight');
+            }, ANIMATION_TIMING.REWARD_HIGHLIGHT_DURATION);
+          }, ANIMATION_TIMING.SCROLL_SETTLE_DELAY);
+        }
+      }, ANIMATION_TIMING.DOM_RENDER_DELAY);
+    });
   }
 }
 
@@ -1404,24 +1523,29 @@ function closeBackgroundShopPopup() {
 
 /**
  * Handle click on a background tile
+ * Only called for non-locked backgrounds (purchasable, unlocked, or active)
  * @param {string} bgId - The ID of the clicked background
  */
 function handleBackgroundTileClick(bgId) {
-  const background = BACKGROUNDS[bgId];
-  if (!background) return;
+  const backgrounds = getAllBackgrounds();
+  const bg = backgrounds.find(b => b.id === bgId);
+  if (!bg) return;
   
-  const isUnlocked = isBackgroundUnlocked(bgId);
-  const selectedBg = getSelectedBackground();
+  const state = bg.state;
   
-  if (isUnlocked) {
-    // Background is unlocked - show selection confirmation
-    if (bgId !== selectedBg.id) {
-      showBackgroundSelectConfirmPopup(background);
-    }
-  } else {
-    // Background is locked - show unlock confirmation
-    showBackgroundUnlockConfirmPopup(background);
+  if (state === BACKGROUND_STATE.ACTIVE) {
+    // Already active, do nothing
+    return;
   }
+  
+  if (state === BACKGROUND_STATE.UNLOCKED) {
+    // Background is unlocked - show selection confirmation
+    showBackgroundSelectConfirmPopup(bg);
+  } else if (state === BACKGROUND_STATE.PURCHASABLE) {
+    // Background is purchasable - show unlock/purchase confirmation
+    showBackgroundUnlockConfirmPopup(bg);
+  }
+  // Note: LOCKED state tiles are not clickable, so no handler needed
 }
 
 /**

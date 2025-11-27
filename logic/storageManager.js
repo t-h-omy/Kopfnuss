@@ -11,7 +11,8 @@ const STORAGE_KEYS = {
   DIAMONDS: 'kopfnuss_diamonds',
   DIAMONDS_EARNED: 'kopfnuss_diamonds_earned',
   UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
-  SELECTED_BACKGROUND: 'kopfnuss_selected_background'
+  SELECTED_BACKGROUND: 'kopfnuss_selected_background',
+  LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds'
 };
 
 /**
@@ -210,6 +211,24 @@ export function saveSelectedBackground(backgroundId) {
  */
 export function loadSelectedBackground() {
   return loadFromStorage(STORAGE_KEYS.SELECTED_BACKGROUND, 'default');
+}
+
+/**
+ * Save last known purchasable backgrounds
+ * Used to detect newly purchasable backgrounds for celebration popup
+ * @param {Array<string>} backgroundIds - Array of background IDs that were purchasable
+ * @returns {boolean} Success status
+ */
+export function saveLastKnownPurchasableBackgrounds(backgroundIds) {
+  return saveToStorage(STORAGE_KEYS.LAST_KNOWN_PURCHASABLE_BACKGROUNDS, backgroundIds);
+}
+
+/**
+ * Load last known purchasable backgrounds
+ * @returns {Array<string>} Array of background IDs that were purchasable (defaults to empty array)
+ */
+export function loadLastKnownPurchasableBackgrounds() {
+  return loadFromStorage(STORAGE_KEYS.LAST_KNOWN_PURCHASABLE_BACKGROUNDS, []);
 }
 
 /**

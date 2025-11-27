@@ -118,6 +118,10 @@ export const CHALLENGE_TYPES = {
 /**
  * Background customization configuration
  * Applied in: logic/backgroundManager.js, main.js - Background Customization Screen
+ * 
+ * Each background has a tasksRequired property that determines how many total
+ * completed tasks are needed before the background becomes purchasable.
+ * The default background (tasksRequired: 0) is always available.
  */
 export const BACKGROUNDS = {
   // Default background - always unlocked, cannot be purchased
@@ -126,19 +130,22 @@ export const BACKGROUNDS = {
     name: 'Standard',
     file: 'backgrounds/background_compressed.webp',
     cost: 0,
+    tasksRequired: 0,
     isDefault: true
   },
-  // Unlockable backgrounds - can be purchased with diamonds
+  // Unlockable backgrounds - can be purchased with diamonds after completing enough tasks
   sunset: {
     id: 'sunset',
     name: 'Sonnenuntergang',
     file: 'backgrounds/sunset_background_optimized.webp',
-    cost: 2
+    cost: 2,
+    tasksRequired: 5
   },
   unicorn: {
     id: 'unicorn',
     name: 'Einhorn',
     file: 'backgrounds/unicorn_background_optimized.webp',
-    cost: 2
+    cost: 2,
+    tasksRequired: 5
   }
 };
