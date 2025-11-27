@@ -347,24 +347,40 @@ body::before {
 
 /* Challenge Node (Circle) */
 .challenge-node {
-  width: 100px;
-  height: 100px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: 4px solid var(--color-gray);
+  border: 5px solid var(--color-gray);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 42px;
+  font-size: 38px;
   position: relative;
   transition: all var(--transition);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   cursor: default;
 }
 
+/* Gradient border wrapper for challenge nodes */
+.challenge-node-wrapper {
+  border-radius: 50%;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
 /* Node States */
+.challenge-available .challenge-node-wrapper {
+  background: linear-gradient(135deg, #0D5BA8 0%, #5AA3E8 50%, #0D5BA8 100%);
+  animation: pulseBlue 2s ease-in-out infinite;
+}
+
 .challenge-available .challenge-node {
-  border-color: var(--color-blue);
+  border: none;
   cursor: pointer;
 }
 
@@ -377,8 +393,26 @@ body::before {
   transform: scale(1.02);
 }
 
+.challenge-in_progress .challenge-node-wrapper {
+  background: linear-gradient(135deg, #0D5BA8 0%, #5AA3E8 50%, #0D5BA8 100%);
+  animation: pulseBlue 2s ease-in-out infinite;
+}
+
+/* Pulsating animation for unlocked challenge nodes */
+@keyframes pulseBlue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(30, 107, 184, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(30, 107, 184, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(30, 107, 184, 0);
+  }
+}
+
 .challenge-in_progress .challenge-node {
-  border-color: var(--color-orange);
+  border: none;
   cursor: pointer;
 }
 
@@ -387,13 +421,74 @@ body::before {
   box-shadow: 0 6px 20px rgba(242, 140, 40, 0.4);
 }
 
+.challenge-completed .challenge-node-wrapper {
+  background: linear-gradient(135deg, #E07818 0%, #FFB347 50%, #E07818 100%);
+}
+
 .challenge-completed .challenge-node {
-  border-color: var(--color-perfect);
+  border: none;
+}
+
+.challenge-locked .challenge-node-wrapper {
+  background: linear-gradient(135deg, #888888 0%, #C8C8C8 50%, #888888 100%);
 }
 
 .challenge-locked .challenge-node {
-  border-color: var(--color-gray);
+  border: none;
   opacity: 0.7;
+}
+
+/* Grey emoticon for locked challenges */
+.challenge-locked .challenge-node .node-icon {
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+/* Background graphic for completed challenges */
+.challenge-bg-graphic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 168px;
+  height: 168px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.challenge-bg-graphic img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Animation for background graphic when returning from task screen */
+.challenge-bg-animate {
+  animation: bgGraphicScale 3s ease-out;
+}
+
+@keyframes bgGraphicScale {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0.9;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
 }
 
 /* Status Icon (Star/Lock) */
@@ -415,11 +510,11 @@ body::before {
   --card-overlap: -25px;
   background: #FFFFFF;
   border-radius: 16px;
-  padding: 14px 18px;
+  padding: 10px 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   text-align: center;
-  width: 62%;
-  max-width: 240px;
+  width: 68%;
+  max-width: 270px;
   position: relative;
   z-index: 2;
 }
@@ -843,9 +938,9 @@ body::before {
   }
   
   .challenge-node {
-    width: 105px;
-    height: 105px;
-    font-size: 45px;
+    width: 94px;
+    height: 94px;
+    font-size: 40px;
   }
   
   .challenge-splash {
@@ -853,9 +948,14 @@ body::before {
     height: 140px;
   }
   
+  .challenge-bg-graphic {
+    width: 180px;
+    height: 180px;
+  }
+  
   .challenge-info-card {
-    max-width: 280px;
-    padding: 16px 20px;
+    max-width: 310px;
+    padding: 12px 18px;
   }
   
   .challenge-info-card h3 {
@@ -869,14 +969,19 @@ body::before {
 
 @media (min-width: 1024px) {
   .challenge-node {
-    width: 110px;
-    height: 110px;
-    font-size: 48px;
+    width: 100px;
+    height: 100px;
+    font-size: 44px;
   }
   
   .challenge-splash {
     width: 150px;
     height: 150px;
+  }
+  
+  .challenge-bg-graphic {
+    width: 192px;
+    height: 192px;
   }
   
   .splash-ray {

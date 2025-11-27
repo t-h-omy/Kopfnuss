@@ -16,7 +16,7 @@ import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './log
 import { clearAllData } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancing.js';
-import { ANIMATION_TIMING, RESIZE_CONFIG } from './data/constants.js';
+import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
   scrollToAndHighlightRewardButton 
@@ -133,6 +133,28 @@ let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
+
+// Preload celebration images for faster display
+const celebrationImageCache = [];
+function preloadCelebrationImages() {
+  const celebrationGraphics = [
+    './assets/celebration-burst-1.png',
+    './assets/celebration-burst-2.png',
+    './assets/celebration-burst-3.png',
+    './assets/celebration-burst-4.png',
+    './assets/celebration-burst-5.png'
+  ];
+  
+  celebrationGraphics.forEach((src, index) => {
+    const img = new Image();
+    img.src = src;
+    celebrationImageCache[index] = img;
+  });
+}
+
+// Preload images on module load
+preloadCelebrationImages();
 
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
@@ -218,6 +240,10 @@ function loadChallengesScreen(container) {
   // Update diamonds based on progress and check if any were awarded
   const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
+  
+  // Store flag value and challenge index for animation before resetting
+  const shouldAnimateBackground = returningFromTaskScreen;
+  const justCompletedChallengeIndex = currentChallengeIndex;
   
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first diamond, then streak (or vice versa)
@@ -335,6 +361,15 @@ function loadChallengesScreen(container) {
   // Store node positions for SVG path calculation
   const nodePositions = [];
   
+  // Background graphics for completed challenges (PNG images from assets folder)
+  const celebrationGraphics = [
+    'celebration-burst-1.png', 
+    'celebration-burst-2.png', 
+    'celebration-burst-3.png', 
+    'celebration-burst-4.png', 
+    'celebration-burst-5.png'
+  ];
+  
   challenges.forEach((challenge, index) => {
     const isLeftPosition = index % 2 === 0;
     const positionClass = isLeftPosition ? 'position-left' : 'position-right';
@@ -372,10 +407,51 @@ function loadChallengesScreen(container) {
     }
     nodeContainer.appendChild(splash);
     
+    // Add background graphic for completed challenges
+    if (challenge.state === 'completed') {
+      const bgGraphic = document.createElement('div');
+      bgGraphic.className = 'challenge-bg-graphic';
+      
+      // Apply size from balancing constant
+      const size = VISUAL_CONFIG.CELEBRATION_GRAPHIC_SIZE;
+      bgGraphic.style.width = `${size}px`;
+      bgGraphic.style.height = `${size}px`;
+      
+      // Select graphic using circular selection to ensure variety
+      // Use modulo to cycle through graphics and add 1 to avoid same as last used
+      const graphicIndex = (lastUsedGraphicIndex + 1 + Math.floor(Math.random() * (celebrationGraphics.length - 1))) % celebrationGraphics.length;
+      lastUsedGraphicIndex = graphicIndex;
+      
+      const img = document.createElement('img');
+      img.src = `./assets/${celebrationGraphics[graphicIndex]}`;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      bgGraphic.appendChild(img);
+      
+      // Only animate the newly completed challenge (not previously completed ones)
+      // Add delay so animation plays after auto-scrolling is complete
+      if (shouldAnimateBackground && index === justCompletedChallengeIndex) {
+        setTimeout(() => {
+          bgGraphic.classList.add('challenge-bg-animate');
+        }, VISUAL_CONFIG.CELEBRATION_ANIMATION_DELAY);
+      }
+      
+      nodeContainer.appendChild(bgGraphic);
+    }
+    
+    // Create gradient wrapper for the node
+    const nodeWrapper = document.createElement('div');
+    nodeWrapper.className = 'challenge-node-wrapper';
+    
     // Create the circular node
     const node = document.createElement('div');
     node.className = 'challenge-node';
-    node.innerHTML = challenge.icon;
+    
+    // Create icon span for potential grayscale filter on locked challenges
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'node-icon';
+    iconSpan.innerHTML = challenge.icon;
+    node.appendChild(iconSpan);
     
     // Add status icon
     if (challenge.state === 'completed') {
@@ -390,7 +466,8 @@ function loadChallengesScreen(container) {
       node.appendChild(statusIcon);
     }
     
-    nodeContainer.appendChild(node);
+    nodeWrapper.appendChild(node);
+    nodeContainer.appendChild(nodeWrapper);
     
     // Create info card
     const infoCard = document.createElement('div');
