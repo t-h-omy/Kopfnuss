@@ -114,3 +114,49 @@ export const CHALLENGE_TYPES = {
     difficulty: 2
   }
 };
+
+/**
+ * Background customization configuration
+ * Applied in: logic/backgroundManager.js, main.js - Background Customization Screen
+ */
+export const BACKGROUNDS = {
+  // Default background - always unlocked, cannot be purchased
+  default: {
+    id: 'default',
+    name: 'Standard',
+    file: 'background_compressed.webp',
+    cost: 0,
+    isDefault: true
+  },
+  // Challenge node backgrounds - can be unlocked with diamonds
+  forest: {
+    id: 'forest',
+    name: 'Wald',
+    file: 'challenge-node-bg-1.webp',
+    cost: 2
+  },
+  sunset: {
+    id: 'sunset',
+    name: 'Sonnenuntergang',
+    file: 'challenge-node-bg-2.webp',
+    cost: 2
+  },
+  mountain: {
+    id: 'mountain',
+    name: 'Berge',
+    file: 'challenge-node-bg-3.webp',
+    cost: 2
+  },
+  ocean: {
+    id: 'ocean',
+    name: 'Ozean',
+    file: 'challenge-node-bg-4.webp',
+    cost: 2
+  },
+  space: {
+    id: 'space',
+    name: 'Weltraum',
+    file: 'challenge-node-bg-5.webp',
+    cost: 2
+  }
+};

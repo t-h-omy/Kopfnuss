@@ -8,7 +8,9 @@ const STORAGE_KEYS = {
   CHALLENGES: 'kopfnuss_challenges_', // Will be appended with date
   PROGRESS: 'kopfnuss_progress',
   STREAK: 'kopfnuss_streak',
-  DIAMONDS: 'kopfnuss_diamonds'
+  DIAMONDS: 'kopfnuss_diamonds',
+  UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
+  SELECTED_BACKGROUND: 'kopfnuss_selected_background'
 };
 
 /**
@@ -151,6 +153,45 @@ export function saveDiamonds(diamonds) {
  */
 export function loadDiamonds() {
   return loadFromStorage(STORAGE_KEYS.DIAMONDS, 0);
+}
+
+/**
+ * Save unlocked backgrounds
+ * @param {Array<string>} unlockedBackgrounds - Array of unlocked background IDs
+ * @returns {boolean} Success status
+ */
+export function saveUnlockedBackgrounds(unlockedBackgrounds) {
+  return saveToStorage(STORAGE_KEYS.UNLOCKED_BACKGROUNDS, unlockedBackgrounds);
+}
+
+/**
+ * Load unlocked backgrounds
+ * @returns {Array<string>} Array of unlocked background IDs (default always includes 'default')
+ */
+export function loadUnlockedBackgrounds() {
+  const backgrounds = loadFromStorage(STORAGE_KEYS.UNLOCKED_BACKGROUNDS, ['default']);
+  // Ensure 'default' is always included
+  if (!backgrounds.includes('default')) {
+    backgrounds.unshift('default');
+  }
+  return backgrounds;
+}
+
+/**
+ * Save selected background
+ * @param {string} backgroundId - ID of the selected background
+ * @returns {boolean} Success status
+ */
+export function saveSelectedBackground(backgroundId) {
+  return saveToStorage(STORAGE_KEYS.SELECTED_BACKGROUND, backgroundId);
+}
+
+/**
+ * Load selected background
+ * @returns {string} ID of the selected background (defaults to 'default')
+ */
+export function loadSelectedBackground() {
+  return loadFromStorage(STORAGE_KEYS.SELECTED_BACKGROUND, 'default');
 }
 
 /**

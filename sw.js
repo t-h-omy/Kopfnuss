@@ -1,10 +1,10 @@
 // Service Worker für Kopfnuss PWA
 // Offline-Funktionalität und Caching mit Versionskontrolle
-// BUILD_TIMESTAMP: 2025-11-27T08:00:00Z - Forces browser to detect SW changes
+// BUILD_TIMESTAMP: 2025-11-27T09:41:00Z - Forces browser to detect SW changes
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.12.0';
+const APP_VERSION = '1.13.0';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
@@ -27,6 +27,7 @@ const urlsToCache = [
   './logic/taskScreenController.js',
   './logic/popupManager.js',
   './logic/visualEffects.js',
+  './logic/backgroundManager.js',
   './assets/challenge-node-bg-1.webp',
   './assets/challenge-node-bg-2.webp',
   './assets/challenge-node-bg-3.webp',
