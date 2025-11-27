@@ -2,9 +2,9 @@
 // Defines min/max values for each operation type
 // Used by: logic/taskGenerators.js
 // 
-// Balancing values are loaded from JSON files based on dev mode setting:
-// - Production: data/balancing.production.json
-// - Dev mode: data/balancing.dev.json
+// Balancing values are selected based on dev mode setting:
+// - Production (default): Uses DEFAULT_BALANCING and DEFAULT_CONFIG
+// - Dev mode: Uses DEV_BALANCING and DEV_CONFIG (easier values for testing)
 
 /**
  * Check if dev mode is enabled (reads directly from localStorage to avoid circular imports)
@@ -30,8 +30,7 @@ function isDevModeEnabled() {
 const useDevBalancing = isDevModeEnabled();
 
 /**
- * Default balancing values (production)
- * These are used as fallback if JSON loading fails
+ * Production balancing values (used when dev mode is OFF)
  */
 const DEFAULT_BALANCING = {
   addition: {
@@ -90,7 +89,7 @@ const DEV_BALANCING = {
 export const BALANCING = useDevBalancing ? DEV_BALANCING : DEFAULT_BALANCING;
 
 /**
- * Default game configuration constants (production)
+ * Production game configuration constants (used when dev mode is OFF)
  */
 const DEFAULT_CONFIG = {
   TASKS_PER_CHALLENGE: 8,

@@ -24,7 +24,7 @@ import {
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG, BACKGROUNDS } from './data/balancing.js';
-import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG } from './data/constants.js';
+import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
   scrollToAndHighlightRewardButton 
@@ -1486,7 +1486,7 @@ function setupDevSettingsListeners() {
         // Move lastActiveDate one day back to simulate passing a day
         // This correctly handles month/year boundaries
         const lastDate = new Date(streak.lastActiveDate + 'T12:00:00'); // Use noon to avoid timezone issues
-        lastDate.setTime(lastDate.getTime() - 24 * 60 * 60 * 1000); // Subtract 24 hours in milliseconds
+        lastDate.setTime(lastDate.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
         streak.lastActiveDate = lastDate.toISOString().split('T')[0];
         saveStreak(streak);
         showDevFeedback('Zeit um 1 Tag vorgerückt 📅');
@@ -1524,6 +1524,10 @@ function setupDevSettingsListeners() {
  * Show brief dev feedback message
  * @param {string} message - Message to display
  */
+/**
+ * Show brief dev feedback message
+ * @param {string} message - Message to display
+ */
 function showDevFeedback(message) {
   // Remove any existing feedback
   const existingFeedback = document.querySelector('.dev-feedback');
@@ -1536,10 +1540,10 @@ function showDevFeedback(message) {
   feedback.textContent = message;
   document.body.appendChild(feedback);
   
-  // Remove after animation
+  // Remove after animation (duration matches CSS animation timing)
   setTimeout(() => {
     feedback.remove();
-  }, 2000);
+  }, DEV_SETTINGS_CONFIG.FEEDBACK_DURATION);
 }
 
 /**
