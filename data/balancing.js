@@ -8,6 +8,9 @@
 
 /**
  * Check if dev mode is enabled (reads directly from localStorage to avoid circular imports)
+ * NOTE: This duplicates logic from storageManager.js intentionally to avoid circular imports,
+ * since storageManager.js imports from this file. The dev mode check only happens once
+ * during module initialization, and changing dev mode requires an app reload anyway.
  * @returns {boolean} True if dev mode is enabled
  */
 function isDevModeEnabled() {
@@ -23,7 +26,7 @@ function isDevModeEnabled() {
   }
 }
 
-// Determine which balancing to use based on dev mode
+// Determine which balancing to use based on dev mode (evaluated once at module load)
 const useDevBalancing = isDevModeEnabled();
 
 /**

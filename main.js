@@ -1484,8 +1484,9 @@ function setupDevSettingsListeners() {
       const streak = loadStreak();
       if (streak.lastActiveDate) {
         // Move lastActiveDate one day back to simulate passing a day
-        const lastDate = new Date(streak.lastActiveDate + 'T00:00:00');
-        lastDate.setDate(lastDate.getDate() - 1);
+        // This correctly handles month/year boundaries
+        const lastDate = new Date(streak.lastActiveDate + 'T12:00:00'); // Use noon to avoid timezone issues
+        lastDate.setTime(lastDate.getTime() - 24 * 60 * 60 * 1000); // Subtract 24 hours in milliseconds
         streak.lastActiveDate = lastDate.toISOString().split('T')[0];
         saveStreak(streak);
         showDevFeedback('Zeit um 1 Tag vorgerückt 📅');

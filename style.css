@@ -2395,5 +2395,5 @@ button,
   font-weight: 600;
   box-shadow: var(--shadow-medium);
   z-index: 1001;
-  animation: slideInUp 0.3s ease, fadeOut 0.3s ease 1.5s forwards;
+  animation: slideInUp 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
 }

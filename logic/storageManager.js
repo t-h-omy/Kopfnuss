@@ -7,31 +7,49 @@
 const DEV_MODE_KEY = 'kopfnuss_use_dev_balancing';
 
 /**
+ * Cached dev mode state (initialized on first call, persists until page reload)
+ * Using null to indicate not yet cached
+ */
+let cachedDevModeState = null;
+
+/**
  * Load dev mode setting (this is stored separately and not affected by dev mode prefix)
  * This function is defined early because it's needed by getStoragePrefix()
+ * Uses caching to avoid repeated localStorage reads
  * @returns {boolean} True if dev mode is enabled
  */
 export function loadDevModeSetting() {
+  // Return cached value if available
+  if (cachedDevModeState !== null) {
+    return cachedDevModeState;
+  }
+  
   try {
     const item = localStorage.getItem(DEV_MODE_KEY);
     if (item === null) {
+      cachedDevModeState = false;
       return false;
     }
-    return JSON.parse(item) === true;
+    cachedDevModeState = JSON.parse(item) === true;
+    return cachedDevModeState;
   } catch (error) {
     console.error('Error loading dev mode setting:', error);
+    cachedDevModeState = false;
     return false;
   }
 }
 
 /**
  * Save dev mode setting
+ * Note: Changing dev mode requires an app reload, so the cache will be refreshed
  * @param {boolean} useDevBalancing - Whether dev mode is enabled
  * @returns {boolean} Success status
  */
 export function saveDevModeSetting(useDevBalancing) {
   try {
     localStorage.setItem(DEV_MODE_KEY, JSON.stringify(useDevBalancing));
+    // Update cache (though app will reload anyway)
+    cachedDevModeState = useDevBalancing;
     return true;
   } catch (error) {
     console.error('Error saving dev mode setting:', error);
@@ -55,6 +73,7 @@ const BASE_STORAGE_KEYS = {
 
 /**
  * Get the dev mode prefix based on current dev mode state
+ * Uses cached dev mode state for performance
  * @returns {string} Prefix for storage keys ('kopfnuss_dev_' or 'kopfnuss_')
  */
 function getStoragePrefix() {
