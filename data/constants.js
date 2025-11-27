@@ -118,5 +118,5 @@ export const VISUAL_CONFIG = {
   // Opacity of the fullscreen background image (0.0 = invisible, 1.0 = fully visible)
   // Applied in: main.js → sets CSS variable --background-opacity
   // Affects: style.css - .challenges-container::before, .task-screen::before
-  BACKGROUND_OPACITY: 0.35
+  BACKGROUND_OPACITY: 1.00
 };
