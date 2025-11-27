@@ -1,0 +1,103 @@
+{
+  "BALANCING": {
+    "addition": {
+      "min": 10,
+      "max": 1500
+    },
+    "subtraction": {
+      "min": 10,
+      "max": 999
+    },
+    "multiplication": {
+      "factor1": { "min": 2, "max": 20 },
+      "factor2": { "min": 2, "max": 20 }
+    },
+    "division": {
+      "divisor": { "min": 2, "max": 12 },
+      "quotient": { "min": 2, "max": 20 }
+    },
+    "squared": {
+      "min": 2,
+      "max": 20
+    }
+  },
+  "CONFIG": {
+    "TASKS_PER_CHALLENGE": 8,
+    "DAILY_CHALLENGES": 5,
+    "TASKS_FOR_STREAK": 10,
+    "TASKS_PER_DIAMOND": 80,
+    "STREAK_RESCUE_COST": 1,
+    "FREEZE_AFTER_DAYS": 1,
+    "LOSE_AFTER_DAYS": 2
+  },
+  "CHALLENGE_TYPES": {
+    "addition": {
+      "name": "Addition",
+      "icon": "➕",
+      "difficulty": 1
+    },
+    "subtraction": {
+      "name": "Subtraktion",
+      "icon": "➖",
+      "difficulty": 1
+    },
+    "multiplication": {
+      "name": "Multiplikation",
+      "icon": "✖️",
+      "difficulty": 2
+    },
+    "division": {
+      "name": "Division",
+      "icon": "➗",
+      "difficulty": 2
+    },
+    "mixed": {
+      "name": "Gemischt",
+      "icon": "🎲",
+      "difficulty": 3
+    },
+    "squared": {
+      "name": "Quadratzahlen",
+      "icon": "x²",
+      "difficulty": 2
+    }
+  },
+  "BACKGROUNDS": {
+    "default": {
+      "id": "default",
+      "name": "Standard",
+      "file": "backgrounds/background_compressed.webp",
+      "cost": 0,
+      "tasksRequired": 0,
+      "isDefault": true
+    },
+    "sunset": {
+      "id": "sunset",
+      "name": "Sonnenuntergang",
+      "file": "backgrounds/sunset_background_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 70
+    },
+    "unicorn": {
+      "id": "unicorn",
+      "name": "Einhorn",
+      "file": "backgrounds/unicorn_background_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 210
+    },
+    "candy": {
+      "id": "candy",
+      "name": "Süßigkeiten",
+      "file": "backgrounds/candy_background_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 140
+    },
+    "maineCoon": {
+      "id": "maineCoon",
+      "name": "Maine Coon",
+      "file": "backgrounds/maine_coon_background_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 280
+    }
+  }
+}
