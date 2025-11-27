@@ -176,6 +176,23 @@ body::before {
   position: relative;
 }
 
+/* Fullscreen background for challenges screen */
+.challenges-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./assets/background_compressed.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+  z-index: -1;
+  pointer-events: none;
+}
+
 /* Header Section */
 .challenges-header {
   text-align: center;
@@ -1006,6 +1023,23 @@ body::before {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+}
+
+/* Fullscreen background for task screen */
+.task-screen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('./assets/background_compressed.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Main interaction area - positioned to stay above keyboard */

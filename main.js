@@ -139,11 +139,11 @@ let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 const celebrationImageCache = [];
 function preloadCelebrationImages() {
   const celebrationGraphics = [
-    './assets/celebration-burst-1.png',
-    './assets/celebration-burst-2.png',
-    './assets/celebration-burst-3.png',
-    './assets/celebration-burst-4.png',
-    './assets/celebration-burst-5.png'
+    './assets/challenge-node-bg-1.webp',
+    './assets/challenge-node-bg-2.webp',
+    './assets/challenge-node-bg-3.webp',
+    './assets/challenge-node-bg-4.webp',
+    './assets/challenge-node-bg-5.webp'
   ];
   
   celebrationGraphics.forEach((src, index) => {
@@ -361,13 +361,13 @@ function loadChallengesScreen(container) {
   // Store node positions for SVG path calculation
   const nodePositions = [];
   
-  // Background graphics for completed challenges (PNG images from assets folder)
+  // Background graphics for completed challenges (512×512 webp images from assets folder)
   const celebrationGraphics = [
-    'celebration-burst-1.png', 
-    'celebration-burst-2.png', 
-    'celebration-burst-3.png', 
-    'celebration-burst-4.png', 
-    'celebration-burst-5.png'
+    'challenge-node-bg-1.webp', 
+    'challenge-node-bg-2.webp', 
+    'challenge-node-bg-3.webp', 
+    'challenge-node-bg-4.webp', 
+    'challenge-node-bg-5.webp'
   ];
   
   challenges.forEach((challenge, index) => {
