@@ -135,6 +135,27 @@ let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge 
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 
+// Preload celebration images for faster display
+const celebrationImageCache = [];
+function preloadCelebrationImages() {
+  const celebrationGraphics = [
+    './assets/celebration-burst-1.png',
+    './assets/celebration-burst-2.png',
+    './assets/celebration-burst-3.png',
+    './assets/celebration-burst-4.png',
+    './assets/celebration-burst-5.png'
+  ];
+  
+  celebrationGraphics.forEach((src, index) => {
+    const img = new Image();
+    img.src = src;
+    celebrationImageCache[index] = img;
+  });
+}
+
+// Preload images on module load
+preloadCelebrationImages();
+
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
  * @param {Array} challenges - Array of challenge objects

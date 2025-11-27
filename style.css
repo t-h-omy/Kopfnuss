@@ -376,6 +376,7 @@ body::before {
 /* Node States */
 .challenge-available .challenge-node-wrapper {
   background: linear-gradient(135deg, #0D5BA8 0%, #5AA3E8 50%, #0D5BA8 100%);
+  animation: pulseBlue 2s ease-in-out infinite;
 }
 
 .challenge-available .challenge-node {
@@ -394,6 +395,20 @@ body::before {
 
 .challenge-in_progress .challenge-node-wrapper {
   background: linear-gradient(135deg, #0D5BA8 0%, #5AA3E8 50%, #0D5BA8 100%);
+  animation: pulseBlue 2s ease-in-out infinite;
+}
+
+/* Pulsating animation for unlocked challenge nodes */
+@keyframes pulseBlue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(30, 107, 184, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(30, 107, 184, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(30, 107, 184, 0);
+  }
 }
 
 .challenge-in_progress .challenge-node {
