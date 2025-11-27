@@ -139,7 +139,7 @@ export const BACKGROUNDS = {
     id: 'sunset',
     name: 'Sonnenuntergang',
     file: 'challenge-node-bg-2.webp',
-    cost: 2
+    cost: 3
   },
   mountain: {
     id: 'mountain',
