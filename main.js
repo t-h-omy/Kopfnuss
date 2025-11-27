@@ -361,7 +361,7 @@ function loadChallengesScreen(container) {
   // Store node positions for SVG path calculation
   const nodePositions = [];
   
-  // Background graphics for completed challenges (512×512 webp images from assets folder)
+  // Background graphics for completed challenges (512×512 WebP images from assets folder)
   const celebrationGraphics = [
     'challenge-node-bg-1.webp', 
     'challenge-node-bg-2.webp', 
