@@ -1566,7 +1566,13 @@ function setupDevSettingsListeners() {
         saveStreak(streak);
         showDevSettingsReloadPopup('1 Tag simuliert. App neu starten, damit die Streak-Logik ausgeführt wird?');
       } else {
-        showDevFeedback('Keine Aktivität vorhanden');
+        // No activity yet - set lastActiveDate to yesterday so user can start testing
+        const yesterday = new Date();
+        yesterday.setTime(yesterday.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
+        streak.lastActiveDate = yesterday.toISOString().split('T')[0];
+        streak.currentStreak = 1; // Start with streak of 1
+        saveStreak(streak);
+        showDevSettingsReloadPopup('Aktivität für gestern erstellt. App neu starten, damit die Streak-Logik ausgeführt wird?');
       }
     });
   }
