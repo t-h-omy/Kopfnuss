@@ -70,17 +70,20 @@ export function getTasksRemaining(background) {
 
 /**
  * Get all available backgrounds with their unlock status and state
+ * Backgrounds are sorted by tasksRequired (lowest first)
  * @returns {Array<Object>} Array of background objects with unlock status and state
  */
 export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
   
-  return Object.values(BACKGROUNDS).map(bg => ({
-    ...bg,
-    isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
-    state: getBackgroundState(bg),
-    tasksRemaining: getTasksRemaining(bg)
-  }));
+  return Object.values(BACKGROUNDS)
+    .map(bg => ({
+      ...bg,
+      isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
+      state: getBackgroundState(bg),
+      tasksRemaining: getTasksRemaining(bg)
+    }))
+    .sort((a, b) => (a.tasksRequired || 0) - (b.tasksRequired || 0));
 }
 
 /**
