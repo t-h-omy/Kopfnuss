@@ -7,10 +7,13 @@ import {
   validateAnswer, 
   nextTask, 
   completeCurrentChallenge,
-  abandonChallenge 
+  abandonChallenge,
+  getTaskFlowState
 } from './taskFlow.js';
 import { startChallenge } from './challengeStateManager.js';
-import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented } from '../main.js';
+import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult } from '../main.js';
+import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
+import { getChallenge } from './challengeGenerator.js';
 
 let taskFlowState = null;
 
@@ -61,6 +64,12 @@ export function initTaskScreen(challengeIndex) {
     console.error('Failed to initialize task flow');
     showScreen('challenges');
     return;
+  }
+  
+  // Check if this is a super challenge and start sparkle effect
+  const challenge = getChallenge(challengeIndex);
+  if (challenge && challenge.isSuperChallenge) {
+    startSuperChallengeSparkles();
   }
   
   // Display first task
@@ -178,6 +187,9 @@ function handleAnswerSubmit() {
  * Handle challenge completion
  */
 function handleChallengeCompletion() {
+  // Stop super challenge sparkles if they were running
+  stopSuperChallengeSparkles();
+  
   const results = completeCurrentChallenge();
   
   if (!results) {
@@ -193,6 +205,11 @@ function handleChallengeCompletion() {
   // Notify main.js if streak was incremented during this challenge
   if (results.streakIncremented) {
     notifyStreakIncremented(results.streakIncremented);
+  }
+  
+  // Notify main.js if this was a super challenge
+  if (results.isSuperChallenge) {
+    notifySuperChallengeResult(results.superChallengeSuccess, results.superChallengeAwardedDiamond);
   }
   
   // Get appropriate motivation phrase

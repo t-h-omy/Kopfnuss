@@ -1077,8 +1077,302 @@ button,
 
 
 /* ===========================
-   8. SCREEN: TASK
+   7.5. SUPER CHALLENGE STATES
    =========================== */
+
+/* Super Challenge Locked */
+.challenge-super_locked .challenge-node-wrapper {
+  background: linear-gradient(135deg, #7B68EE 0%, #9370DB 50%, #7B68EE 100%);
+  opacity: 0.6;
+}
+
+.challenge-super_locked .challenge-node {
+  border: none;
+  opacity: 0.8;
+}
+
+.challenge-super_locked .challenge-node .node-icon {
+  filter: saturate(0.5);
+}
+
+.challenge-super_locked .splash-ray {
+  color: #9370DB;
+  background: linear-gradient(to bottom, #9370DB, transparent);
+  opacity: 0.35;
+}
+
+.challenge-super_locked .challenge-info-card::before {
+  content: '⭐';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 20px;
+  z-index: 10;
+}
+
+.challenge-super_locked .challenge-info-card {
+  position: relative;
+  border: 2px dashed #9370DB;
+}
+
+/* Super Challenge Available */
+.challenge-super_available .challenge-node-wrapper {
+  background: linear-gradient(135deg, #7B68EE 0%, #BA55D3 50%, #7B68EE 100%);
+  animation: pulsePurple 2s ease-in-out infinite;
+}
+
+.challenge-super_available .challenge-node {
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(186, 85, 211, 0.4);
+}
+
+.challenge-super_available .challenge-node:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px rgba(186, 85, 211, 0.6);
+}
+
+.challenge-super_available .challenge-node:active {
+  transform: scale(1.04);
+}
+
+.challenge-super_available .splash-ray {
+  color: #BA55D3;
+  background: linear-gradient(to bottom, #BA55D3, transparent);
+  animation: superSplashPulse 1.5s ease-in-out infinite;
+}
+
+.challenge-super_available .challenge-info-card::before {
+  content: '⭐';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 20px;
+  z-index: 10;
+  animation: starPulse 1.5s ease-in-out infinite;
+}
+
+.challenge-super_available .challenge-info-card {
+  position: relative;
+  border: 2px solid #BA55D3;
+  box-shadow: 0 0 10px rgba(186, 85, 211, 0.3);
+}
+
+/* Super Challenge In Progress */
+.challenge-super_in_progress .challenge-node-wrapper {
+  background: linear-gradient(135deg, #9932CC 0%, #DA70D6 50%, #9932CC 100%);
+  animation: pulsePurple 1.5s ease-in-out infinite;
+}
+
+.challenge-super_in_progress .challenge-node {
+  border: none;
+  cursor: pointer;
+}
+
+.challenge-super_in_progress .challenge-node:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(218, 112, 214, 0.5);
+}
+
+.challenge-super_in_progress .splash-ray {
+  color: #DA70D6;
+  background: linear-gradient(to bottom, #DA70D6, transparent);
+}
+
+.challenge-super_in_progress .challenge-info-card::before {
+  content: '⭐';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 20px;
+  z-index: 10;
+}
+
+.challenge-super_in_progress .challenge-info-card {
+  position: relative;
+  border: 2px solid #DA70D6;
+}
+
+/* Super Challenge Completed */
+.challenge-super_completed .challenge-node-wrapper {
+  background: linear-gradient(135deg, #9932CC 0%, #FFD700 50%, #9932CC 100%);
+}
+
+.challenge-super_completed .challenge-node {
+  border: none;
+}
+
+.challenge-super_completed .status-icon {
+  color: #FFD700;
+  animation: starPop 0.5s ease;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+.challenge-super_completed .splash-ray {
+  color: #FFD700;
+  background: linear-gradient(to bottom, #FFD700, transparent);
+}
+
+.challenge-super_completed .challenge-info-card::before {
+  content: '💎';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 20px;
+  z-index: 10;
+}
+
+.challenge-super_completed .challenge-info-card {
+  position: relative;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Super Challenge Failed (completed challenge but didn't get diamond) */
+.challenge-super_failed .challenge-node-wrapper {
+  background: linear-gradient(135deg, #9370DB 0%, #C0C0C0 50%, #9370DB 100%);
+}
+
+.challenge-super_failed .challenge-node {
+  border: none;
+}
+
+.challenge-super_failed .status-icon {
+  color: silver;
+}
+
+.challenge-super_failed .splash-ray {
+  color: #9370DB;
+  background: linear-gradient(to bottom, #9370DB, transparent);
+  opacity: 0.5;
+}
+
+.challenge-super_failed .challenge-info-card::before {
+  content: '⭐';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 20px;
+  z-index: 10;
+  opacity: 0.5;
+}
+
+.challenge-super_failed .challenge-info-card {
+  position: relative;
+  border: 2px solid #9370DB;
+}
+
+/* Super Challenge Sparkle Overlay */
+.super-challenge-sparkle-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.super-challenge-sparkle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  animation: superSparkleFloat 3s ease-in-out forwards;
+}
+
+.super-challenge-sparkle::before {
+  content: '✨';
+  font-size: 16px;
+  position: absolute;
+  animation: superSparkleRotate 2s linear infinite;
+}
+
+/* Super Challenge Popup Styles */
+.super-challenge-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+}
+
+.super-challenge-popup-card .super-icon {
+  font-size: 72px;
+  margin-bottom: var(--spacing-md);
+  animation: bounceIn 0.8s ease;
+}
+
+.super-challenge-popup-card h2 {
+  color: #9932CC;
+}
+
+.super-challenge-popup-card .super-description {
+  font-size: 15px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.super-challenge-popup-card .super-reward-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #7B1FA2;
+}
+
+.btn-super-challenge {
+  background: linear-gradient(135deg, #9932CC 0%, #BA55D3 100%);
+  color: white;
+  animation: wobble 2s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(153, 50, 204, 0.4);
+}
+
+.btn-super-challenge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(153, 50, 204, 0.5);
+}
+
+/* Super Challenge Success Popup */
+.super-success-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+}
+
+.super-success-popup-card h2 {
+  color: #9932CC;
+}
+
+.super-success-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #F3E5F5 0%, #CE93D8 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.super-success-icon {
+  font-size: 32px;
+  animation: starBurst 1s ease 3;
+}
+
+.super-success-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #7B1FA2;
+}
+
+/* Super Challenge Failure Popup */
+.super-failure-popup-card h2 {
+  color: #666;
+}
 
 .task-screen {
   max-width: 600px;
@@ -2084,6 +2378,56 @@ button,
 
 /* Animation Classes */
 .unlock-animation { animation: unlockBounce 0.6s ease; }
+
+/* Super Challenge Animations */
+@keyframes pulsePurple {
+  0% { box-shadow: 0 0 0 0 rgba(186, 85, 211, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(186, 85, 211, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(186, 85, 211, 0); }
+}
+
+@keyframes superSplashPulse {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes superSparkleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translateY(-20px) scale(1);
+  }
+  80% {
+    opacity: 0.6;
+    transform: translateY(-60px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.3);
+  }
+}
+
+@keyframes superSparkleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-2deg); }
+  30% { transform: rotate(2deg); }
+  45% { transform: rotate(-1deg); }
+  60% { transform: rotate(1deg); }
+  75% { transform: rotate(0deg); }
+}
 
 
 /* ===========================

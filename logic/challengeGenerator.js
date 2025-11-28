@@ -13,7 +13,13 @@ export const CHALLENGE_STATE = {
   AVAILABLE: 'available',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
-  FAILED: 'failed'
+  FAILED: 'failed',
+  // Super challenge states
+  SUPER_LOCKED: 'super_locked',
+  SUPER_AVAILABLE: 'super_available',
+  SUPER_IN_PROGRESS: 'super_in_progress',
+  SUPER_COMPLETED: 'super_completed',
+  SUPER_FAILED: 'super_failed'
 };
 
 /**
@@ -34,9 +40,18 @@ function generateTasksForChallenge(operationType, count = CONFIG.TASKS_PER_CHALL
  * Create a challenge object
  * @param {string} operationType - Type of operation
  * @param {number} index - Challenge index (0-4)
+ * @param {boolean} isSuperChallenge - Whether this is a super challenge
  * @returns {Object} Challenge object
  */
-function createChallenge(operationType, index) {
+function createChallenge(operationType, index, isSuperChallenge = false) {
+  // Determine initial state based on index and super challenge status
+  let state;
+  if (index === 0) {
+    state = isSuperChallenge ? CHALLENGE_STATE.SUPER_AVAILABLE : CHALLENGE_STATE.AVAILABLE;
+  } else {
+    state = isSuperChallenge ? CHALLENGE_STATE.SUPER_LOCKED : CHALLENGE_STATE.LOCKED;
+  }
+  
   return {
     id: `challenge_${index}_${operationType}`,
     type: operationType,
@@ -44,11 +59,13 @@ function createChallenge(operationType, index) {
     icon: CHALLENGE_TYPES[operationType].icon,
     difficulty: CHALLENGE_TYPES[operationType].difficulty,
     tasks: generateTasksForChallenge(operationType),
-    state: index === 0 ? CHALLENGE_STATE.AVAILABLE : CHALLENGE_STATE.LOCKED,
+    state: state,
     errors: 0,
     currentTaskIndex: 0,
     completedAt: null,
-    startedAt: null
+    startedAt: null,
+    isSuperChallenge: isSuperChallenge,
+    superChallengeResult: null // 'success', 'failed', or null if not yet completed
   };
 }
 
@@ -69,6 +86,7 @@ function shuffleArray(array) {
  * Generate 5 daily challenges
  * Challenges are randomly selected from all available types (max one of each type)
  * and shuffled so order varies each day
+ * One challenge (at index 2 or 3) is randomly designated as a Super Challenge
  * @returns {Array} Array of 5 challenge objects
  */
 export function generateDailyChallenges() {
@@ -85,8 +103,12 @@ export function generateDailyChallenges() {
   shuffleArray(allChallengeTypes);
   const selectedTypes = allChallengeTypes.slice(0, 5);
   
+  // Randomly select index 2 or 3 for the super challenge
+  // Based on CONFIG.DAILY_CHALLENGES: if 5 challenges, use index 2 or 3 (next-to-last or before that)
+  const superChallengeIndex = Math.random() < 0.5 ? 2 : 3;
+  
   const challenges = selectedTypes.map((type, index) => 
-    createChallenge(type, index)
+    createChallenge(type, index, index === superChallengeIndex)
   );
   
   return challenges;
@@ -166,8 +188,30 @@ export function resetChallenges() {
 export function areAllChallengesCompleted() {
   const challenges = getTodaysChallenges();
   return challenges.every(challenge => 
-    challenge.state === CHALLENGE_STATE.COMPLETED
+    challenge.state === CHALLENGE_STATE.COMPLETED || 
+    challenge.state === CHALLENGE_STATE.SUPER_COMPLETED
   );
+}
+
+/**
+ * Check if a state represents a super challenge
+ * @param {string} state - The challenge state
+ * @returns {boolean} True if the state is a super challenge state
+ */
+export function isSuperChallengeState(state) {
+  return state.startsWith('super_');
+}
+
+/**
+ * Get the equivalent regular state for a super challenge state
+ * @param {string} superState - The super challenge state
+ * @returns {string} The equivalent regular state
+ */
+export function getSuperStateEquivalent(superState) {
+  if (!isSuperChallengeState(superState)) {
+    return superState;
+  }
+  return superState.replace('super_', '');
 }
 
 /**
@@ -178,19 +222,19 @@ export function getChallengeStats() {
   const challenges = getTodaysChallenges();
   
   const completed = challenges.filter(c => 
-    c.state === CHALLENGE_STATE.COMPLETED
+    c.state === CHALLENGE_STATE.COMPLETED || c.state === CHALLENGE_STATE.SUPER_COMPLETED
   ).length;
   
   const inProgress = challenges.filter(c => 
-    c.state === CHALLENGE_STATE.IN_PROGRESS
+    c.state === CHALLENGE_STATE.IN_PROGRESS || c.state === CHALLENGE_STATE.SUPER_IN_PROGRESS
   ).length;
   
   const available = challenges.filter(c => 
-    c.state === CHALLENGE_STATE.AVAILABLE
+    c.state === CHALLENGE_STATE.AVAILABLE || c.state === CHALLENGE_STATE.SUPER_AVAILABLE
   ).length;
   
   const locked = challenges.filter(c => 
-    c.state === CHALLENGE_STATE.LOCKED
+    c.state === CHALLENGE_STATE.LOCKED || c.state === CHALLENGE_STATE.SUPER_LOCKED
   ).length;
   
   const totalErrors = challenges.reduce((sum, c) => sum + c.errors, 0);
