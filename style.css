@@ -1080,25 +1080,25 @@ button,
    7.5. SUPER CHALLENGE STATES
    =========================== */
 
-/* Super Challenge Star Badge - positioned on node */
-.challenge-super_locked .challenge-node-container::after,
-.challenge-super_available .challenge-node-container::after,
-.challenge-super_in_progress .challenge-node-container::after {
+/* Super Challenge Star Badge - positioned on info card corner (opposite from node) */
+.challenge-super_locked .challenge-info-card::after,
+.challenge-super_available .challenge-info-card::after,
+.challenge-super_in_progress .challenge-info-card::after {
   content: '⭐';
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -12px;
+  right: -12px;
   font-size: 32px;
   z-index: 20;
   filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
   animation: starSwivel 3s ease-in-out infinite;
 }
 
-.challenge-super_locked .challenge-node-container::after {
+.challenge-super_locked .challenge-info-card::after {
   opacity: 0.7;
 }
 
-.challenge-super_available .challenge-node-container::after {
+.challenge-super_available .challenge-info-card::after {
   animation: starSwivel 2s ease-in-out infinite;
 }
 
