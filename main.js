@@ -1,7 +1,8 @@
 // Kopfnuss - Main Application Entry Point
 // Routing und App-Initialisierung
 
-import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges } from './logic/challengeGenerator.js';
+import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE } from './logic/challengeGenerator.js';
+import { completeChallenge as completeChallengeState } from './logic/challengeStateManager.js';
 import { 
   getStreakInfo, 
   checkStreakStatusOnLoad, 
@@ -10,13 +11,22 @@ import {
   restoreExpiredStreak,
   acceptStreakLoss,
   unfreezeStreakByChallenge,
+  incrementStreakByChallenge,
   STREAK_LOSS_REASON
 } from './logic/streakManager.js';
-import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds } from './logic/diamondManager.js';
-import { clearAllData } from './logic/storageManager.js';
+import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds, saveDiamonds } from './logic/diamondManager.js';
+import { 
+  clearAllData, 
+  loadDevModeSetting, 
+  saveDevModeSetting,
+  loadProgress,
+  saveProgress,
+  loadStreak,
+  saveStreak
+} from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG, BACKGROUNDS } from './data/balancing.js';
-import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG } from './data/constants.js';
+import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
   scrollToAndHighlightRewardButton 
@@ -149,6 +159,7 @@ let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 
 // Preload celebration images for faster display
@@ -171,6 +182,31 @@ function preloadCelebrationImages() {
 
 // Preload images on module load
 preloadCelebrationImages();
+
+/**
+ * Update the header streak display with new values
+ * @param {number} streakCount - The new streak count
+ * @param {boolean} isFrozen - Whether the streak is frozen
+ */
+function updateHeaderStreakDisplay(streakCount, isFrozen = false) {
+  const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
+  const streakIcon = streakCapsule?.querySelector('.stat-icon');
+  const streakValue = streakCapsule?.querySelector('.stat-value');
+  
+  if (streakValue) {
+    streakValue.textContent = streakCount;
+  }
+  
+  if (streakCapsule && streakIcon) {
+    if (isFrozen) {
+      streakCapsule.classList.add('streak-frozen');
+      streakIcon.textContent = '🧊';
+    } else {
+      streakCapsule.classList.remove('streak-frozen');
+      streakIcon.textContent = '🔥';
+    }
+  }
+}
 
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
@@ -1074,6 +1110,8 @@ function showStreakRestorablePopup(previousStreak, onClose = null) {
     } else {
       // Accept loss and start fresh
       acceptStreakLoss();
+      // Update header UI to show streak = 0
+      updateHeaderStreakDisplay(0, false);
       overlay.remove();
       markStreakStatusHandled();
       if (onClose && typeof onClose === 'function') {
@@ -1112,6 +1150,13 @@ function showStreakRestoredSuccessPopup(newStreak, onClose = null) {
   document.body.appendChild(overlay);
   
   createConfettiEffect();
+  
+  // Update header UI with new streak and diamonds
+  updateHeaderStreakDisplay(newStreak, false);
+  const diamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+  if (diamondDisplay) {
+    diamondDisplay.textContent = loadDiamonds();
+  }
   
   const closeButton = document.getElementById('streak-restored-close-button');
   closeButton.addEventListener('click', () => {
@@ -1157,6 +1202,8 @@ function showStreakLostPopup(previousStreak, onClose = null) {
   const closeButton = document.getElementById('streak-lost-close-button');
   closeButton.addEventListener('click', () => {
     acceptStreakLoss();
+    // Update header UI to show streak = 0
+    updateHeaderStreakDisplay(0, false);
     overlay.remove();
     markStreakStatusHandled();
     if (onClose && typeof onClose === 'function') {
@@ -1229,6 +1276,8 @@ export function notifyStreakIncremented(newStreak) {
  * Show settings popup with options to reset data or generate new challenges
  */
 function showSettingsPopup() {
+  const isDevMode = loadDevModeSetting();
+  
   // Create popup overlay
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay settings-popup-overlay';
@@ -1238,9 +1287,74 @@ function showSettingsPopup() {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card settings-popup-card';
   
+  // Dev mode toggle HTML
+  const devModeToggleClass = isDevMode ? 'dev-mode-toggle active' : 'dev-mode-toggle';
+  const devModeToggleText = isDevMode ? 'AN' : 'AUS';
+  
+  // Dev settings section HTML (only visible in dev mode)
+  const devSettingsHtml = isDevMode ? `
+    <div class="dev-settings-section">
+      <h3>🛠️ Dev-Einstellungen</h3>
+      <div class="dev-settings-grid">
+        <div class="dev-setting-row">
+          <label>💎 Diamanten:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-diamonds-minus" class="dev-btn-small">-</button>
+            <span id="dev-diamonds-value" class="dev-value">${loadDiamonds()}</span>
+            <button id="dev-diamonds-plus" class="dev-btn-small">+</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>🔥 Streak:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-streak-minus" class="dev-btn-small">-</button>
+            <span id="dev-streak-value" class="dev-value">${getStreakInfo().currentStreak}</span>
+            <button id="dev-streak-plus" class="dev-btn-small">+</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>🧊 Streak Status:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-freeze-streak" class="dev-btn-action">Einfrieren</button>
+            <button id="dev-unfreeze-streak" class="dev-btn-action">Auftauen</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>📅 Zeit:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-advance-day" class="dev-btn-action">+1 Tag</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>✅ Challenge:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-complete-challenge" class="dev-btn-action">Abschließen</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>📊 Gelöste Aufgaben:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-tasks-minus" class="dev-btn-small">-10</button>
+            <span id="dev-tasks-value" class="dev-value">${loadProgress().totalTasksCompleted || 0}</span>
+            <button id="dev-tasks-plus" class="dev-btn-small">+10</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  ` : '';
+  
   popupCard.innerHTML = `
     <h2>⚙️ Einstellungen</h2>
     <div class="settings-actions">
+      <div class="dev-mode-section">
+        <div class="dev-mode-row">
+          <span class="dev-mode-label">🔧 Dev-Mode:</span>
+          <button id="dev-mode-toggle" class="${devModeToggleClass}">
+            <span class="toggle-text">${devModeToggleText}</span>
+          </button>
+        </div>
+      </div>
+      ${devSettingsHtml}
       <button id="regenerate-challenges-button" class="btn-settings">
         <span class="btn-icon">🔄</span>
         <span class="btn-text">Neue Herausforderungen generieren</span>
@@ -1260,10 +1374,478 @@ function showSettingsPopup() {
   const closeBtn = document.getElementById('close-settings-button');
   const regenerateBtn = document.getElementById('regenerate-challenges-button');
   const resetBtn = document.getElementById('reset-all-data-button');
+  const devModeToggle = document.getElementById('dev-mode-toggle');
   
   if (closeBtn) closeBtn.addEventListener('click', closeSettingsPopup);
   if (regenerateBtn) regenerateBtn.addEventListener('click', handleRegenerateChallenges);
   if (resetBtn) resetBtn.addEventListener('click', handleResetAllData);
+  if (devModeToggle) devModeToggle.addEventListener('click', handleDevModeToggle);
+  
+  // Add dev settings event listeners if in dev mode
+  if (isDevMode) {
+    setupDevSettingsListeners();
+  }
+}
+
+/**
+ * Handle dev mode toggle
+ * Shows reload confirmation popup
+ */
+function handleDevModeToggle() {
+  const currentDevMode = loadDevModeSetting();
+  const newDevMode = !currentDevMode;
+  
+  // Show reload confirmation popup
+  showDevModeReloadPopup(newDevMode);
+}
+
+/**
+ * Show reload confirmation popup after dev mode toggle
+ * @param {boolean} newDevMode - The new dev mode state to apply
+ */
+function showDevModeReloadPopup(newDevMode) {
+  // Close settings popup first
+  closeSettingsPopup();
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay confirmation-popup-overlay';
+  overlay.id = 'dev-mode-reload-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card confirmation-popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>🔄 Neustart erforderlich</h2>
+    <p>App neu starten, um das neue Balancing zu aktivieren?</p>
+    <div class="confirmation-buttons">
+      <button id="confirm-reload-button" class="btn-primary">Neu starten</button>
+      <button id="cancel-reload-button" class="btn-secondary">Abbrechen</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const confirmBtn = document.getElementById('confirm-reload-button');
+  const cancelBtn = document.getElementById('cancel-reload-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      // Save the new dev mode setting
+      saveDevModeSetting(newDevMode);
+      // Reload the app
+      window.location.reload();
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+  }
+}
+
+/**
+ * Show reload popup after dev settings change
+ * @param {string} message - Message to display
+ */
+function showDevSettingsReloadPopup(message) {
+  // Close settings popup first
+  closeSettingsPopup();
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay confirmation-popup-overlay';
+  overlay.id = 'dev-settings-reload-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card confirmation-popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>🔄 Neustart erforderlich</h2>
+    <p>${message}</p>
+    <div class="confirmation-buttons">
+      <button id="confirm-dev-reload-button" class="btn-primary">Neu starten</button>
+      <button id="cancel-dev-reload-button" class="btn-secondary">Abbrechen</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const confirmBtn = document.getElementById('confirm-dev-reload-button');
+  const cancelBtn = document.getElementById('cancel-dev-reload-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      window.location.reload();
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+      // Re-open settings popup
+      showSettingsPopup();
+    });
+  }
+}
+
+/**
+ * Setup event listeners for dev settings controls
+ */
+function setupDevSettingsListeners() {
+  // Diamond controls - update UI immediately without reload
+  const diamondsMinus = document.getElementById('dev-diamonds-minus');
+  const diamondsPlus = document.getElementById('dev-diamonds-plus');
+  const diamondsValue = document.getElementById('dev-diamonds-value');
+  
+  if (diamondsMinus) {
+    diamondsMinus.addEventListener('click', () => {
+      const current = loadDiamonds();
+      const newValue = Math.max(0, current - 1);
+      saveDiamonds(newValue);
+      // Update dev settings display
+      if (diamondsValue) diamondsValue.textContent = newValue;
+      // Update main UI diamond display
+      const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+      if (mainDiamondDisplay) mainDiamondDisplay.textContent = newValue;
+      showDevFeedback('💎 ' + newValue);
+    });
+  }
+  
+  if (diamondsPlus) {
+    diamondsPlus.addEventListener('click', () => {
+      const current = loadDiamonds();
+      const newValue = current + 1;
+      saveDiamonds(newValue);
+      // Update dev settings display
+      if (diamondsValue) diamondsValue.textContent = newValue;
+      // Update main UI diamond display
+      const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+      if (mainDiamondDisplay) mainDiamondDisplay.textContent = newValue;
+      showDevFeedback('💎 ' + newValue);
+    });
+  }
+  
+  // Streak controls
+  const streakMinus = document.getElementById('dev-streak-minus');
+  const streakPlus = document.getElementById('dev-streak-plus');
+  const streakValue = document.getElementById('dev-streak-value');
+  
+  if (streakMinus) {
+    streakMinus.addEventListener('click', () => {
+      const streak = loadStreak();
+      streak.currentStreak = Math.max(0, streak.currentStreak - 1);
+      saveStreak(streak);
+      // Update dev settings display
+      if (streakValue) streakValue.textContent = streak.currentStreak;
+      // Update main UI streak display
+      const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
+      if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
+      showDevFeedback('🔥 ' + streak.currentStreak);
+    });
+  }
+  
+  if (streakPlus) {
+    streakPlus.addEventListener('click', () => {
+      const streak = loadStreak();
+      streak.currentStreak += 1;
+      if (streak.currentStreak > streak.longestStreak) {
+        streak.longestStreak = streak.currentStreak;
+      }
+      saveStreak(streak);
+      // Update dev settings display
+      if (streakValue) streakValue.textContent = streak.currentStreak;
+      // Update main UI streak display
+      const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
+      if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
+      showDevFeedback('🔥 ' + streak.currentStreak);
+    });
+  }
+  
+  // Freeze/Unfreeze streak - update UI immediately
+  const freezeBtn = document.getElementById('dev-freeze-streak');
+  const unfreezeBtn = document.getElementById('dev-unfreeze-streak');
+  
+  if (freezeBtn) {
+    freezeBtn.addEventListener('click', () => {
+      const streak = loadStreak();
+      streak.isFrozen = true;
+      saveStreak(streak);
+      // Update main UI streak icon to frozen
+      const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
+      const streakIcon = streakCapsule?.querySelector('.stat-icon');
+      if (streakCapsule) streakCapsule.classList.add('streak-frozen');
+      if (streakIcon) streakIcon.textContent = '🧊';
+      showDevFeedback('Streak eingefroren 🧊');
+    });
+  }
+  
+  if (unfreezeBtn) {
+    unfreezeBtn.addEventListener('click', () => {
+      const streak = loadStreak();
+      streak.isFrozen = false;
+      streak.lossReason = null;
+      saveStreak(streak);
+      // Update main UI streak icon to normal
+      const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
+      const streakIcon = streakCapsule?.querySelector('.stat-icon');
+      if (streakCapsule) streakCapsule.classList.remove('streak-frozen');
+      if (streakIcon) streakIcon.textContent = '🔥';
+      showDevFeedback('Streak aufgetaut 🔥');
+    });
+  }
+  
+  // Advance day
+  const advanceDayBtn = document.getElementById('dev-advance-day');
+  
+  if (advanceDayBtn) {
+    advanceDayBtn.addEventListener('click', () => {
+      const streak = loadStreak();
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      
+      // Edge case: If currentStreak is 0, there's nothing to freeze or lose
+      // User needs to complete a challenge first to start a streak
+      if (!streak.currentStreak || streak.currentStreak === 0) {
+        showDevFeedback('⚠️ Kein Streak vorhanden. Schließe zuerst eine Challenge ab.');
+        return;
+      }
+      
+      if (streak.lastActiveDate) {
+        // Calculate current gap in days using date strings for accuracy
+        const todayDate = new Date(todayStr + 'T12:00:00');
+        const lastDate = new Date(streak.lastActiveDate + 'T12:00:00');
+        const currentGap = Math.round((todayDate.getTime() - lastDate.getTime()) / DEV_SETTINGS_CONFIG.MS_PER_DAY);
+        
+        // Move lastActiveDate one more day back to increase the gap by 1
+        lastDate.setTime(lastDate.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
+        streak.lastActiveDate = lastDate.toISOString().split('T')[0];
+        
+        const newGap = currentGap + 1;
+        let message = '';
+        // Gap interpretation (corrected):
+        // 1 day = next day after activity, streak continues normally
+        // 2 days = 1 complete inactive day, streak frozen
+        // 3 days = 2 inactive days, streak expired (restorable with 💎)
+        // 4+ days = streak permanently lost
+        if (newGap === 1) {
+          message = 'Lücke: 1 Tag → Streak normal (nächster Tag)';
+        } else if (newGap === 2) {
+          message = 'Lücke: 2 Tage → Streak wird eingefroren';
+        } else if (newGap === 3) {
+          message = 'Lücke: 3 Tage → Streak verloren (mit 💎 rettbar)';
+        } else {
+          message = `Lücke: ${newGap} Tage → Streak endgültig verloren`;
+        }
+        
+        // Reset statusHandledDate so popup will show after reload
+        streak.statusHandledDate = null;
+        
+        saveStreak(streak);
+        showDevSettingsReloadPopup(`${message}. App neu starten?`);
+      } else {
+        // Has a streak but no lastActiveDate - this shouldn't happen normally
+        // Show feedback that they need to complete a challenge first
+        showDevFeedback('⚠️ Keine Aktivität vorhanden. Schließe zuerst eine Challenge ab.');
+      }
+    });
+  }
+  
+  // Total tasks controls - update UI immediately
+  const tasksMinus = document.getElementById('dev-tasks-minus');
+  const tasksPlus = document.getElementById('dev-tasks-plus');
+  const tasksValue = document.getElementById('dev-tasks-value');
+  
+  if (tasksMinus) {
+    tasksMinus.addEventListener('click', () => {
+      const progress = loadProgress();
+      progress.totalTasksCompleted = Math.max(0, (progress.totalTasksCompleted || 0) - 10);
+      saveProgress(progress);
+      if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
+      // Update diamond progress text in main UI
+      updateDiamondProgressText(progress.totalTasksCompleted);
+      showDevFeedback('📊 ' + progress.totalTasksCompleted + ' Aufgaben');
+    });
+  }
+  
+  if (tasksPlus) {
+    tasksPlus.addEventListener('click', () => {
+      const progress = loadProgress();
+      const oldTotal = progress.totalTasksCompleted || 0;
+      const newTotal = oldTotal + 10;
+      
+      // Calculate diamonds earned from this increment
+      const oldDiamonds = Math.floor(oldTotal / CONFIG.TASKS_PER_DIAMOND);
+      const newDiamonds = Math.floor(newTotal / CONFIG.TASKS_PER_DIAMOND);
+      const diamondsEarned = newDiamonds - oldDiamonds;
+      
+      progress.totalTasksCompleted = newTotal;
+      saveProgress(progress);
+      
+      // Award diamonds if earned
+      if (diamondsEarned > 0) {
+        let currentDiamonds = loadDiamonds();
+        currentDiamonds += diamondsEarned;
+        saveDiamonds(currentDiamonds);
+        
+        // Track diamonds earned for popup when settings close
+        devDiamondsEarned += diamondsEarned;
+        
+        // Update dev settings display
+        const devDiamondValue = document.getElementById('dev-diamonds-value');
+        if (devDiamondValue) devDiamondValue.textContent = currentDiamonds;
+        // Update main UI diamond display
+        const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+        if (mainDiamondDisplay) mainDiamondDisplay.textContent = currentDiamonds;
+      }
+      
+      if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
+      // Update diamond progress text in main UI
+      updateDiamondProgressText(progress.totalTasksCompleted);
+      
+      // Show feedback with diamond info if earned
+      if (diamondsEarned > 0) {
+        showDevFeedback(`📊 ${newTotal} Aufgaben (+${diamondsEarned} 💎)`);
+      } else {
+        showDevFeedback('📊 ' + newTotal + ' Aufgaben');
+      }
+    });
+  }
+  
+  // Complete Challenge button
+  const completeChallengeBtn = document.getElementById('dev-complete-challenge');
+  
+  if (completeChallengeBtn) {
+    completeChallengeBtn.addEventListener('click', () => {
+      const challenges = getTodaysChallenges();
+      
+      // Find the first available or in_progress challenge
+      const challengeIndex = challenges.findIndex(c => 
+        c.state === CHALLENGE_STATE.AVAILABLE || c.state === CHALLENGE_STATE.IN_PROGRESS
+      );
+      
+      if (challengeIndex === -1) {
+        showDevFeedback('❌ Keine Challenge verfügbar');
+        return;
+      }
+      
+      const challenge = challenges[challengeIndex];
+      
+      // Complete the challenge with 0 errors
+      completeChallengeState(challengeIndex, 0);
+      
+      // Update progress - add tasks from this challenge
+      const progress = loadProgress();
+      const tasksInChallenge = challenge.tasks ? challenge.tasks.length : CONFIG.TASKS_PER_CHALLENGE;
+      const oldTotal = progress.totalTasksCompleted || 0;
+      const newTotal = oldTotal + tasksInChallenge;
+      
+      // Calculate diamonds earned
+      const oldDiamonds = Math.floor(oldTotal / CONFIG.TASKS_PER_DIAMOND);
+      const newDiamonds = Math.floor(newTotal / CONFIG.TASKS_PER_DIAMOND);
+      const diamondsEarned = newDiamonds - oldDiamonds;
+      
+      progress.totalTasksCompleted = newTotal;
+      progress.totalChallengesCompleted = (progress.totalChallengesCompleted || 0) + 1;
+      progress.lastPlayedDate = new Date().toISOString().split('T')[0];
+      saveProgress(progress);
+      
+      // Award diamonds if earned
+      if (diamondsEarned > 0) {
+        let currentDiamonds = loadDiamonds();
+        currentDiamonds += diamondsEarned;
+        saveDiamonds(currentDiamonds);
+        devDiamondsEarned += diamondsEarned;
+      }
+      
+      // Handle streak progression
+      const streak = loadStreak();
+      let streakMessage = '';
+      
+      if (streak.isFrozen) {
+        // Unfreeze streak
+        const result = unfreezeStreakByChallenge();
+        if (result.wasUnfrozen) {
+          streakMessage = ` (🔓 Streak ${result.newStreak})`;
+        }
+      } else if (!streak.lossReason) {
+        // Increment streak
+        const result = incrementStreakByChallenge();
+        if (result.wasIncremented) {
+          streakMessage = ` (🔥 Streak ${result.newStreak})`;
+        }
+      }
+      
+      // Show restart popup
+      const overlay = document.createElement('div');
+      overlay.className = 'popup-overlay';
+      overlay.id = 'dev-restart-popup-overlay';
+      
+      const feedbackText = diamondsEarned > 0 
+        ? `Challenge ${challengeIndex + 1} abgeschlossen! (+${diamondsEarned} 💎)${streakMessage}`
+        : `Challenge ${challengeIndex + 1} abgeschlossen!${streakMessage}`;
+      
+      overlay.innerHTML = `
+        <div class="popup-card">
+          <h2>🔄 Neustart erforderlich</h2>
+          <p>${feedbackText}</p>
+          <p>App neu starten, um die Änderungen zu sehen?</p>
+          <div class="popup-buttons">
+            <button id="dev-restart-confirm" class="btn-primary">Neu starten</button>
+            <button id="dev-restart-cancel" class="btn-secondary">Abbrechen</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(overlay);
+      
+      document.getElementById('dev-restart-confirm').addEventListener('click', () => {
+        window.location.reload();
+      });
+      
+      document.getElementById('dev-restart-cancel').addEventListener('click', () => {
+        overlay.remove();
+      });
+    });
+  }
+}
+
+/**
+ * Update the diamond progress text in the main UI
+ * @param {number} totalTasksCompleted - Total tasks completed
+ */
+function updateDiamondProgressText(totalTasksCompleted) {
+  const progressElement = document.querySelector('.diamond-progress-info');
+  if (progressElement) {
+    const tasksUntilNext = CONFIG.TASKS_PER_DIAMOND - (totalTasksCompleted % CONFIG.TASKS_PER_DIAMOND);
+    const progressText = tasksUntilNext === 1 
+      ? 'Noch 1 Aufgabe bis +1 💎' 
+      : `Noch ${tasksUntilNext} Aufgaben bis +1 💎`;
+    progressElement.textContent = progressText;
+  }
+}
+
+/**
+ * Show brief dev feedback message
+ * @param {string} message - Message to display
+ */
+function showDevFeedback(message) {
+  // Remove any existing feedback
+  const existingFeedback = document.querySelector('.dev-feedback');
+  if (existingFeedback) {
+    existingFeedback.remove();
+  }
+  
+  const feedback = document.createElement('div');
+  feedback.className = 'dev-feedback';
+  feedback.textContent = message;
+  document.body.appendChild(feedback);
+  
+  // Remove after animation (duration matches CSS animation timing)
+  setTimeout(() => {
+    feedback.remove();
+  }, DEV_SETTINGS_CONFIG.FEEDBACK_DURATION);
 }
 
 /**
@@ -1273,6 +1855,13 @@ function closeSettingsPopup() {
   const overlay = document.getElementById('settings-popup-overlay');
   if (overlay) {
     overlay.remove();
+  }
+  
+  // Show diamond celebration popup if diamonds were earned from dev settings
+  if (devDiamondsEarned > 0) {
+    const diamondsToShow = devDiamondsEarned;
+    devDiamondsEarned = 0; // Reset before showing popup
+    showDiamondCelebrationPopup(diamondsToShow, CONFIG.TASKS_PER_DIAMOND);
   }
 }
 

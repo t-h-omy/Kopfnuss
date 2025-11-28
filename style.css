@@ -637,10 +637,14 @@ body::before {
 
 .settings-popup-card {
   animation: scaleIn 0.3s ease;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-popup-card h2 {
   margin-bottom: var(--spacing-lg);
+  flex-shrink: 0;
 }
 
 .settings-actions {
@@ -649,6 +653,29 @@ body::before {
   align-items: center;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: var(--spacing-xs);
+}
+
+/* Scrollbar styling for settings */
+.settings-actions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-actions::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.settings-actions::-webkit-scrollbar-thumb {
+  background: var(--color-gray);
+  border-radius: 3px;
+}
+
+.settings-actions::-webkit-scrollbar-thumb:hover {
+  background: var(--color-blue);
 }
 
 .btn-settings {
@@ -701,6 +728,9 @@ body::before {
   width: 100%;
   max-width: none;
   padding: var(--spacing-md);
+  flex-shrink: 0;
+  margin-top: auto;
+  align-self: center;
 }
 
 /* ===========================
@@ -2216,4 +2246,184 @@ button,
   font-size: 18px;
   color: var(--color-blue);
   margin-bottom: var(--spacing-sm);
+}
+
+/* ===========================
+   DEV MODE TOGGLE & SETTINGS
+   =========================== */
+
+.dev-mode-section {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--color-gray);
+}
+
+.dev-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.dev-mode-label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.dev-mode-toggle {
+  min-width: 70px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  background: white;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dev-mode-toggle .toggle-text {
+  color: var(--color-danger);
+}
+
+.dev-mode-toggle.active {
+  border-color: var(--color-perfect);
+  background: var(--color-perfect);
+}
+
+.dev-mode-toggle.active .toggle-text {
+  color: white;
+}
+
+.dev-mode-toggle:hover {
+  transform: scale(1.02);
+}
+
+/* Dev Settings Section */
+.dev-settings-section {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-perfect);
+}
+
+.dev-settings-section h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.dev-settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.dev-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) 0;
+}
+
+.dev-setting-row label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  flex-shrink: 0;
+}
+
+.dev-setting-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.dev-value {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-blue);
+  min-width: 40px;
+  text-align: center;
+}
+
+.dev-btn-small {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-blue);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dev-btn-small:hover {
+  background: var(--color-blue);
+  color: white;
+}
+
+.dev-btn-small:active {
+  transform: scale(0.95);
+}
+
+.dev-btn-action {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-blue);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dev-btn-action:hover {
+  background: var(--color-blue);
+  color: white;
+}
+
+.dev-btn-action:active {
+  transform: scale(0.95);
+}
+
+/* Dev Feedback Toast */
+.dev-feedback {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-perfect);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-medium);
+  z-index: 1001;
+  animation: slideInUp 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
 }

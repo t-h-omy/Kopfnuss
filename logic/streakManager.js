@@ -56,7 +56,7 @@ export function checkStreakStatusOnLoad() {
   
   const daysSinceLastActive = daysBetween(lastActiveDate, today);
   
-  // Same day - no popup needed
+  // Same day - no popup needed (unless already frozen from before)
   if (daysSinceLastActive === 0) {
     return {
       showPopup: streak.isFrozen,
@@ -66,8 +66,20 @@ export function checkStreakStatusOnLoad() {
     };
   }
   
-  // 1 day gap - streak is frozen
+  // 1 day gap - next day after activity, streak continues normally
+  // Player completed challenge yesterday, opens app today - no problem
   if (daysSinceLastActive === 1) {
+    return {
+      showPopup: false,
+      lossReason: null,
+      previousStreak: streak.currentStreak,
+      isFrozen: false
+    };
+  }
+  
+  // 2 day gap - 1 complete inactive day, streak is frozen
+  // Player completed challenge 2 days ago, missed yesterday, opens app today
+  if (daysSinceLastActive === 2 && streak.currentStreak > 0) {
     return {
       showPopup: true,
       lossReason: STREAK_LOSS_REASON.FROZEN,
@@ -76,8 +88,9 @@ export function checkStreakStatusOnLoad() {
     };
   }
   
-  // 2 day gap - streak expired but can be restored with diamond
-  if (daysSinceLastActive === 2 && streak.currentStreak > 0) {
+  // 3 day gap - streak expired but can be restored with diamond
+  // Player missed 2 days
+  if (daysSinceLastActive === 3 && streak.currentStreak > 0) {
     return {
       showPopup: true,
       lossReason: STREAK_LOSS_REASON.EXPIRED_RESTORABLE,
@@ -86,8 +99,8 @@ export function checkStreakStatusOnLoad() {
     };
   }
   
-  // 3+ day gap - streak permanently lost
-  if (daysSinceLastActive >= 3 && streak.currentStreak > 0) {
+  // 4+ day gap - streak permanently lost
+  if (daysSinceLastActive >= 4 && streak.currentStreak > 0) {
     return {
       showPopup: true,
       lossReason: STREAK_LOSS_REASON.EXPIRED_PERMANENT,
@@ -147,26 +160,30 @@ export function updateStreak() {
   if (daysSinceLastActive === 0) {
     // No changes needed, streak status stays the same
   }
-  // Next day - freeze streak if not already frozen (player needs to complete a challenge to unfreeze)
+  // 1 day gap - next day after activity, streak continues normally
+  // Player completed challenge yesterday, opens app today - no problem
   else if (daysSinceLastActive === 1) {
+    // No freezing needed, this is normal behavior
+    // The player has until the end of today to complete a challenge
+  }
+  // 2 days gap - 1 complete inactive day, streak is frozen
+  // Player completed challenge 2 days ago, missed yesterday, opens app today
+  else if (daysSinceLastActive === 2) {
     if (!streak.isFrozen && streak.currentStreak > 0) {
       streak.isFrozen = true;
       streak.lossReason = STREAK_LOSS_REASON.FROZEN;
     }
   }
-  // 2 days gap - streak is lost but restorable
-  else if (daysSinceLastActive === 2) {
-    if (streak.currentStreak > 0 && !streak.lossReason) {
+  // 3 days gap - streak is lost but restorable with diamond
+  else if (daysSinceLastActive === 3) {
+    if (streak.currentStreak > 0 && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_RESTORABLE) {
       streak.lossReason = STREAK_LOSS_REASON.EXPIRED_RESTORABLE;
     }
     // Don't reset streak yet, allow restoration via popup
-    if (streak.lossReason === STREAK_LOSS_REASON.FROZEN) {
-      streak.lossReason = STREAK_LOSS_REASON.EXPIRED_RESTORABLE;
-    }
     streak.isFrozen = false;
   }
-  // More than 2 days - streak definitely lost
-  else if (daysSinceLastActive > 2) {
+  // 4+ days gap - streak permanently lost
+  else if (daysSinceLastActive >= 4) {
     if (streak.currentStreak > 0 && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_PERMANENT) {
       streak.lossReason = STREAK_LOSS_REASON.EXPIRED_PERMANENT;
     }
@@ -335,12 +352,13 @@ export function unfreezeStreakByChallenge() {
     ? daysBetween(streak.lastActiveDate, today)
     : null;
   
-  // Can only unfreeze if it's been 1 day
-  if (daysSinceLastActive !== 1) {
+  // Can only unfreeze if it's been exactly 2 days (frozen state)
+  // Day 0: last activity, Day 1: missed, Day 2: today (frozen, can unfreeze)
+  if (daysSinceLastActive !== 2) {
     return {
       success: false,
       wasUnfrozen: false,
-      message: 'Streak can only be unfrozen within 1 day'
+      message: 'Streak can only be unfrozen on frozen day (2 day gap)'
     };
   }
   
@@ -366,7 +384,7 @@ export function unfreezeStreakByChallenge() {
 }
 
 /**
- * Restore expired streak by spending a diamond (2-day gap only)
+ * Restore expired streak by spending a diamond (3-day gap only)
  * @returns {Object} Result with success status and message
  */
 export function restoreExpiredStreak() {
@@ -374,15 +392,15 @@ export function restoreExpiredStreak() {
   const diamonds = loadDiamonds();
   const today = getTodayDate();
   
-  // Check if streak can be restored (2-day gap)
+  // Check if streak can be restored (3-day gap = expired restorable)
   const daysSinceLastActive = streak.lastActiveDate 
     ? daysBetween(streak.lastActiveDate, today)
     : null;
     
-  if (daysSinceLastActive !== 2) {
+  if (daysSinceLastActive !== 3) {
     return {
       success: false,
-      message: 'Streak can only be restored after exactly 2 days of inactivity'
+      message: 'Streak can only be restored after exactly 3 days of inactivity'
     };
   }
   

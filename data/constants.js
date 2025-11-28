@@ -120,3 +120,18 @@ export const VISUAL_CONFIG = {
   // Affects: style.css - .challenges-container::before, .task-screen::before
   BACKGROUND_OPACITY: 1.00
 };
+
+/**
+ * Dev settings configuration
+ * Applied in: main.js - dev settings controls
+ */
+export const DEV_SETTINGS_CONFIG = {
+  // Duration in ms for dev feedback toast display
+  // Applied in: main.js - showDevFeedback()
+  // CSS match: style.css - .dev-feedback animation (0.3s + 1.7s = 2.0s total)
+  FEEDBACK_DURATION: 2000,
+  
+  // Milliseconds in a day (used for date manipulation)
+  // Applied in: main.js - dev advance day function
+  MS_PER_DAY: 24 * 60 * 60 * 1000
+};

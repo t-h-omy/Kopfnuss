@@ -1,43 +1,54 @@
 // Kopfnuss - Balancing Configuration
 // Defines min/max values for each operation type
 // Used by: logic/taskGenerators.js
+// 
+// Balancing values are selected based on dev mode setting:
+// - Production (default): Uses DEFAULT_BALANCING and DEFAULT_CONFIG
+// - Dev mode: Uses DEV_BALANCING and DEV_CONFIG (easier values for testing)
 
 /**
- * Balancing values for different mathematical operations
- * Designed for 6th grade level (10-12 years old)
- * Applied in: logic/taskGenerators.js - generateAdditionTask(), generateSubtractionTask(), etc.
+ * Check if dev mode is enabled (reads directly from localStorage to avoid circular imports)
+ * NOTE: This duplicates logic from storageManager.js intentionally to avoid circular imports,
+ * since storageManager.js imports from this file. The dev mode check only happens once
+ * during module initialization, and changing dev mode requires an app reload anyway.
+ * @returns {boolean} True if dev mode is enabled
  */
-export const BALANCING = {
-  // Addition task number range
-  // Applied in: logic/taskGenerators.js - generateAdditionTask()
+function isDevModeEnabled() {
+  try {
+    const item = localStorage.getItem('kopfnuss_use_dev_balancing');
+    if (item === null) {
+      return false;
+    }
+    return JSON.parse(item) === true;
+  } catch (error) {
+    console.error('Error checking dev mode:', error);
+    return false;
+  }
+}
+
+// Determine which balancing to use based on dev mode (evaluated once at module load)
+const useDevBalancing = isDevModeEnabled();
+
+/**
+ * Production balancing values (used when dev mode is OFF)
+ */
+const DEFAULT_BALANCING = {
   addition: {
     min: 10,
     max: 1500
   },
-  
-  // Subtraction task number range (results are always positive)
-  // Applied in: logic/taskGenerators.js - generateSubtractionTask()
   subtraction: {
     min: 10,
     max: 999
   },
-  
-  // Multiplication factor ranges
-  // Applied in: logic/taskGenerators.js - generateMultiplicationTask()
   multiplication: {
     factor1: { min: 2, max: 20 },
     factor2: { min: 2, max: 20 }
   },
-  
-  // Division ranges (results are always whole numbers)
-  // Applied in: logic/taskGenerators.js - generateDivisionTask()
   division: {
     divisor: { min: 2, max: 12 },
     quotient: { min: 2, max: 20 }
   },
-  
-  // Squared number range (z² where z is between min and max)
-  // Applied in: logic/taskGenerators.js - generateSquaredTask()
   squared: {
     min: 2,
     max: 20
@@ -45,38 +56,69 @@ export const BALANCING = {
 };
 
 /**
+ * Dev balancing values (easier for testing)
+ */
+const DEV_BALANCING = {
+  addition: {
+    min: 1,
+    max: 10
+  },
+  subtraction: {
+    min: 1,
+    max: 10
+  },
+  multiplication: {
+    factor1: { min: 1, max: 5 },
+    factor2: { min: 1, max: 5 }
+  },
+  division: {
+    divisor: { min: 2, max: 5 },
+    quotient: { min: 1, max: 5 }
+  },
+  squared: {
+    min: 1,
+    max: 5
+  }
+};
+
+/**
+ * Balancing values for different mathematical operations
+ * Designed for 6th grade level (10-12 years old)
+ * Applied in: logic/taskGenerators.js - generateAdditionTask(), generateSubtractionTask(), etc.
+ */
+export const BALANCING = useDevBalancing ? DEV_BALANCING : DEFAULT_BALANCING;
+
+/**
+ * Production game configuration constants (used when dev mode is OFF)
+ */
+const DEFAULT_CONFIG = {
+  TASKS_PER_CHALLENGE: 8,
+  DAILY_CHALLENGES: 5,
+  TASKS_FOR_STREAK: 10,
+  TASKS_PER_DIAMOND: 80,
+  STREAK_RESCUE_COST: 1,
+  FREEZE_AFTER_DAYS: 1,
+  LOSE_AFTER_DAYS: 2
+};
+
+/**
+ * Dev game configuration constants (faster progression for testing)
+ */
+const DEV_CONFIG = {
+  TASKS_PER_CHALLENGE: 2,
+  DAILY_CHALLENGES: 5,
+  TASKS_FOR_STREAK: 2,
+  TASKS_PER_DIAMOND: 4,
+  STREAK_RESCUE_COST: 1,
+  FREEZE_AFTER_DAYS: 1,
+  LOSE_AFTER_DAYS: 2
+};
+
+/**
  * Game configuration constants
  * Applied in: Various game logic files
  */
-export const CONFIG = {
-  // Number of tasks shown per challenge session
-  // Applied in: logic/challengeGenerator.js, logic/taskFlow.js
-  TASKS_PER_CHALLENGE: 8,
-  
-  // Number of challenge nodes displayed on the challenges screen
-  // Applied in: logic/challengeGenerator.js - generateDailyChallenges()
-  DAILY_CHALLENGES: 5,
-  
-  // Minimum completed tasks per day to maintain/increment streak
-  // Applied in: logic/streakManager.js
-  TASKS_FOR_STREAK: 10,
-  
-  // Number of completed tasks needed to earn one diamond
-  // Applied in: logic/diamondManager.js, main.js - diamond progress display
-  TASKS_PER_DIAMOND: 80,
-  
-  // Diamond cost to rescue an expired streak
-  // Applied in: main.js - showStreakRestorablePopup(), logic/streakManager.js
-  STREAK_RESCUE_COST: 1,
-  
-  // Days of inactivity before streak freezes (shows frozen state)
-  // Applied in: logic/streakManager.js - checkStreakStatusOnLoad()
-  FREEZE_AFTER_DAYS: 1,
-  
-  // Days of inactivity before streak is permanently lost
-  // Applied in: logic/streakManager.js - checkStreakStatusOnLoad()
-  LOSE_AFTER_DAYS: 2
-};
+export const CONFIG = useDevBalancing ? DEV_CONFIG : DEFAULT_CONFIG;
 
 /**
  * Challenge type definitions

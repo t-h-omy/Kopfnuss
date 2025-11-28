@@ -2,9 +2,65 @@
 // Handles all localStorage operations with error handling
 
 /**
- * Storage keys for localStorage
+ * Dev mode setting key (stored separately, never has dev prefix)
  */
-const STORAGE_KEYS = {
+const DEV_MODE_KEY = 'kopfnuss_use_dev_balancing';
+
+/**
+ * Cached dev mode state (initialized on first call, persists until page reload)
+ * Using null to indicate not yet cached
+ */
+let cachedDevModeState = null;
+
+/**
+ * Load dev mode setting (this is stored separately and not affected by dev mode prefix)
+ * This function is defined early because it's needed by getStoragePrefix()
+ * Uses caching to avoid repeated localStorage reads
+ * @returns {boolean} True if dev mode is enabled
+ */
+export function loadDevModeSetting() {
+  // Return cached value if available
+  if (cachedDevModeState !== null) {
+    return cachedDevModeState;
+  }
+  
+  try {
+    const item = localStorage.getItem(DEV_MODE_KEY);
+    if (item === null) {
+      cachedDevModeState = false;
+      return false;
+    }
+    cachedDevModeState = JSON.parse(item) === true;
+    return cachedDevModeState;
+  } catch (error) {
+    console.error('Error loading dev mode setting:', error);
+    cachedDevModeState = false;
+    return false;
+  }
+}
+
+/**
+ * Save dev mode setting
+ * Note: Changing dev mode requires an app reload, so the cache will be refreshed
+ * @param {boolean} useDevBalancing - Whether dev mode is enabled
+ * @returns {boolean} Success status
+ */
+export function saveDevModeSetting(useDevBalancing) {
+  try {
+    localStorage.setItem(DEV_MODE_KEY, JSON.stringify(useDevBalancing));
+    // Update cache (though app will reload anyway)
+    cachedDevModeState = useDevBalancing;
+    return true;
+  } catch (error) {
+    console.error('Error saving dev mode setting:', error);
+    return false;
+  }
+}
+
+/**
+ * Base storage keys for localStorage (without dev prefix)
+ */
+const BASE_STORAGE_KEYS = {
   CHALLENGES: 'kopfnuss_challenges_', // Will be appended with date
   PROGRESS: 'kopfnuss_progress',
   STREAK: 'kopfnuss_streak',
@@ -13,6 +69,42 @@ const STORAGE_KEYS = {
   UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
   SELECTED_BACKGROUND: 'kopfnuss_selected_background',
   LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds'
+};
+
+/**
+ * Get the dev mode prefix based on current dev mode state
+ * Uses cached dev mode state for performance
+ * @returns {string} Prefix for storage keys ('kopfnuss_dev_' or 'kopfnuss_')
+ */
+function getStoragePrefix() {
+  const useDevBalancing = loadDevModeSetting();
+  return useDevBalancing ? 'kopfnuss_dev_' : 'kopfnuss_';
+}
+
+/**
+ * Get storage key with appropriate prefix based on dev mode
+ * @param {string} baseKey - Base storage key
+ * @returns {string} Full storage key with prefix
+ */
+function getStorageKey(baseKey) {
+  const prefix = getStoragePrefix();
+  // Extract the base key name (remove 'kopfnuss_' prefix if present)
+  const keyName = baseKey.replace('kopfnuss_', '');
+  return prefix + keyName;
+}
+
+/**
+ * Dynamic storage keys that respect dev mode
+ */
+const STORAGE_KEYS = {
+  get CHALLENGES() { return getStorageKey('kopfnuss_challenges_'); },
+  get PROGRESS() { return getStorageKey('kopfnuss_progress'); },
+  get STREAK() { return getStorageKey('kopfnuss_streak'); },
+  get DIAMONDS() { return getStorageKey('kopfnuss_diamonds'); },
+  get DIAMONDS_EARNED() { return getStorageKey('kopfnuss_diamonds_earned'); },
+  get UNLOCKED_BACKGROUNDS() { return getStorageKey('kopfnuss_unlocked_backgrounds'); },
+  get SELECTED_BACKGROUND() { return getStorageKey('kopfnuss_selected_background'); },
+  get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); }
 };
 
 /**
@@ -232,17 +324,32 @@ export function loadLastKnownPurchasableBackgrounds() {
 }
 
 /**
- * Clear all app data (for reset/debugging)
+ * Clear all app data for current mode (dev or prod)
+ * Only clears data for the current mode, never affects the other mode
  * @returns {boolean} Success status
  */
 export function clearAllData() {
   try {
-    // Get all keys that belong to Kopfnuss
-    const keys = Object.keys(localStorage);
-    const kopfnussKeys = keys.filter(key => key.startsWith('kopfnuss_'));
+    const isDevMode = loadDevModeSetting();
+    const prefix = isDevMode ? 'kopfnuss_dev_' : 'kopfnuss_';
     
-    // Remove all Kopfnuss keys
-    kopfnussKeys.forEach(key => localStorage.removeItem(key));
+    // Get all keys that belong to current mode
+    const keys = Object.keys(localStorage);
+    const keysToRemove = keys.filter(key => {
+      // Skip dev mode setting key - should never be cleared
+      if (key === DEV_MODE_KEY) return false;
+      
+      if (isDevMode) {
+        // In dev mode, only clear dev keys
+        return key.startsWith('kopfnuss_dev_');
+      } else {
+        // In prod mode, only clear prod keys (exclude dev keys)
+        return key.startsWith('kopfnuss_') && !key.startsWith('kopfnuss_dev_') && key !== DEV_MODE_KEY;
+      }
+    });
+    
+    // Remove filtered keys
+    keysToRemove.forEach(key => localStorage.removeItem(key));
     
     return true;
   } catch (error) {
