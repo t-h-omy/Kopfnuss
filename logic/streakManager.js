@@ -56,7 +56,7 @@ export function checkStreakStatusOnLoad() {
   
   const daysSinceLastActive = daysBetween(lastActiveDate, today);
   
-  // Same day - no popup needed
+  // Same day - no popup needed (unless already frozen from before)
   if (daysSinceLastActive === 0) {
     return {
       showPopup: streak.isFrozen,
@@ -66,8 +66,20 @@ export function checkStreakStatusOnLoad() {
     };
   }
   
-  // 1 day gap - streak is frozen
+  // 1 day gap - next day after activity, streak continues normally
+  // Player completed challenge yesterday, opens app today - no problem
   if (daysSinceLastActive === 1) {
+    return {
+      showPopup: false,
+      lossReason: null,
+      previousStreak: streak.currentStreak,
+      isFrozen: false
+    };
+  }
+  
+  // 2 day gap - 1 complete inactive day, streak is frozen
+  // Player completed challenge 2 days ago, missed yesterday, opens app today
+  if (daysSinceLastActive === 2 && streak.currentStreak > 0) {
     return {
       showPopup: true,
       lossReason: STREAK_LOSS_REASON.FROZEN,
@@ -76,8 +88,9 @@ export function checkStreakStatusOnLoad() {
     };
   }
   
-  // 2 day gap - streak expired but can be restored with diamond
-  if (daysSinceLastActive === 2 && streak.currentStreak > 0) {
+  // 3 day gap - streak expired but can be restored with diamond
+  // Player missed 2 days
+  if (daysSinceLastActive === 3 && streak.currentStreak > 0) {
     return {
       showPopup: true,
       lossReason: STREAK_LOSS_REASON.EXPIRED_RESTORABLE,
@@ -86,8 +99,8 @@ export function checkStreakStatusOnLoad() {
     };
   }
   
-  // 3+ day gap - streak permanently lost
-  if (daysSinceLastActive >= 3 && streak.currentStreak > 0) {
+  // 4+ day gap - streak permanently lost
+  if (daysSinceLastActive >= 4 && streak.currentStreak > 0) {
     return {
       showPopup: true,
       lossReason: STREAK_LOSS_REASON.EXPIRED_PERMANENT,

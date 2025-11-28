@@ -1557,14 +1557,38 @@ function setupDevSettingsListeners() {
   if (advanceDayBtn) {
     advanceDayBtn.addEventListener('click', () => {
       const streak = loadStreak();
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      
       if (streak.lastActiveDate) {
-        // Move lastActiveDate one day back to simulate that one day has passed
-        // This makes the streak system think more time has elapsed since last activity
-        const lastDate = new Date(streak.lastActiveDate + 'T12:00:00'); // Use noon to avoid timezone issues
+        // Calculate current gap in days using date strings for accuracy
+        const todayDate = new Date(todayStr + 'T12:00:00');
+        const lastDate = new Date(streak.lastActiveDate + 'T12:00:00');
+        const currentGap = Math.round((todayDate.getTime() - lastDate.getTime()) / DEV_SETTINGS_CONFIG.MS_PER_DAY);
+        
+        // Move lastActiveDate one more day back to increase the gap by 1
         lastDate.setTime(lastDate.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
         streak.lastActiveDate = lastDate.toISOString().split('T')[0];
+        
+        const newGap = currentGap + 1;
+        let message = '';
+        // Gap interpretation (corrected):
+        // 1 day = next day after activity, streak continues normally
+        // 2 days = 1 complete inactive day, streak frozen
+        // 3 days = 2 inactive days, streak expired (restorable with 💎)
+        // 4+ days = streak permanently lost
+        if (newGap === 1) {
+          message = 'Lücke: 1 Tag → Streak normal (nächster Tag)';
+        } else if (newGap === 2) {
+          message = 'Lücke: 2 Tage → Streak wird eingefroren';
+        } else if (newGap === 3) {
+          message = 'Lücke: 3 Tage → Streak verloren (mit 💎 rettbar)';
+        } else {
+          message = `Lücke: ${newGap} Tage → Streak endgültig verloren`;
+        }
+        
         saveStreak(streak);
-        showDevSettingsReloadPopup('1 Tag simuliert. App neu starten, damit die Streak-Logik ausgeführt wird?');
+        showDevSettingsReloadPopup(`${message}. App neu starten?`);
       } else {
         // No activity yet - set lastActiveDate to yesterday so user can start testing
         const yesterday = new Date();
@@ -1572,7 +1596,7 @@ function setupDevSettingsListeners() {
         streak.lastActiveDate = yesterday.toISOString().split('T')[0];
         streak.currentStreak = 1; // Start with streak of 1
         saveStreak(streak);
-        showDevSettingsReloadPopup('Aktivität für gestern erstellt. App neu starten, damit die Streak-Logik ausgeführt wird?');
+        showDevSettingsReloadPopup('Aktivität für gestern erstellt (Lücke: 1 Tag). App neu starten?');
       }
     });
   }
