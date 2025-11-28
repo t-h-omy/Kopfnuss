@@ -157,6 +157,7 @@ let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 
 // Preload celebration images for faster display
@@ -1641,6 +1642,9 @@ function setupDevSettingsListeners() {
         currentDiamonds += diamondsEarned;
         saveDiamonds(currentDiamonds);
         
+        // Track diamonds earned for popup when settings close
+        devDiamondsEarned += diamondsEarned;
+        
         // Update dev settings display
         const devDiamondValue = document.getElementById('dev-diamonds-value');
         if (devDiamondValue) devDiamondValue.textContent = currentDiamonds;
@@ -1707,6 +1711,13 @@ function closeSettingsPopup() {
   const overlay = document.getElementById('settings-popup-overlay');
   if (overlay) {
     overlay.remove();
+  }
+  
+  // Show diamond celebration popup if diamonds were earned from dev settings
+  if (devDiamondsEarned > 0) {
+    const diamondsToShow = devDiamondsEarned;
+    devDiamondsEarned = 0; // Reset before showing popup
+    showDiamondCelebrationPopup(diamondsToShow, CONFIG.TASKS_PER_DIAMOND);
   }
 }
 
