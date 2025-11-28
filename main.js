@@ -1560,6 +1560,13 @@ function setupDevSettingsListeners() {
       const today = new Date();
       const todayStr = today.toISOString().split('T')[0];
       
+      // Edge case: If currentStreak is 0, there's nothing to freeze or lose
+      // User needs to complete a challenge first to start a streak
+      if (!streak.currentStreak || streak.currentStreak === 0) {
+        showDevFeedback('⚠️ Kein Streak vorhanden. Schließe zuerst eine Challenge ab.');
+        return;
+      }
+      
       if (streak.lastActiveDate) {
         // Calculate current gap in days using date strings for accuracy
         const todayDate = new Date(todayStr + 'T12:00:00');
@@ -1590,13 +1597,9 @@ function setupDevSettingsListeners() {
         saveStreak(streak);
         showDevSettingsReloadPopup(`${message}. App neu starten?`);
       } else {
-        // No activity yet - set lastActiveDate to yesterday so user can start testing
-        const yesterday = new Date();
-        yesterday.setTime(yesterday.getTime() - DEV_SETTINGS_CONFIG.MS_PER_DAY);
-        streak.lastActiveDate = yesterday.toISOString().split('T')[0];
-        streak.currentStreak = 1; // Start with streak of 1
-        saveStreak(streak);
-        showDevSettingsReloadPopup('Aktivität für gestern erstellt (Lücke: 1 Tag). App neu starten?');
+        // Has a streak but no lastActiveDate - this shouldn't happen normally
+        // Show feedback that they need to complete a challenge first
+        showDevFeedback('⚠️ Keine Aktivität vorhanden. Schließe zuerst eine Challenge ab.');
       }
     });
   }
@@ -1621,12 +1624,41 @@ function setupDevSettingsListeners() {
   if (tasksPlus) {
     tasksPlus.addEventListener('click', () => {
       const progress = loadProgress();
-      progress.totalTasksCompleted = (progress.totalTasksCompleted || 0) + 10;
+      const oldTotal = progress.totalTasksCompleted || 0;
+      const newTotal = oldTotal + 10;
+      
+      // Calculate diamonds earned from this increment
+      const oldDiamonds = Math.floor(oldTotal / CONFIG.TASKS_PER_DIAMOND);
+      const newDiamonds = Math.floor(newTotal / CONFIG.TASKS_PER_DIAMOND);
+      const diamondsEarned = newDiamonds - oldDiamonds;
+      
+      progress.totalTasksCompleted = newTotal;
       saveProgress(progress);
+      
+      // Award diamonds if earned
+      if (diamondsEarned > 0) {
+        let currentDiamonds = loadDiamonds();
+        currentDiamonds += diamondsEarned;
+        saveDiamonds(currentDiamonds);
+        
+        // Update dev settings display
+        const devDiamondValue = document.getElementById('dev-diamonds-value');
+        if (devDiamondValue) devDiamondValue.textContent = currentDiamonds;
+        // Update main UI diamond display
+        const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+        if (mainDiamondDisplay) mainDiamondDisplay.textContent = currentDiamonds;
+      }
+      
       if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
       // Update diamond progress text in main UI
       updateDiamondProgressText(progress.totalTasksCompleted);
-      showDevFeedback('📊 ' + progress.totalTasksCompleted + ' Aufgaben');
+      
+      // Show feedback with diamond info if earned
+      if (diamondsEarned > 0) {
+        showDevFeedback(`📊 ${newTotal} Aufgaben (+${diamondsEarned} 💎)`);
+      } else {
+        showDevFeedback('📊 ' + newTotal + ' Aufgaben');
+      }
     });
   }
 }
