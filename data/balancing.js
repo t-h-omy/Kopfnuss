@@ -98,7 +98,10 @@ const DEFAULT_CONFIG = {
   TASKS_PER_DIAMOND: 80,
   STREAK_RESCUE_COST: 1,
   FREEZE_AFTER_DAYS: 1,
-  LOSE_AFTER_DAYS: 2
+  LOSE_AFTER_DAYS: 2,
+  // Super Challenge settings
+  SUPER_CHALLENGE_SPAWN_CHANCE: 0.25, // 25% chance for a super challenge to spawn
+  SUPER_CHALLENGE_SPARKLE_COUNT: 12   // Number of sparkle particles during super challenge
 };
 
 /**
@@ -111,7 +114,10 @@ const DEV_CONFIG = {
   TASKS_PER_DIAMOND: 4,
   STREAK_RESCUE_COST: 1,
   FREEZE_AFTER_DAYS: 1,
-  LOSE_AFTER_DAYS: 2
+  LOSE_AFTER_DAYS: 2,
+  // Super Challenge settings (higher chance for testing)
+  SUPER_CHALLENGE_SPAWN_CHANCE: 0.75, // 75% chance in dev mode for easier testing
+  SUPER_CHALLENGE_SPARKLE_COUNT: 12   // Number of sparkle particles during super challenge
 };
 
 /**

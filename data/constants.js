@@ -63,12 +63,10 @@ export const SPARKLE_CONFIG = {
 
 /**
  * Super Challenge sparkle overlay configuration
+ * Note: PARTICLE_COUNT is configured in balancing.js CONFIG.SUPER_CHALLENGE_SPARKLE_COUNT
  * Applied in: logic/visualEffects.js - startSuperChallengeSparkles()
  */
 export const SUPER_CHALLENGE_SPARKLE_CONFIG = {
-  // Number of floating sparkle particles on screen at any time
-  PARTICLE_COUNT: 12,
-  
   // Time in ms between spawning new sparkle particles
   SPAWN_INTERVAL: 400,
   

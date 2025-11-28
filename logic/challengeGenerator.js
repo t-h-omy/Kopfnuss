@@ -86,7 +86,7 @@ function shuffleArray(array) {
  * Generate 5 daily challenges
  * Challenges are randomly selected from all available types (max one of each type)
  * and shuffled so order varies each day
- * One challenge (at index 2 or 3) is randomly designated as a Super Challenge
+ * Has a configurable chance (CONFIG.SUPER_CHALLENGE_SPAWN_CHANCE) to include one Super Challenge
  * @returns {Array} Array of 5 challenge objects
  */
 export function generateDailyChallenges() {
@@ -103,9 +103,11 @@ export function generateDailyChallenges() {
   shuffleArray(allChallengeTypes);
   const selectedTypes = allChallengeTypes.slice(0, 5);
   
-  // Randomly select index 2 or 3 for the super challenge
-  // Based on CONFIG.DAILY_CHALLENGES: if 5 challenges, use index 2 or 3 (next-to-last or before that)
-  const superChallengeIndex = Math.random() < 0.5 ? 2 : 3;
+  // Determine if a super challenge should spawn based on configured chance (default 25%)
+  const spawnSuperChallenge = Math.random() < CONFIG.SUPER_CHALLENGE_SPAWN_CHANCE;
+  
+  // If spawning, randomly select index 2 or 3 for the super challenge
+  const superChallengeIndex = spawnSuperChallenge ? (Math.random() < 0.5 ? 2 : 3) : -1;
   
   const challenges = selectedTypes.map((type, index) => 
     createChallenge(type, index, index === superChallengeIndex)

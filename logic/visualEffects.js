@@ -2,6 +2,7 @@
 // Centralized visual effects for sparkles, highlights, and scroll animations
 
 import { ANIMATION_TIMING, SPARKLE_CONFIG, SUPER_CHALLENGE_SPARKLE_CONFIG } from '../data/constants.js';
+import { CONFIG } from '../data/balancing.js';
 
 // Track super challenge sparkle interval for cleanup
 let superChallengeSparkleInterval = null;
@@ -49,6 +50,7 @@ export function createSparklesAroundElement(element) {
 /**
  * Start the super challenge sparkle overlay effect
  * Creates a continuous subtle sparkle animation across the screen
+ * Sparkle count is configurable via CONFIG.SUPER_CHALLENGE_SPARKLE_COUNT
  */
 export function startSuperChallengeSparkles() {
   // Stop any existing sparkle interval
@@ -63,8 +65,11 @@ export function startSuperChallengeSparkles() {
     document.body.appendChild(container);
   }
   
+  // Get sparkle count from config (balanceable)
+  const sparkleCount = CONFIG.SUPER_CHALLENGE_SPARKLE_COUNT || 12;
+  
   // Create initial sparkles
-  for (let i = 0; i < SUPER_CHALLENGE_SPARKLE_CONFIG.PARTICLE_COUNT; i++) {
+  for (let i = 0; i < sparkleCount; i++) {
     setTimeout(() => {
       createSuperChallengeSparkle(container);
     }, i * (SUPER_CHALLENGE_SPARKLE_CONFIG.SPAWN_INTERVAL / 2));

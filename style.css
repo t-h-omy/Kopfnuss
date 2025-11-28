@@ -1082,101 +1082,112 @@ button,
 
 /* Super Challenge Locked */
 .challenge-super_locked .challenge-node-wrapper {
-  background: linear-gradient(135deg, #7B68EE 0%, #9370DB 50%, #7B68EE 100%);
-  opacity: 0.6;
+  background: linear-gradient(135deg, #8A2BE2 0%, #BA55D3 50%, #8A2BE2 100%);
+  opacity: 0.7;
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
 }
 
 .challenge-super_locked .challenge-node {
-  border: none;
-  opacity: 0.8;
+  border: 3px solid rgba(255, 215, 0, 0.5);
+  opacity: 0.9;
 }
 
 .challenge-super_locked .challenge-node .node-icon {
-  filter: saturate(0.5);
+  filter: saturate(0.6);
 }
 
 .challenge-super_locked .splash-ray {
-  color: #9370DB;
-  background: linear-gradient(to bottom, #9370DB, transparent);
-  opacity: 0.35;
+  color: #BA55D3;
+  background: linear-gradient(to bottom, #BA55D3, transparent);
+  opacity: 0.5;
 }
 
 .challenge-super_locked .challenge-info-card::before {
   content: '⭐';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  font-size: 20px;
+  top: -12px;
+  left: -12px;
+  font-size: 28px;
   z-index: 10;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
 }
 
 .challenge-super_locked .challenge-info-card {
   position: relative;
-  border: 2px dashed #9370DB;
+  border: 3px solid #BA55D3;
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(186, 85, 211, 0.15) 100%);
+  box-shadow: 0 0 12px rgba(186, 85, 211, 0.25);
 }
 
 /* Super Challenge Available */
 .challenge-super_available .challenge-node-wrapper {
-  background: linear-gradient(135deg, #7B68EE 0%, #BA55D3 50%, #7B68EE 100%);
-  animation: pulsePurple 2s ease-in-out infinite;
+  background: linear-gradient(135deg, #8A2BE2 0%, #FF1493 50%, #8A2BE2 100%);
+  animation: pulsePurple 1.5s ease-in-out infinite;
+  box-shadow: 0 0 25px rgba(255, 20, 147, 0.5);
 }
 
 .challenge-super_available .challenge-node {
-  border: none;
+  border: 3px solid #FFD700;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(186, 85, 211, 0.4);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 .challenge-super_available .challenge-node:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 25px rgba(186, 85, 211, 0.6);
+  transform: scale(1.12);
+  box-shadow: 0 6px 30px rgba(255, 20, 147, 0.7), 0 0 20px rgba(255, 215, 0, 0.6);
 }
 
 .challenge-super_available .challenge-node:active {
-  transform: scale(1.04);
+  transform: scale(1.06);
 }
 
 .challenge-super_available .splash-ray {
-  color: #BA55D3;
-  background: linear-gradient(to bottom, #BA55D3, transparent);
-  animation: superSplashPulse 1.5s ease-in-out infinite;
+  color: #FF1493;
+  background: linear-gradient(to bottom, #FF1493, transparent);
+  animation: superSplashPulse 1s ease-in-out infinite;
+  opacity: 0.9;
 }
 
 .challenge-super_available .challenge-info-card::before {
   content: '⭐';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  font-size: 20px;
+  top: -12px;
+  left: -12px;
+  font-size: 28px;
   z-index: 10;
-  animation: starPulse 1.5s ease-in-out infinite;
+  animation: starPulse 1s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
 }
 
 .challenge-super_available .challenge-info-card {
   position: relative;
-  border: 2px solid #BA55D3;
-  box-shadow: 0 0 10px rgba(186, 85, 211, 0.3);
+  border: 3px solid #FF1493;
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.15) 0%, rgba(255, 20, 147, 0.2) 100%);
+  box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+  animation: superCardGlow 2s ease-in-out infinite;
 }
 
 /* Super Challenge In Progress */
 .challenge-super_in_progress .challenge-node-wrapper {
-  background: linear-gradient(135deg, #9932CC 0%, #DA70D6 50%, #9932CC 100%);
-  animation: pulsePurple 1.5s ease-in-out infinite;
+  background: linear-gradient(135deg, #9932CC 0%, #FF69B4 50%, #9932CC 100%);
+  animation: pulsePurple 1.2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
 }
 
 .challenge-super_in_progress .challenge-node {
-  border: none;
+  border: 3px solid #FFD700;
   cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
 .challenge-super_in_progress .challenge-node:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(218, 112, 214, 0.5);
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px rgba(255, 105, 180, 0.6);
 }
 
 .challenge-super_in_progress .splash-ray {
-  color: #DA70D6;
-  background: linear-gradient(to bottom, #DA70D6, transparent);
+  color: #FF69B4;
+  background: linear-gradient(to bottom, #FF69B4, transparent);
 }
 
 .challenge-super_in_progress .challenge-info-card::before {
@@ -2427,6 +2438,15 @@ button,
   45% { transform: rotate(-1deg); }
   60% { transform: rotate(1deg); }
   75% { transform: rotate(0deg); }
+}
+
+@keyframes superCardGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(255, 20, 147, 0.6), 0 0 15px rgba(255, 215, 0, 0.3);
+  }
 }
 
 
