@@ -419,6 +419,11 @@ function loadChallengesScreen(container) {
     showBackgroundShopPopup(scrollToId);
   });
   
+  // Create page title (below fixed header)
+  const pageTitle = document.createElement('h1');
+  pageTitle.className = 'challenges-title';
+  pageTitle.textContent = 'Tägliche Herausforderungen';
+  
   // Create challenges map container
   const challengesMap = document.createElement('div');
   challengesMap.className = 'challenges-map';
@@ -601,6 +606,7 @@ function loadChallengesScreen(container) {
   footer.innerHTML = `v${VERSION.string}`;
   
   challengesContainer.appendChild(header);
+  challengesContainer.appendChild(pageTitle);
   challengesContainer.appendChild(challengesMap);
   challengesContainer.appendChild(rewardSection);
   challengesContainer.appendChild(footer);

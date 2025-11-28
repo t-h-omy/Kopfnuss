@@ -8,6 +8,9 @@
   /* App Height for mobile keyboard stability */
   --app-height: 100vh;
   
+  /* Header Height for fixed header spacing */
+  --header-height: 80px;
+  
   /* Background opacity (set via JavaScript from VISUAL_CONFIG.BACKGROUND_OPACITY) */
   --background-opacity: 0.35;
   
@@ -303,14 +306,26 @@ body::before {
   text-align: left;
 }
 
-/* Challenge Map Container - add top padding for fixed header */
+/* Page Title - Below fixed header */
+.challenges-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-blue);
+  text-align: center;
+  margin-top: calc(var(--header-height) + var(--spacing-md));
+  margin-bottom: var(--spacing-md);
+  padding: 0 var(--spacing-md);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Challenge Map Container */
 .challenges-map {
   position: relative;
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
   padding: var(--spacing-lg);
-  padding-top: 100px; /* Space for fixed header */
 }
 
 /* SVG Connection Lines */
