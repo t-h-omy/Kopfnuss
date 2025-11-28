@@ -368,32 +368,6 @@ function loadChallengesScreen(container) {
   const challengesContainer = document.createElement('div');
   challengesContainer.className = 'challenges-container';
   
-  // Create burger menu button (positioned absolutely in container)
-  const burgerButton = document.createElement('button');
-  burgerButton.className = 'burger-menu-button';
-  burgerButton.id = 'burger-menu-button';
-  burgerButton.setAttribute('aria-label', 'Einstellungen öffnen');
-  burgerButton.innerHTML = '<span class="burger-icon">☰</span>';
-  burgerButton.addEventListener('click', showSettingsPopup);
-  
-  // Create shop button (positioned below burger menu)
-  const shopButton = document.createElement('button');
-  shopButton.className = 'shop-button';
-  shopButton.id = 'shop-button';
-  shopButton.setAttribute('aria-label', 'Hintergründe anpassen');
-  shopButton.innerHTML = '<span class="shop-icon">🛒</span>';
-  shopButton.addEventListener('click', () => {
-    // Check for purchasable backgrounds to scroll to
-    const backgrounds = getAllBackgrounds();
-    const purchasableBackground = backgrounds.find(bg => bg.state === BACKGROUND_STATE.PURCHASABLE);
-    const scrollToId = purchasableBackground ? purchasableBackground.id : null;
-    showBackgroundShopPopup(scrollToId);
-  });
-  
-  // Create header with streak and diamonds
-  const header = document.createElement('div');
-  header.className = 'challenges-header';
-  
   // Create progress text with correct singular/plural form
   const tasksUntilNext = diamondInfo.tasksUntilNext;
   const progressText = tasksUntilNext === 1 
@@ -404,20 +378,46 @@ function loadChallengesScreen(container) {
   const streakIcon = streakInfo.isFrozen ? '🧊' : '🔥';
   const streakClass = streakInfo.isFrozen ? 'stat-capsule streak-frozen' : 'stat-capsule';
   
+  // Create fixed header with player stats and navigation
+  const header = document.createElement('div');
+  header.className = 'challenges-header';
+  
   header.innerHTML = `
-    <h1>Tägliche Herausforderungen</h1>
-    <div class="header-stats">
-      <div class="${streakClass}">
-        <span class="stat-icon">${streakIcon}</span>
-        <span class="stat-value">${streakInfo.currentStreak}</span>
+    <div class="header-left">
+      <div class="header-stats">
+        <div class="${streakClass}">
+          <span class="stat-icon">${streakIcon}</span>
+          <span class="stat-value">${streakInfo.currentStreak}</span>
+        </div>
+        <div class="stat-capsule">
+          <span class="stat-icon">💎</span>
+          <span class="stat-value">${diamondInfo.current}</span>
+        </div>
       </div>
-      <div class="stat-capsule">
-        <span class="stat-icon">💎</span>
-        <span class="stat-value">${diamondInfo.current}</span>
-      </div>
+      <div class="diamond-progress-info">${progressText}</div>
     </div>
-    <div class="diamond-progress-info">${progressText}</div>
+    <div class="header-right">
+      <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
+        <span class="shop-icon">🛒</span>
+      </button>
+      <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
+        <span class="burger-icon">☰</span>
+      </button>
+    </div>
   `;
+  
+  // Add event listeners for buttons inside header
+  const burgerButton = header.querySelector('#burger-menu-button');
+  burgerButton.addEventListener('click', showSettingsPopup);
+  
+  const shopButton = header.querySelector('#shop-button');
+  shopButton.addEventListener('click', () => {
+    // Check for purchasable backgrounds to scroll to
+    const backgrounds = getAllBackgrounds();
+    const purchasableBackground = backgrounds.find(bg => bg.state === BACKGROUND_STATE.PURCHASABLE);
+    const scrollToId = purchasableBackground ? purchasableBackground.id : null;
+    showBackgroundShopPopup(scrollToId);
+  });
   
   // Create challenges map container
   const challengesMap = document.createElement('div');
@@ -600,8 +600,6 @@ function loadChallengesScreen(container) {
   footer.className = 'challenges-footer';
   footer.innerHTML = `v${VERSION.string}`;
   
-  challengesContainer.appendChild(burgerButton);
-  challengesContainer.appendChild(shopButton);
   challengesContainer.appendChild(header);
   challengesContainer.appendChild(challengesMap);
   challengesContainer.appendChild(rewardSection);
