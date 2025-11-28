@@ -160,26 +160,30 @@ export function updateStreak() {
   if (daysSinceLastActive === 0) {
     // No changes needed, streak status stays the same
   }
-  // Next day - freeze streak if not already frozen (player needs to complete a challenge to unfreeze)
+  // 1 day gap - next day after activity, streak continues normally
+  // Player completed challenge yesterday, opens app today - no problem
   else if (daysSinceLastActive === 1) {
+    // No freezing needed, this is normal behavior
+    // The player has until the end of today to complete a challenge
+  }
+  // 2 days gap - 1 complete inactive day, streak is frozen
+  // Player completed challenge 2 days ago, missed yesterday, opens app today
+  else if (daysSinceLastActive === 2) {
     if (!streak.isFrozen && streak.currentStreak > 0) {
       streak.isFrozen = true;
       streak.lossReason = STREAK_LOSS_REASON.FROZEN;
     }
   }
-  // 2 days gap - streak is lost but restorable
-  else if (daysSinceLastActive === 2) {
-    if (streak.currentStreak > 0 && !streak.lossReason) {
+  // 3 days gap - streak is lost but restorable with diamond
+  else if (daysSinceLastActive === 3) {
+    if (streak.currentStreak > 0 && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_RESTORABLE) {
       streak.lossReason = STREAK_LOSS_REASON.EXPIRED_RESTORABLE;
     }
     // Don't reset streak yet, allow restoration via popup
-    if (streak.lossReason === STREAK_LOSS_REASON.FROZEN) {
-      streak.lossReason = STREAK_LOSS_REASON.EXPIRED_RESTORABLE;
-    }
     streak.isFrozen = false;
   }
-  // More than 2 days - streak definitely lost
-  else if (daysSinceLastActive > 2) {
+  // 4+ days gap - streak permanently lost
+  else if (daysSinceLastActive >= 4) {
     if (streak.currentStreak > 0 && streak.lossReason !== STREAK_LOSS_REASON.EXPIRED_PERMANENT) {
       streak.lossReason = STREAK_LOSS_REASON.EXPIRED_PERMANENT;
     }

@@ -1595,6 +1595,9 @@ function setupDevSettingsListeners() {
           message = `Lücke: ${newGap} Tage → Streak endgültig verloren`;
         }
         
+        // Reset statusHandledDate so popup will show after reload
+        streak.statusHandledDate = null;
+        
         saveStreak(streak);
         showDevSettingsReloadPopup(`${message}. App neu starten?`);
       } else {
