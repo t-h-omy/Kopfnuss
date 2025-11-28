@@ -352,12 +352,13 @@ export function unfreezeStreakByChallenge() {
     ? daysBetween(streak.lastActiveDate, today)
     : null;
   
-  // Can only unfreeze if it's been 1 day
-  if (daysSinceLastActive !== 1) {
+  // Can only unfreeze if it's been exactly 2 days (frozen state)
+  // Day 0: last activity, Day 1: missed, Day 2: today (frozen, can unfreeze)
+  if (daysSinceLastActive !== 2) {
     return {
       success: false,
       wasUnfrozen: false,
-      message: 'Streak can only be unfrozen within 1 day'
+      message: 'Streak can only be unfrozen on frozen day (2 day gap)'
     };
   }
   

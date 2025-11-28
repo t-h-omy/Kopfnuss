@@ -182,6 +182,31 @@ function preloadCelebrationImages() {
 preloadCelebrationImages();
 
 /**
+ * Update the header streak display with new values
+ * @param {number} streakCount - The new streak count
+ * @param {boolean} isFrozen - Whether the streak is frozen
+ */
+function updateHeaderStreakDisplay(streakCount, isFrozen = false) {
+  const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
+  const streakIcon = streakCapsule?.querySelector('.stat-icon');
+  const streakValue = streakCapsule?.querySelector('.stat-value');
+  
+  if (streakValue) {
+    streakValue.textContent = streakCount;
+  }
+  
+  if (streakCapsule && streakIcon) {
+    if (isFrozen) {
+      streakCapsule.classList.add('streak-frozen');
+      streakIcon.textContent = '🧊';
+    } else {
+      streakCapsule.classList.remove('streak-frozen');
+      streakIcon.textContent = '🔥';
+    }
+  }
+}
+
+/**
  * Find the index of the currently unlocked (available or in_progress) challenge
  * @param {Array} challenges - Array of challenge objects
  * @returns {number} Index of the current unlocked challenge, or -1 if none found
@@ -1083,6 +1108,8 @@ function showStreakRestorablePopup(previousStreak, onClose = null) {
     } else {
       // Accept loss and start fresh
       acceptStreakLoss();
+      // Update header UI to show streak = 0
+      updateHeaderStreakDisplay(0, false);
       overlay.remove();
       markStreakStatusHandled();
       if (onClose && typeof onClose === 'function') {
@@ -1166,6 +1193,8 @@ function showStreakLostPopup(previousStreak, onClose = null) {
   const closeButton = document.getElementById('streak-lost-close-button');
   closeButton.addEventListener('click', () => {
     acceptStreakLoss();
+    // Update header UI to show streak = 0
+    updateHeaderStreakDisplay(0, false);
     overlay.remove();
     markStreakStatusHandled();
     if (onClose && typeof onClose === 'function') {
