@@ -8,6 +8,9 @@
   /* App Height for mobile keyboard stability */
   --app-height: 100vh;
   
+  /* Header Height for fixed header spacing */
+  --header-height: 80px;
+  
   /* Background opacity (set via JavaScript from VISUAL_CONFIG.BACKGROUND_OPACITY) */
   --background-opacity: 0.35;
   
@@ -197,28 +200,74 @@ body::before {
   pointer-events: none;
 }
 
-/* Header Section */
+/* Header Section - Fixed at top with player stats and navigation */
 .challenges-header {
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-lg) var(--spacing-md);
-  animation: fadeInDown 0.6s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  animation: fadeInDown 0.4s ease;
 }
 
-.challenges-header h1 {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 34px;
-  font-weight: 700;
-  color: var(--color-blue);
-  margin-bottom: var(--spacing-lg);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+/* Left side - Player Stats Block */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+}
+
+/* Right side - Navigation Buttons */
+.header-right {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+/* Navigation buttons in header */
+.header-right .burger-menu-button,
+.header-right .shop-button {
+  position: static;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  padding: 0;
+}
+
+.header-right .burger-menu-button:hover,
+.header-right .shop-button:hover {
+  background: var(--color-off-white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-right .burger-menu-button:active,
+.header-right .shop-button:active {
+  transform: scale(0.95);
 }
 
 /* Stats Capsules Container */
 .header-stats {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
@@ -249,12 +298,25 @@ body::before {
 
 /* Diamond Progress Info */
 .diamond-progress-info {
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-xs);
   font-family: 'Fredoka', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--color-blue);
+  text-align: left;
+}
+
+/* Page Title - Below fixed header */
+.challenges-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-blue);
   text-align: center;
+  margin-top: calc(var(--header-height) + var(--spacing-md));
+  margin-bottom: var(--spacing-md);
+  padding: 0 var(--spacing-md);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Challenge Map Container */
@@ -595,9 +657,6 @@ body::before {
    =========================== */
 
 .burger-menu-button {
-  position: fixed;
-  right: var(--spacing-lg);
-  top: var(--spacing-lg);
   width: 44px;
   height: 44px;
   border: none;
@@ -610,7 +669,6 @@ body::before {
   justify-content: center;
   transition: all var(--transition);
   padding: 0;
-  z-index: 100;
 }
 
 .burger-menu-button:hover {
@@ -1811,9 +1869,6 @@ button,
    =========================== */
 
 .shop-button {
-  position: fixed;
-  right: var(--spacing-lg);
-  top: calc(var(--spacing-lg) + 52px);
   width: 44px;
   height: 44px;
   border: none;
@@ -1826,7 +1881,6 @@ button,
   justify-content: center;
   transition: all var(--transition);
   padding: 0;
-  z-index: 100;
 }
 
 .shop-button:hover {
