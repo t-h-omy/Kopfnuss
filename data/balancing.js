@@ -198,6 +198,27 @@ const DEFAULT_BACKGROUNDS = {
     file: 'backgrounds/maine_coon_background_optimized.webp',
     cost: 2,
     tasksRequired: 280
+  },
+  elephant: {
+    id: 'elephant',
+    name: 'Elefant',
+    file: 'backgrounds/elephant_background_less_saturated.webp',
+    cost: 2,
+    tasksRequired: 5
+  },
+  pomeranian: {
+    id: 'pomeranian',
+    name: 'Pomeranian',
+    file: 'backgrounds/pomeranian_background_soft_optimized.webp',
+    cost: 2,
+    tasksRequired: 5
+  },
+  snakeJungle: {
+    id: 'snakeJungle',
+    name: 'Dschungelschlange',
+    file: 'backgrounds/snake_jungle_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 5
   }
 };
 
@@ -242,6 +263,27 @@ const DEV_BACKGROUNDS = {
     file: 'backgrounds/maine_coon_background_optimized.webp',
     cost: 2,
     tasksRequired: 15
+  },
+  elephant: {
+    id: 'elephant',
+    name: 'Elefant',
+    file: 'backgrounds/elephant_background_less_saturated.webp',
+    cost: 2,
+    tasksRequired: 2
+  },
+  pomeranian: {
+    id: 'pomeranian',
+    name: 'Pomeranian',
+    file: 'backgrounds/pomeranian_background_soft_optimized.webp',
+    cost: 2,
+    tasksRequired: 2
+  },
+  snakeJungle: {
+    id: 'snakeJungle',
+    name: 'Dschungelschlange',
+    file: 'backgrounds/snake_jungle_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 2
   }
 };
 
