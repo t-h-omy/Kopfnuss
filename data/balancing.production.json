@@ -75,15 +75,15 @@
       "id": "sunset",
       "name": "Sonnenuntergang",
       "file": "backgrounds/sunset_background_optimized.webp",
-      "cost": 2,
-      "tasksRequired": 70
+      "cost": 1,
+      "tasksRequired": 16
     },
     "unicorn": {
       "id": "unicorn",
       "name": "Einhorn",
       "file": "backgrounds/unicorn_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 210
+      "tasksRequired": 70
     },
     "candy": {
       "id": "candy",
@@ -97,7 +97,7 @@
       "name": "Maine Coon",
       "file": "backgrounds/maine_coon_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 280
+      "tasksRequired": 350
     }
   }
 }
