@@ -384,7 +384,7 @@ export function unfreezeStreakByChallenge() {
 }
 
 /**
- * Restore expired streak by spending a diamond (2-day gap only)
+ * Restore expired streak by spending a diamond (3-day gap only)
  * @returns {Object} Result with success status and message
  */
 export function restoreExpiredStreak() {
@@ -392,15 +392,15 @@ export function restoreExpiredStreak() {
   const diamonds = loadDiamonds();
   const today = getTodayDate();
   
-  // Check if streak can be restored (2-day gap)
+  // Check if streak can be restored (3-day gap = expired restorable)
   const daysSinceLastActive = streak.lastActiveDate 
     ? daysBetween(streak.lastActiveDate, today)
     : null;
     
-  if (daysSinceLastActive !== 2) {
+  if (daysSinceLastActive !== 3) {
     return {
       success: false,
-      message: 'Streak can only be restored after exactly 2 days of inactivity'
+      message: 'Streak can only be restored after exactly 3 days of inactivity'
     };
   }
   
