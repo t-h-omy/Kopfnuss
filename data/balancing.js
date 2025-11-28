@@ -158,14 +158,9 @@ export const CHALLENGE_TYPES = {
 };
 
 /**
- * Background customization configuration
- * Applied in: logic/backgroundManager.js, main.js - Background Customization Screen
- * 
- * Each background has a tasksRequired property that determines how many total
- * completed tasks are needed before the background becomes purchasable.
- * The default background (tasksRequired: 0) is always available.
+ * Production background customization configuration (used when dev mode is OFF)
  */
-export const BACKGROUNDS = {
+const DEFAULT_BACKGROUNDS = {
   // Default background - always unlocked, cannot be purchased
   default: {
     id: 'default',
@@ -205,3 +200,57 @@ export const BACKGROUNDS = {
     tasksRequired: 280
   }
 };
+
+/**
+ * Dev background customization configuration (faster unlock for testing)
+ */
+const DEV_BACKGROUNDS = {
+  // Default background - always unlocked, cannot be purchased
+  default: {
+    id: 'default',
+    name: 'Standard',
+    file: 'backgrounds/background_compressed.webp',
+    cost: 0,
+    tasksRequired: 0,
+    isDefault: true
+  },
+  // Unlockable backgrounds - lower tasksRequired for faster testing
+  sunset: {
+    id: 'sunset',
+    name: 'Sonnenuntergang',
+    file: 'backgrounds/sunset_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 5
+  },
+  unicorn: {
+    id: 'unicorn',
+    name: 'Einhorn',
+    file: 'backgrounds/unicorn_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 10
+  },
+  candy: {
+    id: 'candy',
+    name: 'Süßigkeiten',
+    file: 'backgrounds/candy_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 10
+  },
+  maineCoon: {
+    id: 'maineCoon',
+    name: 'Maine Coon',
+    file: 'backgrounds/maine_coon_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 15
+  }
+};
+
+/**
+ * Background customization configuration
+ * Applied in: logic/backgroundManager.js, main.js - Background Customization Screen
+ * 
+ * Each background has a tasksRequired property that determines how many total
+ * completed tasks are needed before the background becomes purchasable.
+ * The default background (tasksRequired: 0) is always available.
+ */
+export const BACKGROUNDS = useDevBalancing ? DEV_BACKGROUNDS : DEFAULT_BACKGROUNDS;
