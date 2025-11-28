@@ -76,28 +76,28 @@
       "name": "Sonnenuntergang",
       "file": "backgrounds/sunset_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 70
+      "tasksRequired": 5
     },
     "unicorn": {
       "id": "unicorn",
       "name": "Einhorn",
       "file": "backgrounds/unicorn_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 210
+      "tasksRequired": 10
     },
     "candy": {
       "id": "candy",
       "name": "Süßigkeiten",
       "file": "backgrounds/candy_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 140
+      "tasksRequired": 10
     },
     "maineCoon": {
       "id": "maineCoon",
       "name": "Maine Coon",
       "file": "backgrounds/maine_coon_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 280
+      "tasksRequired": 15
     }
   }
 }
