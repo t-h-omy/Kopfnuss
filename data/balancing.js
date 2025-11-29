@@ -197,15 +197,15 @@ const DEFAULT_BACKGROUNDS = {
     id: 'sunset',
     name: 'Sonnenuntergang',
     file: 'backgrounds/sunset_background_optimized.webp',
-    cost: 2,
-    tasksRequired: 70
+    cost: 1,
+    tasksRequired: 16
   },
   unicorn: {
     id: 'unicorn',
     name: 'Einhorn',
     file: 'backgrounds/unicorn_background_optimized.webp',
     cost: 2,
-    tasksRequired: 210
+    tasksRequired: 70
   },
   candy: {
     id: 'candy',
@@ -218,57 +218,57 @@ const DEFAULT_BACKGROUNDS = {
     id: 'maineCoon',
     name: 'Maine Coon',
     file: 'backgrounds/maine_coon_background_optimized.webp',
-    cost: 2,
-    tasksRequired: 280
+    cost: 4,
+    tasksRequired: 350
   },
   elephant: {
     id: 'elephant',
     name: 'Elefant',
     file: 'backgrounds/elephant_background_less_saturated.webp',
-    cost: 2,
-    tasksRequired: 5
+    cost: 4,
+    tasksRequired: 530
   },
   pomeranian: {
     id: 'pomeranian',
     name: 'Pomeranian',
     file: 'backgrounds/pomeranian_background_soft_optimized.webp',
-    cost: 2,
-    tasksRequired: 5
+    cost: 3,
+    tasksRequired: 710
   },
   snakeJungle: {
     id: 'snakeJungle',
     name: 'Dschungelschlange',
     file: 'backgrounds/snake_jungle_background_optimized.webp',
-    cost: 2,
-    tasksRequired: 5
+    cost: 4,
+    tasksRequired: 230
   },
   capybara: {
     id: 'capybara',
     name: 'Capybara',
     file: 'backgrounds/capybara_background_less_saturated.webp',
-    cost: 2,
-    tasksRequired: 350
+    cost: 4,
+    tasksRequired: 850
   },
   dino: {
     id: 'dino',
     name: 'Dinosaurier',
     file: 'backgrounds/dino_background_optimized.webp',
-    cost: 2,
-    tasksRequired: 420
+    cost: 3,
+    tasksRequired: 1000
   },
   instruments: {
     id: 'instruments',
     name: 'Musikinstrumente',
     file: 'backgrounds/instruments_optimized.webp',
-    cost: 2,
-    tasksRequired: 490
+    cost: 3,
+    tasksRequired: 1180
   },
   orca: {
     id: 'orca',
     name: 'Orca',
     file: 'backgrounds/orca_background_optimized.webp',
-    cost: 2,
-    tasksRequired: 560
+    cost: 3,
+    tasksRequired: 1350
   }
 };
 
