@@ -501,7 +501,10 @@ export function markEventEndPopupShown(eventId) {
 
 /**
  * Clear all seasonal data for an event (called when event ends)
- * This resets currency and unlocked backgrounds for the event
+ * This resets currency, task count, and unlocked backgrounds for the event.
+ * Note: This function is called automatically when the event end popup is shown
+ * to ensure all seasonal data is cleared for the next occurrence of the event.
+ * Per requirements, seasonal backgrounds must be unlocked again each year.
  * @param {string} eventId - ID of the event to clear
  */
 export function clearEventData(eventId) {

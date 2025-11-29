@@ -65,7 +65,8 @@ import {
   shouldShowEventEndPopup,
   markEventEndPopupShown,
   checkAndResetSeasonalBackground,
-  isSeasonalBackgroundUsable
+  isSeasonalBackgroundUsable,
+  clearEventData
 } from './logic/eventManager.js';
 
 /**
@@ -1434,11 +1435,11 @@ function showSuperChallengeSuccessPopup(onClose = null) {
   
   let rewardDisplayHtml;
   if (seasonalReward) {
-    // Seasonal currency reward
+    // Seasonal currency reward - use singular form
     rewardDisplayHtml = `
       <div class="super-success-display seasonal-reward">
         <span class="super-success-icon">${seasonalReward.emoticon}</span>
-        <span class="super-success-text">+1 ${seasonalReward.currencyName.slice(0, -1)}</span>
+        <span class="super-success-text">+1 ${seasonalReward.currencyNameSingular}</span>
       </div>
     `;
   } else {
@@ -1581,6 +1582,10 @@ function showEventEndPopup(event, backgroundWasReset = false, onClose = null) {
     if (onClose) onClose();
     return;
   }
+  
+  // Clear all seasonal data for this event (currency, tasks, unlocked backgrounds)
+  // This ensures the player must earn everything again next time the event occurs
+  clearEventData(event.id);
   
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay event-popup-overlay';

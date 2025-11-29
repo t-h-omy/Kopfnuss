@@ -337,6 +337,7 @@ const DEFAULT_SEASONAL_EVENTS = {
     name: 'Weihnachten',
     emoticon: '❄️',
     currencyName: 'Schneeflocken',
+    currencyNameSingular: 'Schneeflocke',
     startMonth: 12,
     startDay: 1,
     endMonth: 12,
@@ -349,6 +350,7 @@ const DEFAULT_SEASONAL_EVENTS = {
     name: 'Frühling',
     emoticon: '🌸',
     currencyName: 'Blütenblätter',
+    currencyNameSingular: 'Blütenblatt',
     startMonth: 3,
     startDay: 15,
     endMonth: 4,
@@ -361,6 +363,7 @@ const DEFAULT_SEASONAL_EVENTS = {
     name: 'Sommer',
     emoticon: '☀️',
     currencyName: 'Sonnenstrahlen',
+    currencyNameSingular: 'Sonnenstrahl',
     startMonth: 7,
     startDay: 1,
     endMonth: 8,
@@ -379,6 +382,7 @@ const DEV_SEASONAL_EVENTS = {
     name: 'Weihnachten',
     emoticon: '❄️',
     currencyName: 'Schneeflocken',
+    currencyNameSingular: 'Schneeflocke',
     startMonth: 11,
     startDay: 1,
     endMonth: 12,
@@ -391,6 +395,7 @@ const DEV_SEASONAL_EVENTS = {
     name: 'Frühling',
     emoticon: '🌸',
     currencyName: 'Blütenblätter',
+    currencyNameSingular: 'Blütenblatt',
     startMonth: 3,
     startDay: 1,
     endMonth: 4,
@@ -403,6 +408,7 @@ const DEV_SEASONAL_EVENTS = {
     name: 'Sommer',
     emoticon: '☀️',
     currencyName: 'Sonnenstrahlen',
+    currencyNameSingular: 'Sonnenstrahl',
     startMonth: 6,
     startDay: 1,
     endMonth: 8,
@@ -422,12 +428,19 @@ export const SEASONAL_EVENTS = useDevBalancing ? DEV_SEASONAL_EVENTS : DEFAULT_S
  * Production seasonal backgrounds configuration
  * Seasonal backgrounds are only available during their associated event.
  * They cost seasonal currency (not diamonds) and require tasks completed during the event.
+ * 
+ * NOTE: The 'file' property currently uses placeholder images. Each seasonal background
+ * should have its own unique image file added to assets/backgrounds/ before enabling
+ * the seasonal event system in production. Example files to create:
+ * - christmas_snow_background.webp
+ * - spring_blossoms_background.webp
+ * - summer_beach_background.webp
  */
 const DEFAULT_SEASONAL_BACKGROUNDS = {
   christmasSnow: {
     id: 'christmasSnow',
     name: 'Winterwunderland',
-    file: 'backgrounds/background_compressed.webp', // Placeholder - would be replaced with actual seasonal background
+    file: 'backgrounds/background_compressed.webp', // TODO: Replace with christmas_snow_background.webp
     cost: 50,
     tasksRequired: 100,
     eventId: 'christmas',
@@ -436,7 +449,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
   springBlossoms: {
     id: 'springBlossoms',
     name: 'Kirschblüten',
-    file: 'backgrounds/background_compressed.webp', // Placeholder - would be replaced with actual seasonal background
+    file: 'backgrounds/background_compressed.webp', // TODO: Replace with spring_blossoms_background.webp
     cost: 40,
     tasksRequired: 80,
     eventId: 'spring',
@@ -445,7 +458,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
   summerBeach: {
     id: 'summerBeach',
     name: 'Strandparadies',
-    file: 'backgrounds/background_compressed.webp', // Placeholder - would be replaced with actual seasonal background
+    file: 'backgrounds/background_compressed.webp', // TODO: Replace with summer_beach_background.webp
     cost: 45,
     tasksRequired: 90,
     eventId: 'summer',
@@ -455,12 +468,13 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
 
 /**
  * Dev seasonal backgrounds configuration (lower requirements for testing)
+ * NOTE: Uses the same placeholder images as production config for testing purposes.
  */
 const DEV_SEASONAL_BACKGROUNDS = {
   christmasSnow: {
     id: 'christmasSnow',
     name: 'Winterwunderland',
-    file: 'backgrounds/background_compressed.webp', // Placeholder
+    file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
     cost: 5,
     tasksRequired: 10,
     eventId: 'christmas',
@@ -469,7 +483,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
   springBlossoms: {
     id: 'springBlossoms',
     name: 'Kirschblüten',
-    file: 'backgrounds/background_compressed.webp', // Placeholder
+    file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
     cost: 4,
     tasksRequired: 8,
     eventId: 'spring',
@@ -478,7 +492,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
   summerBeach: {
     id: 'summerBeach',
     name: 'Strandparadies',
-    file: 'backgrounds/background_compressed.webp', // Placeholder
+    file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
     cost: 5,
     tasksRequired: 9,
     eventId: 'summer',

@@ -225,7 +225,8 @@ export function completeCurrentChallenge() {
           seasonalCurrencyAwarded = {
             amount: 1,
             emoticon: activeEvent.emoticon,
-            currencyName: activeEvent.currencyName
+            currencyName: activeEvent.currencyName,
+            currencyNameSingular: activeEvent.currencyNameSingular
           };
         }
         superChallengeAwardedDiamond = false;
