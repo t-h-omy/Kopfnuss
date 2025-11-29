@@ -1087,11 +1087,26 @@ button,
   content: '⭐';
   position: absolute;
   top: -12px;
-  right: -12px;
   font-size: 32px;
-  z-index: 20;
+  z-index: 100;
   filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
   animation: starSwivel 3s ease-in-out infinite;
+}
+
+/* Star on right for left-positioned challenges (node is on left, star goes to right of info card) */
+.challenge-row.position-left .challenge-super_locked .challenge-info-card::after,
+.challenge-row.position-left .challenge-super_available .challenge-info-card::after,
+.challenge-row.position-left .challenge-super_in_progress .challenge-info-card::after {
+  right: -12px;
+  left: auto;
+}
+
+/* Star on left for right-positioned challenges (node is on right, star goes to left of info card) */
+.challenge-row.position-right .challenge-super_locked .challenge-info-card::after,
+.challenge-row.position-right .challenge-super_available .challenge-info-card::after,
+.challenge-row.position-right .challenge-super_in_progress .challenge-info-card::after {
+  left: -12px;
+  right: auto;
 }
 
 .challenge-super_locked .challenge-info-card::after {
@@ -1100,6 +1115,14 @@ button,
 
 .challenge-super_available .challenge-info-card::after {
   animation: starSwivel 2s ease-in-out infinite;
+}
+
+/* Ensure info card creates stacking context for the star */
+.challenge-super_locked .challenge-info-card,
+.challenge-super_available .challenge-info-card,
+.challenge-super_in_progress .challenge-info-card {
+  position: relative;
+  z-index: 10;
 }
 
 /* Super Challenge Locked */
