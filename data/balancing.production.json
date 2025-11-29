@@ -103,57 +103,57 @@
       "id": "maineCoon",
       "name": "Maine Coon",
       "file": "backgrounds/maine_coon_background_optimized.webp",
-      "cost": 2,
+      "cost": 4,
       "tasksRequired": 350
     },
     "elephant": {
       "id": "elephant",
       "name": "Elefant",
       "file": "backgrounds/elephant_background_less_saturated.webp",
-      "cost": 2,
+      "cost": 4,
       "tasksRequired": 530
     },
     "pomeranian": {
       "id": "pomeranian",
       "name": "Pomeranian",
       "file": "backgrounds/pomeranian_background_soft_optimized.webp",
-      "cost": 2,
+      "cost": 3,
       "tasksRequired": 710
     },
     "snakeJungle": {
       "id": "snakeJungle",
       "name": "Dschungelschlange",
       "file": "backgrounds/snake_jungle_background_optimized.webp",
-      "cost": 2,
+      "cost": 4,
       "tasksRequired": 230
     },
     "capybara": {
       "id": "capybara",
       "name": "Capybara",
       "file": "backgrounds/capybara_background_less_saturated.webp",
-      "cost": 2,
-      "tasksRequired": 350
+      "cost": 4,
+      "tasksRequired": 850
     },
     "dino": {
       "id": "dino",
       "name": "Dinosaurier",
       "file": "backgrounds/dino_background_optimized.webp",
-      "cost": 2,
-      "tasksRequired": 420
+      "cost": 3,
+      "tasksRequired": 1000
     },
     "instruments": {
       "id": "instruments",
       "name": "Musikinstrumente",
       "file": "backgrounds/instruments_optimized.webp",
-      "cost": 2,
-      "tasksRequired": 490
+      "cost": 3,
+      "tasksRequired": 1180
     },
     "orca": {
       "id": "orca",
       "name": "Orca",
       "file": "backgrounds/orca_background_optimized.webp",
-      "cost": 2,
-      "tasksRequired": 560
+      "cost": 3,
+      "tasksRequired": 1350
     }
   },
   "SEASONAL_EVENTS": {
@@ -166,7 +166,7 @@
       "startMonth": 12,
       "startDay": 1,
       "endMonth": 12,
-      "endDay": 31,
+      "endDay": 28,
       "popupTitle": "Weihnachts-Event",
       "popupDescription": "Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!"
     },
@@ -174,14 +174,14 @@
       "id": "newYear",
       "name": "Neujahr",
       "emoticon": "🎆",
-      "currencyName": "Feuerwerksblitze",
-      "currencyNameSingular": "Feuerwerksblitz",
+      "currencyName": "Feuerwerk",
+      "currencyNameSingular": "Feuerwerk",
       "startMonth": 1,
       "startDay": 1,
       "endMonth": 1,
       "endDay": 7,
       "popupTitle": "Neujahrs-Event",
-      "popupDescription": "Sammle Feuerwerksblitze und schalte festliche Hintergründe frei!"
+      "popupDescription": "Sammle Feuerwerke und schalte festliche Hintergründe frei!"
     },
     "valentines": {
       "id": "valentines",
@@ -192,7 +192,7 @@
       "startMonth": 2,
       "startDay": 7,
       "endMonth": 2,
-      "endDay": 14,
+      "endDay": 15,
       "popupTitle": "Valentinstags-Event",
       "popupDescription": "Sammle Rosen und schalte romantische Hintergründe frei!"
     },
@@ -203,7 +203,7 @@
       "currencyName": "Ostereier",
       "currencyNameSingular": "Osterei",
       "startMonth": 3,
-      "startDay": 15,
+      "startDay": 20,
       "endMonth": 4,
       "endDay": 21,
       "popupTitle": "Oster-Event",
@@ -216,9 +216,9 @@
       "currencyName": "Sonnen",
       "currencyNameSingular": "Sonne",
       "startMonth": 7,
-      "startDay": 1,
-      "endMonth": 8,
-      "endDay": 31,
+      "startDay": 25,
+      "endMonth": 9,
+      "endDay": 10,
       "popupTitle": "Sommerferien-Event",
       "popupDescription": "Sammle Sonnen und schalte sommerliche Hintergründe frei!"
     },
@@ -230,19 +230,19 @@
       "currencyNameSingular": "Kürbislaterne",
       "startMonth": 10,
       "startDay": 15,
-      "endMonth": 10,
-      "endDay": 31,
+      "endMonth": 11,
+      "endDay": 1,
       "popupTitle": "Halloween-Event",
       "popupDescription": "Sammle Kürbislaternen und schalte gruselige Hintergründe frei!"
     }
   },
   "SEASONAL_BACKGROUNDS": {
     "gingerbread": {
-      "id": "gingerbread",
-      "name": "Lebkuchen",
+      "id": "gingerbreadman",
+      "name": "Gingerbreadman",
       "file": "backgrounds/christmas/gingerbread_optimized.webp",
       "cost": 2,
-      "tasksRequired": 80,
+      "tasksRequired": 40,
       "eventId": "christmas",
       "isSeasonal": true
     },
