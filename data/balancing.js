@@ -441,7 +441,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
     id: 'christmasSnow',
     name: 'Winterwunderland',
     file: 'backgrounds/background_compressed.webp', // TODO: Replace with christmas_snow_background.webp
-    cost: 50,
+    cost: 2,
     tasksRequired: 100,
     eventId: 'christmas',
     isSeasonal: true
@@ -450,7 +450,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
     id: 'springBlossoms',
     name: 'Kirschblüten',
     file: 'backgrounds/background_compressed.webp', // TODO: Replace with spring_blossoms_background.webp
-    cost: 40,
+    cost: 2,
     tasksRequired: 80,
     eventId: 'spring',
     isSeasonal: true
@@ -459,7 +459,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
     id: 'summerBeach',
     name: 'Strandparadies',
     file: 'backgrounds/background_compressed.webp', // TODO: Replace with summer_beach_background.webp
-    cost: 45,
+    cost: 2,
     tasksRequired: 90,
     eventId: 'summer',
     isSeasonal: true
@@ -475,7 +475,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
     id: 'christmasSnow',
     name: 'Winterwunderland',
     file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
-    cost: 5,
+    cost: 2,
     tasksRequired: 10,
     eventId: 'christmas',
     isSeasonal: true
@@ -484,7 +484,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
     id: 'springBlossoms',
     name: 'Kirschblüten',
     file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
-    cost: 4,
+    cost: 2,
     tasksRequired: 8,
     eventId: 'spring',
     isSeasonal: true
@@ -493,7 +493,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
     id: 'summerBeach',
     name: 'Strandparadies',
     file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
-    cost: 5,
+    cost: 2,
     tasksRequired: 9,
     eventId: 'summer',
     isSeasonal: true
