@@ -101,7 +101,15 @@ const DEFAULT_CONFIG = {
   LOSE_AFTER_DAYS: 2,
   // Super Challenge settings
   SUPER_CHALLENGE_SPAWN_CHANCE: 0.25, // 25% chance for a super challenge to spawn
-  SUPER_CHALLENGE_SPARKLE_COUNT: 12   // Number of sparkle particles during super challenge
+  SUPER_CHALLENGE_SPARKLE_COUNT: 12,  // Number of sparkle particles during super challenge
+  // Shadow settings for modern drop shadow effects
+  SHADOW_COLOR: 'rgba(0, 0, 0, 0.12)',  // Default shadow color
+  SHADOW_BLUR_SMALL: '8px',             // Blur radius for small elements (capsules, small cards)
+  SHADOW_BLUR_LARGE: '16px',            // Blur radius for large elements (nodes, popups)
+  SHADOW_SPREAD_SMALL: '0px',           // Spread for small elements
+  SHADOW_SPREAD_LARGE: '2px',           // Spread for large elements
+  SHADOW_OFFSET_Y_SMALL: '4px',         // Vertical offset for small elements
+  SHADOW_OFFSET_Y_LARGE: '6px'          // Vertical offset for large elements
 };
 
 /**
@@ -117,7 +125,15 @@ const DEV_CONFIG = {
   LOSE_AFTER_DAYS: 2,
   // Super Challenge settings (higher chance for testing)
   SUPER_CHALLENGE_SPAWN_CHANCE: 0.75, // 75% chance in dev mode for easier testing
-  SUPER_CHALLENGE_SPARKLE_COUNT: 12   // Number of sparkle particles during super challenge
+  SUPER_CHALLENGE_SPARKLE_COUNT: 12,  // Number of sparkle particles during super challenge
+  // Shadow settings for modern drop shadow effects
+  SHADOW_COLOR: 'rgba(0, 0, 0, 0.12)',  // Default shadow color
+  SHADOW_BLUR_SMALL: '8px',             // Blur radius for small elements (capsules, small cards)
+  SHADOW_BLUR_LARGE: '16px',            // Blur radius for large elements (nodes, popups)
+  SHADOW_SPREAD_SMALL: '0px',           // Spread for small elements
+  SHADOW_SPREAD_LARGE: '2px',           // Spread for large elements
+  SHADOW_OFFSET_Y_SMALL: '4px',         // Vertical offset for small elements
+  SHADOW_OFFSET_Y_LARGE: '6px'          // Vertical offset for large elements
 };
 
 /**

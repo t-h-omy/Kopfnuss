@@ -28,7 +28,14 @@
     "TASKS_PER_DIAMOND": 80,
     "STREAK_RESCUE_COST": 1,
     "FREEZE_AFTER_DAYS": 1,
-    "LOSE_AFTER_DAYS": 2
+    "LOSE_AFTER_DAYS": 2,
+    "SHADOW_COLOR": "rgba(0, 0, 0, 0.12)",
+    "SHADOW_BLUR_SMALL": "8px",
+    "SHADOW_BLUR_LARGE": "16px",
+    "SHADOW_SPREAD_SMALL": "0px",
+    "SHADOW_SPREAD_LARGE": "2px",
+    "SHADOW_OFFSET_Y_SMALL": "4px",
+    "SHADOW_OFFSET_Y_LARGE": "6px"
   },
   "CHALLENGE_TYPES": {
     "addition": {
