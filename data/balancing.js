@@ -403,7 +403,7 @@ const DEFAULT_SEASONAL_EVENTS = {
     startMonth: 12,
     startDay: 1,
     endMonth: 12,
-    endDay: 31,
+    endDay: 28,
     popupTitle: 'Weihnachts-Event',
     popupDescription: 'Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!'
   },
@@ -411,14 +411,14 @@ const DEFAULT_SEASONAL_EVENTS = {
     id: 'newYear',
     name: 'Neujahr',
     emoticon: '🎆',
-    currencyName: 'Feuerwerksblitze',
-    currencyNameSingular: 'Feuerwerksblitz',
+    currencyName: 'Feuerwerk',
+    currencyNameSingular: 'Feuerwerk',
     startMonth: 1,
     startDay: 1,
     endMonth: 1,
     endDay: 7,
     popupTitle: 'Neujahrs-Event',
-    popupDescription: 'Sammle Feuerwerksblitze und schalte festliche Hintergründe frei!'
+    popupDescription: 'Sammle Feuerwerke und schalte festliche Hintergründe frei!'
   },
   valentines: {
     id: 'valentines',
@@ -429,7 +429,7 @@ const DEFAULT_SEASONAL_EVENTS = {
     startMonth: 2,
     startDay: 7,
     endMonth: 2,
-    endDay: 14,
+    endDay: 15,
     popupTitle: 'Valentinstags-Event',
     popupDescription: 'Sammle Rosen und schalte romantische Hintergründe frei!'
   },
@@ -440,7 +440,7 @@ const DEFAULT_SEASONAL_EVENTS = {
     currencyName: 'Ostereier',
     currencyNameSingular: 'Osterei',
     startMonth: 3,
-    startDay: 15,
+    startDay: 20,
     endMonth: 4,
     endDay: 21,
     popupTitle: 'Oster-Event',
@@ -453,9 +453,9 @@ const DEFAULT_SEASONAL_EVENTS = {
     currencyName: 'Sonnen',
     currencyNameSingular: 'Sonne',
     startMonth: 7,
-    startDay: 1,
-    endMonth: 8,
-    endDay: 31,
+    startDay: 25,
+    endMonth: 9,
+    endDay: 10,
     popupTitle: 'Sommerferien-Event',
     popupDescription: 'Sammle Sonnen und schalte sommerliche Hintergründe frei!'
   },
@@ -467,8 +467,8 @@ const DEFAULT_SEASONAL_EVENTS = {
     currencyNameSingular: 'Kürbislaterne',
     startMonth: 10,
     startDay: 15,
-    endMonth: 10,
-    endDay: 31,
+    endMonth: 11,
+    endDay: 1,
     popupTitle: 'Halloween-Event',
     popupDescription: 'Sammle Kürbislaternen und schalte gruselige Hintergründe frei!'
   }
@@ -585,11 +585,11 @@ export const SEASONAL_EVENTS = useDevBalancing ? DEV_SEASONAL_EVENTS : DEFAULT_S
 const DEFAULT_SEASONAL_BACKGROUNDS = {
   // Christmas backgrounds
   gingerbread: {
-    id: 'gingerbread',
-    name: 'Lebkuchen',
+    id: 'gingerbreadman',
+    name: 'Gingerbreadman',
     file: 'backgrounds/christmas/gingerbread_optimized.webp',
     cost: 2,
-    tasksRequired: 80,
+    tasksRequired: 40,
     eventId: 'christmas',
     isSeasonal: true
   },
