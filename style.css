@@ -1081,6 +1081,7 @@ button,
    =========================== */
 
 /* Super Challenge Star Badge - positioned on info card corner (opposite from node) */
+/* Star must be on top of everything: info-card (z-index: 1) < node (z-index: 3) < lock (z-index: 4) < star (z-index: 5) */
 .challenge-super_locked .challenge-info-card::after,
 .challenge-super_available .challenge-info-card::after,
 .challenge-super_in_progress .challenge-info-card::after {
@@ -1088,7 +1089,7 @@ button,
   position: absolute;
   top: -12px;
   font-size: 32px;
-  z-index: 100;
+  z-index: 5;
   filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
   animation: starSwivel 3s ease-in-out infinite;
 }
@@ -1118,11 +1119,12 @@ button,
 }
 
 /* Ensure info card creates stacking context for the star */
+/* Layering order: info-card (z-index: 1) < node (z-index: 3) < lock (z-index: 4) < star (z-index: 5) */
 .challenge-super_locked .challenge-info-card,
 .challenge-super_available .challenge-info-card,
 .challenge-super_in_progress .challenge-info-card {
   position: relative;
-  z-index: 10;
+  z-index: 1;
 }
 
 /* Super Challenge Locked */
