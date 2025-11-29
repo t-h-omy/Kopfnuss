@@ -241,6 +241,34 @@ const DEFAULT_BACKGROUNDS = {
     file: 'backgrounds/snake_jungle_background_optimized.webp',
     cost: 2,
     tasksRequired: 5
+  },
+  capybara: {
+    id: 'capybara',
+    name: 'Capybara',
+    file: 'backgrounds/capybara_background_less_saturated.webp',
+    cost: 2,
+    tasksRequired: 350
+  },
+  dino: {
+    id: 'dino',
+    name: 'Dinosaurier',
+    file: 'backgrounds/dino_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 420
+  },
+  instruments: {
+    id: 'instruments',
+    name: 'Musikinstrumente',
+    file: 'backgrounds/instruments_optimized.webp',
+    cost: 2,
+    tasksRequired: 490
+  },
+  orca: {
+    id: 'orca',
+    name: 'Orca',
+    file: 'backgrounds/orca_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 560
   }
 };
 
@@ -306,6 +334,34 @@ const DEV_BACKGROUNDS = {
     file: 'backgrounds/snake_jungle_background_optimized.webp',
     cost: 2,
     tasksRequired: 2
+  },
+  capybara: {
+    id: 'capybara',
+    name: 'Capybara',
+    file: 'backgrounds/capybara_background_less_saturated.webp',
+    cost: 2,
+    tasksRequired: 3
+  },
+  dino: {
+    id: 'dino',
+    name: 'Dinosaurier',
+    file: 'backgrounds/dino_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 3
+  },
+  instruments: {
+    id: 'instruments',
+    name: 'Musikinstrumente',
+    file: 'backgrounds/instruments_optimized.webp',
+    cost: 2,
+    tasksRequired: 4
+  },
+  orca: {
+    id: 'orca',
+    name: 'Orca',
+    file: 'backgrounds/orca_background_optimized.webp',
+    cost: 2,
+    tasksRequired: 4
   }
 };
 
@@ -428,19 +484,22 @@ export const SEASONAL_EVENTS = useDevBalancing ? DEV_SEASONAL_EVENTS : DEFAULT_S
  * Production seasonal backgrounds configuration
  * Seasonal backgrounds are only available during their associated event.
  * They cost seasonal currency (not diamonds) and require tasks completed during the event.
- * 
- * NOTE: The 'file' property currently uses placeholder images. Each seasonal background
- * should have its own unique image file added to assets/backgrounds/ before enabling
- * the seasonal event system in production. Example files to create:
- * - christmas_snow_background.webp
- * - spring_blossoms_background.webp
- * - summer_beach_background.webp
+ * Seasonal backgrounds are organized in subfolders: christmas/, spring/, summer/
  */
 const DEFAULT_SEASONAL_BACKGROUNDS = {
-  christmasSnow: {
-    id: 'christmasSnow',
-    name: 'Winterwunderland',
-    file: 'backgrounds/background_compressed.webp', // TODO: Replace with christmas_snow_background.webp
+  gingerbread: {
+    id: 'gingerbread',
+    name: 'Lebkuchen',
+    file: 'backgrounds/christmas/gingerbread_optimized.webp',
+    cost: 2,
+    tasksRequired: 80,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  christmasTree: {
+    id: 'christmasTree',
+    name: 'Weihnachtsbaum',
+    file: 'backgrounds/christmas/christmas_tree_presents_mobile.webp',
     cost: 2,
     tasksRequired: 100,
     eventId: 'christmas',
@@ -449,7 +508,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
   springBlossoms: {
     id: 'springBlossoms',
     name: 'Kirschblüten',
-    file: 'backgrounds/background_compressed.webp', // TODO: Replace with spring_blossoms_background.webp
+    file: 'backgrounds/background_compressed.webp', // TODO: Add spring background to backgrounds/spring/
     cost: 2,
     tasksRequired: 80,
     eventId: 'spring',
@@ -458,7 +517,7 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
   summerBeach: {
     id: 'summerBeach',
     name: 'Strandparadies',
-    file: 'backgrounds/background_compressed.webp', // TODO: Replace with summer_beach_background.webp
+    file: 'backgrounds/background_compressed.webp', // TODO: Add summer background to backgrounds/summer/
     cost: 2,
     tasksRequired: 90,
     eventId: 'summer',
@@ -468,13 +527,22 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
 
 /**
  * Dev seasonal backgrounds configuration (lower requirements for testing)
- * NOTE: Uses the same placeholder images as production config for testing purposes.
+ * Seasonal backgrounds are organized in subfolders: christmas/, spring/, summer/
  */
 const DEV_SEASONAL_BACKGROUNDS = {
-  christmasSnow: {
-    id: 'christmasSnow',
-    name: 'Winterwunderland',
-    file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
+  gingerbread: {
+    id: 'gingerbread',
+    name: 'Lebkuchen',
+    file: 'backgrounds/christmas/gingerbread_optimized.webp',
+    cost: 2,
+    tasksRequired: 5,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  christmasTree: {
+    id: 'christmasTree',
+    name: 'Weihnachtsbaum',
+    file: 'backgrounds/christmas/christmas_tree_presents_mobile.webp',
     cost: 2,
     tasksRequired: 10,
     eventId: 'christmas',
@@ -483,7 +551,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
   springBlossoms: {
     id: 'springBlossoms',
     name: 'Kirschblüten',
-    file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
+    file: 'backgrounds/background_compressed.webp', // TODO: Add spring background to backgrounds/spring/
     cost: 2,
     tasksRequired: 8,
     eventId: 'spring',
@@ -492,7 +560,7 @@ const DEV_SEASONAL_BACKGROUNDS = {
   summerBeach: {
     id: 'summerBeach',
     name: 'Strandparadies',
-    file: 'backgrounds/background_compressed.webp', // TODO: Replace with seasonal image
+    file: 'backgrounds/background_compressed.webp', // TODO: Add summer background to backgrounds/summer/
     cost: 2,
     tasksRequired: 9,
     eventId: 'summer',
