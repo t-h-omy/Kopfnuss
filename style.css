@@ -2549,7 +2549,231 @@ button,
 
 
 /* ===========================
-   17. PRINT
+   17. SEASONAL EVENTS
+   =========================== */
+
+/* Event Countdown in Header */
+.event-countdown {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7B1FA2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  margin-right: var(--spacing-xs);
+}
+
+.event-emoticon {
+  font-size: 16px;
+}
+
+.event-countdown-text {
+  font-weight: 600;
+}
+
+/* Seasonal Currency Capsule */
+.stat-capsule.seasonal-currency {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border: 2px solid #81C784;
+}
+
+.stat-capsule.seasonal-currency .stat-value {
+  color: #388E3C;
+}
+
+/* Event Popup Styles */
+.event-popup-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.event-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+}
+
+.event-emoticon-large {
+  font-size: 72px;
+  margin-bottom: var(--spacing-md);
+  animation: bounceIn 0.8s ease;
+}
+
+.event-popup-card h2 {
+  color: #7B1FA2;
+  margin-bottom: var(--spacing-md);
+}
+
+.event-description {
+  font-size: 15px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
+.event-info-section {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.event-how-to,
+.event-unlock-info {
+  font-size: 14px;
+  margin: var(--spacing-xs) 0;
+  color: var(--text-color);
+}
+
+.event-end-date {
+  font-size: 14px;
+  color: #7B1FA2;
+  font-weight: 500;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background: rgba(123, 31, 162, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.btn-event {
+  background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 100%);
+  color: white;
+  animation: wobble 2s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(123, 31, 162, 0.4);
+}
+
+.btn-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(123, 31, 162, 0.5);
+}
+
+/* Event End Popup */
+.event-end-card h2 {
+  color: #666;
+}
+
+.event-end-info {
+  font-size: 16px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.event-end-details {
+  text-align: left;
+  background: #f5f5f5;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.event-end-details p {
+  font-size: 14px;
+  margin: var(--spacing-xs) 0;
+  color: #666;
+}
+
+.event-background-reset {
+  color: var(--color-orange);
+  font-weight: 500;
+}
+
+.event-next-time {
+  font-size: 16px;
+  color: var(--color-blue);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Seasonal Shop Section */
+.seasonal-backgrounds-section {
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px dashed var(--color-gray);
+}
+
+.seasonal-section-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #7B1FA2;
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.regular-section-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-blue);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.seasonal-backgrounds-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.background-tile.seasonal-tile {
+  border: 3px solid #9C27B0;
+}
+
+.background-tile.seasonal-tile.seasonal-purchasable {
+  border-color: #7B1FA2;
+  animation: seasonalGlow 2s ease-in-out infinite;
+}
+
+.background-tile.seasonal-tile.seasonal-purchasable:hover {
+  border-color: #9C27B0;
+  box-shadow: 0 4px 16px rgba(123, 31, 162, 0.4);
+}
+
+.background-shop-seasonal-currency {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #388E3C;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-left: var(--spacing-md);
+}
+
+.seasonal-cost {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+}
+
+.seasonal-warning {
+  font-size: 12px;
+  color: var(--color-orange);
+  font-weight: 500;
+  margin: var(--spacing-sm) 0;
+}
+
+.super-success-display.seasonal-reward {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.super-success-display.seasonal-reward .super-success-text {
+  color: #388E3C;
+}
+
+@keyframes seasonalGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(123, 31, 162, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(123, 31, 162, 0.5), 0 0 10px rgba(156, 39, 176, 0.3);
+  }
+}
+
+
+/* ===========================
+   18. PRINT
    =========================== */
 
 @media print {

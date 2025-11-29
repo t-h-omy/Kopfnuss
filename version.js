@@ -10,8 +10,8 @@
  */
 export const VERSION = {
   major: 1,
-  minor: 18,
-  patch: 1,
+  minor: 19,
+  patch: 0,
   get string() {
     return `${this.major}.${this.minor}.${this.patch}`;
   },
@@ -23,7 +23,7 @@ export const VERSION = {
 /**
  * Release date
  */
-export const RELEASE_DATE = '2025-11-28';
+export const RELEASE_DATE = '2025-11-29';
 
 /**
  * Build information

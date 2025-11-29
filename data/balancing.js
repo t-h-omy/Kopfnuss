@@ -318,3 +318,176 @@ const DEV_BACKGROUNDS = {
  * The default background (tasksRequired: 0) is always available.
  */
 export const BACKGROUNDS = useDevBalancing ? DEV_BACKGROUNDS : DEFAULT_BACKGROUNDS;
+
+/**
+ * Production seasonal events configuration
+ * Each event has:
+ * - id: Unique identifier for the event
+ * - name: Display name (German)
+ * - emoticon: Currency emoticon
+ * - currencyName: Name of the seasonal currency (German)
+ * - startMonth/startDay: Event start date (month 1-12, day 1-31)
+ * - endMonth/endDay: Event end date (month 1-12, day 1-31)
+ * - popupTitle: Title for the event start popup
+ * - popupDescription: Short description for the event start popup
+ */
+const DEFAULT_SEASONAL_EVENTS = {
+  christmas: {
+    id: 'christmas',
+    name: 'Weihnachten',
+    emoticon: '❄️',
+    currencyName: 'Schneeflocken',
+    startMonth: 12,
+    startDay: 1,
+    endMonth: 12,
+    endDay: 31,
+    popupTitle: 'Weihnachts-Event',
+    popupDescription: 'Sammle Schneeflocken und schalte winterliche Hintergründe frei!'
+  },
+  spring: {
+    id: 'spring',
+    name: 'Frühling',
+    emoticon: '🌸',
+    currencyName: 'Blütenblätter',
+    startMonth: 3,
+    startDay: 15,
+    endMonth: 4,
+    endDay: 5,
+    popupTitle: 'Frühlings-Event',
+    popupDescription: 'Sammle Blütenblätter und schalte frühlingshafte Hintergründe frei!'
+  },
+  summer: {
+    id: 'summer',
+    name: 'Sommer',
+    emoticon: '☀️',
+    currencyName: 'Sonnenstrahlen',
+    startMonth: 7,
+    startDay: 1,
+    endMonth: 8,
+    endDay: 31,
+    popupTitle: 'Sommer-Event',
+    popupDescription: 'Sammle Sonnenstrahlen und schalte sommerliche Hintergründe frei!'
+  }
+};
+
+/**
+ * Dev seasonal events configuration (shorter event periods for testing)
+ */
+const DEV_SEASONAL_EVENTS = {
+  christmas: {
+    id: 'christmas',
+    name: 'Weihnachten',
+    emoticon: '❄️',
+    currencyName: 'Schneeflocken',
+    startMonth: 11,
+    startDay: 1,
+    endMonth: 12,
+    endDay: 31,
+    popupTitle: 'Weihnachts-Event',
+    popupDescription: 'Sammle Schneeflocken und schalte winterliche Hintergründe frei!'
+  },
+  spring: {
+    id: 'spring',
+    name: 'Frühling',
+    emoticon: '🌸',
+    currencyName: 'Blütenblätter',
+    startMonth: 3,
+    startDay: 1,
+    endMonth: 4,
+    endDay: 30,
+    popupTitle: 'Frühlings-Event',
+    popupDescription: 'Sammle Blütenblätter und schalte frühlingshafte Hintergründe frei!'
+  },
+  summer: {
+    id: 'summer',
+    name: 'Sommer',
+    emoticon: '☀️',
+    currencyName: 'Sonnenstrahlen',
+    startMonth: 6,
+    startDay: 1,
+    endMonth: 8,
+    endDay: 31,
+    popupTitle: 'Sommer-Event',
+    popupDescription: 'Sammle Sonnenstrahlen und schalte sommerliche Hintergründe frei!'
+  }
+};
+
+/**
+ * Seasonal events configuration
+ * Applied in: logic/eventManager.js
+ */
+export const SEASONAL_EVENTS = useDevBalancing ? DEV_SEASONAL_EVENTS : DEFAULT_SEASONAL_EVENTS;
+
+/**
+ * Production seasonal backgrounds configuration
+ * Seasonal backgrounds are only available during their associated event.
+ * They cost seasonal currency (not diamonds) and require tasks completed during the event.
+ */
+const DEFAULT_SEASONAL_BACKGROUNDS = {
+  christmasSnow: {
+    id: 'christmasSnow',
+    name: 'Winterwunderland',
+    file: 'backgrounds/background_compressed.webp', // Placeholder - would be replaced with actual seasonal background
+    cost: 50,
+    tasksRequired: 100,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  springBlossoms: {
+    id: 'springBlossoms',
+    name: 'Kirschblüten',
+    file: 'backgrounds/background_compressed.webp', // Placeholder - would be replaced with actual seasonal background
+    cost: 40,
+    tasksRequired: 80,
+    eventId: 'spring',
+    isSeasonal: true
+  },
+  summerBeach: {
+    id: 'summerBeach',
+    name: 'Strandparadies',
+    file: 'backgrounds/background_compressed.webp', // Placeholder - would be replaced with actual seasonal background
+    cost: 45,
+    tasksRequired: 90,
+    eventId: 'summer',
+    isSeasonal: true
+  }
+};
+
+/**
+ * Dev seasonal backgrounds configuration (lower requirements for testing)
+ */
+const DEV_SEASONAL_BACKGROUNDS = {
+  christmasSnow: {
+    id: 'christmasSnow',
+    name: 'Winterwunderland',
+    file: 'backgrounds/background_compressed.webp', // Placeholder
+    cost: 5,
+    tasksRequired: 10,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  springBlossoms: {
+    id: 'springBlossoms',
+    name: 'Kirschblüten',
+    file: 'backgrounds/background_compressed.webp', // Placeholder
+    cost: 4,
+    tasksRequired: 8,
+    eventId: 'spring',
+    isSeasonal: true
+  },
+  summerBeach: {
+    id: 'summerBeach',
+    name: 'Strandparadies',
+    file: 'backgrounds/background_compressed.webp', // Placeholder
+    cost: 5,
+    tasksRequired: 9,
+    eventId: 'summer',
+    isSeasonal: true
+  }
+};
+
+/**
+ * Seasonal backgrounds configuration
+ * Applied in: logic/backgroundManager.js, logic/eventManager.js
+ */
+export const SEASONAL_BACKGROUNDS = useDevBalancing ? DEV_SEASONAL_BACKGROUNDS : DEFAULT_SEASONAL_BACKGROUNDS;

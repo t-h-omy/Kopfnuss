@@ -10,6 +10,12 @@ import {
 } from './challengeStateManager.js';
 import { saveProgress, loadProgress, loadStreak } from './storageManager.js';
 import { unfreezeStreakByChallenge, incrementStreakByChallenge } from './streakManager.js';
+import { 
+  isEventActive, 
+  getActiveEvent, 
+  addSeasonalCurrency, 
+  incrementSeasonalTasks 
+} from './eventManager.js';
 
 /**
  * Task flow state
@@ -162,6 +168,11 @@ export function nextTask() {
   progress.lastPlayedDate = today;
   saveProgress(progress);
   
+  // If a seasonal event is active, increment the seasonal task counter
+  if (isEventActive()) {
+    incrementSeasonalTasks(1);
+  }
+  
   const hasNext = currentTaskIndex < challenge.tasks.length;
   
   if (!hasNext) {
@@ -192,14 +203,37 @@ export function completeCurrentChallenge() {
   
   const challenge = getChallenge(currentChallengeIndex);
   
+  // Check if a seasonal event is active for currency rewards
+  const eventActive = isEventActive();
+  const activeEvent = eventActive ? getActiveEvent() : null;
+  
   // Determine super challenge result if applicable
   let superChallengeSuccess = null;
   let superChallengeAwardedDiamond = false;
+  let seasonalCurrencyAwarded = null;
   
   if (challenge && challenge.isSuperChallenge) {
     // Super challenge success requires zero errors
     superChallengeSuccess = errors === 0;
-    superChallengeAwardedDiamond = superChallengeSuccess;
+    
+    // If event is active, award seasonal currency instead of diamond
+    if (superChallengeSuccess) {
+      if (eventActive && activeEvent) {
+        // Award seasonal currency instead of diamond during events
+        const currencyResult = addSeasonalCurrency(1);
+        if (currencyResult.success) {
+          seasonalCurrencyAwarded = {
+            amount: 1,
+            emoticon: activeEvent.emoticon,
+            currencyName: activeEvent.currencyName
+          };
+        }
+        superChallengeAwardedDiamond = false;
+      } else {
+        // No event - award diamond as normal
+        superChallengeAwardedDiamond = true;
+      }
+    }
   }
   
   // Mark challenge as complete (with super challenge result if applicable)
@@ -247,7 +281,8 @@ export function completeCurrentChallenge() {
     // Super challenge specific results
     isSuperChallenge: challenge?.isSuperChallenge || false,
     superChallengeSuccess: superChallengeSuccess,
-    superChallengeAwardedDiamond: superChallengeAwardedDiamond
+    superChallengeAwardedDiamond: superChallengeAwardedDiamond,
+    seasonalCurrencyAwarded: seasonalCurrencyAwarded
   };
   
   // Reset task flow state
