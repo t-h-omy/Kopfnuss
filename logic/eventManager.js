@@ -15,6 +15,8 @@ import {
   saveSeasonalUnlockedBackgrounds,
   loadSelectedBackground,
   saveSelectedBackground,
+  loadSeasonalLastKnownPurchasable,
+  saveSeasonalLastKnownPurchasable,
   getTodayDate
 } from './storageManager.js';
 
@@ -562,4 +564,79 @@ export function getAllActiveSeasonalBackgrounds() {
     .filter(id => SEASONAL_BACKGROUNDS[id].eventId === activeEvent.id)
     .map(id => getSeasonalBackgroundInfo(id))
     .filter(bg => bg !== null);
+}
+
+/**
+ * Get IDs of seasonal backgrounds that are currently purchasable
+ * (have enough tasks completed but not yet unlocked)
+ * @returns {Array<string>} Array of purchasable seasonal background IDs
+ */
+function getPurchasableSeasonalBackgroundIds() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    return [];
+  }
+  
+  const taskCount = getSeasonalTaskCount();
+  const unlockedBackgrounds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
+  
+  return Object.keys(SEASONAL_BACKGROUNDS)
+    .filter(id => {
+      const bg = SEASONAL_BACKGROUNDS[id];
+      // Must be for the active event
+      if (bg.eventId !== activeEvent.id) return false;
+      // Must have enough tasks
+      if (taskCount < bg.tasksRequired) return false;
+      // Must not already be unlocked
+      if (unlockedBackgrounds.includes(id)) return false;
+      return true;
+    });
+}
+
+/**
+ * Check for newly purchasable seasonal backgrounds
+ * Similar to checkForNewlyPurchasableBackgrounds but for seasonal backgrounds
+ * @returns {Object} Result with hasNew, newlyPurchasable array, and firstNewBackground
+ */
+export function checkForNewlyPurchasableSeasonalBackgrounds() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    return {
+      newlyPurchasable: [],
+      firstNewBackground: null,
+      hasNew: false
+    };
+  }
+  
+  const currentPurchasable = getPurchasableSeasonalBackgroundIds();
+  const lastKnownPurchasable = loadSeasonalLastKnownPurchasable(activeEvent.id);
+  const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
+  
+  // Find backgrounds that are now purchasable but weren't before
+  const newlyPurchasable = currentPurchasable.filter(
+    id => !lastKnownPurchasable.includes(id)
+  );
+  
+  // Update the stored list
+  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
+    .filter(id => !unlockedIds.includes(id));
+  saveSeasonalLastKnownPurchasable(activeEvent.id, allKnownPurchasable);
+  
+  // Get the first newly purchasable background object for display
+  let firstNewBackground = null;
+  if (newlyPurchasable.length > 0) {
+    const bgId = newlyPurchasable[0];
+    firstNewBackground = {
+      ...SEASONAL_BACKGROUNDS[bgId],
+      eventEmoticon: activeEvent.emoticon,
+      eventName: activeEvent.name,
+      isSeasonal: true
+    };
+  }
+  
+  return {
+    newlyPurchasable,
+    firstNewBackground,
+    hasNew: newlyPurchasable.length > 0
+  };
 }

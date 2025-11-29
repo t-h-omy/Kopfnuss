@@ -115,6 +115,7 @@ const STORAGE_KEYS = {
   get SEASONAL_CURRENCY() { return getStorageKey('kopfnuss_seasonal_currency_'); },
   get SEASONAL_TASK_COUNT() { return getStorageKey('kopfnuss_seasonal_tasks_'); },
   get SEASONAL_UNLOCKED_BACKGROUNDS() { return getStorageKey('kopfnuss_seasonal_backgrounds_'); },
+  get SEASONAL_LAST_KNOWN_PURCHASABLE() { return getStorageKey('kopfnuss_seasonal_last_purchasable_'); },
   get EVENT_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_popup_shown_'); },
   get EVENT_END_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_end_popup_shown_'); }
 };
@@ -503,6 +504,27 @@ export function saveEventEndPopupShown(eventId, shown) {
 export function loadEventEndPopupShown(eventId) {
   const key = STORAGE_KEYS.EVENT_END_POPUP_SHOWN + eventId;
   return loadFromStorage(key, false);
+}
+
+/**
+ * Save last known purchasable seasonal backgrounds for an event
+ * @param {string} eventId - ID of the event
+ * @param {Array<string>} backgroundIds - Array of background IDs that were purchasable
+ * @returns {boolean} Success status
+ */
+export function saveSeasonalLastKnownPurchasable(eventId, backgroundIds) {
+  const key = STORAGE_KEYS.SEASONAL_LAST_KNOWN_PURCHASABLE + eventId;
+  return saveToStorage(key, backgroundIds);
+}
+
+/**
+ * Load last known purchasable seasonal backgrounds for an event
+ * @param {string} eventId - ID of the event
+ * @returns {Array<string>} Array of background IDs (defaults to empty array)
+ */
+export function loadSeasonalLastKnownPurchasable(eventId) {
+  const key = STORAGE_KEYS.SEASONAL_LAST_KNOWN_PURCHASABLE + eventId;
+  return loadFromStorage(key, []);
 }
 
 export { STORAGE_KEYS };

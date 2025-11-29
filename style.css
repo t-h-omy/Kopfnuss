@@ -780,25 +780,25 @@ button,
 .header-stats {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .stat-capsule {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 4px;
   background: #FFFFFF;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: 16px;
+  padding: 6px 10px;
+  border-radius: 12px;
   box-shadow: 0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
   font-family: 'Fredoka', sans-serif;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 14px;
   color: var(--text-color);
 }
 
-.stat-capsule .stat-icon { font-size: 20px; }
+.stat-capsule .stat-icon { font-size: 16px; }
 .stat-capsule .stat-value { font-weight: 600; }
 
 .stat-capsule.streak-frozen {
@@ -811,7 +811,7 @@ button,
 
 .diamond-progress-info {
   font-family: 'Fredoka', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--color-blue);
 }
