@@ -66,6 +66,16 @@ setAppHeight();
 // Set background opacity from balancing config
 document.documentElement.style.setProperty('--background-opacity', VISUAL_CONFIG.BACKGROUND_OPACITY);
 
+// Set shadow CSS variables from balancing config
+// These values can be tuned in data/balancing.js without touching CSS
+document.documentElement.style.setProperty('--shadow-color', CONFIG.SHADOW_COLOR);
+document.documentElement.style.setProperty('--shadow-blur-small', CONFIG.SHADOW_BLUR_SMALL);
+document.documentElement.style.setProperty('--shadow-blur-large', CONFIG.SHADOW_BLUR_LARGE);
+document.documentElement.style.setProperty('--shadow-spread-small', CONFIG.SHADOW_SPREAD_SMALL);
+document.documentElement.style.setProperty('--shadow-spread-large', CONFIG.SHADOW_SPREAD_LARGE);
+document.documentElement.style.setProperty('--shadow-offset-y-small', CONFIG.SHADOW_OFFSET_Y_SMALL);
+document.documentElement.style.setProperty('--shadow-offset-y-large', CONFIG.SHADOW_OFFSET_Y_LARGE);
+
 // Apply selected background on load
 applySelectedBackground();
 
