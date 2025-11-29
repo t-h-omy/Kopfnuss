@@ -1094,17 +1094,17 @@ button,
 }
 
 /* Star on right for left-positioned challenges (node is on left, star goes to right of info card) */
-.challenge-row.position-left .challenge-super_locked .challenge-info-card::after,
-.challenge-row.position-left .challenge-super_available .challenge-info-card::after,
-.challenge-row.position-left .challenge-super_in_progress .challenge-info-card::after {
+.challenge-row.position-left.challenge-super_locked .challenge-info-card::after,
+.challenge-row.position-left.challenge-super_available .challenge-info-card::after,
+.challenge-row.position-left.challenge-super_in_progress .challenge-info-card::after {
   right: -12px;
   left: auto;
 }
 
 /* Star on left for right-positioned challenges (node is on right, star goes to left of info card) */
-.challenge-row.position-right .challenge-super_locked .challenge-info-card::after,
-.challenge-row.position-right .challenge-super_available .challenge-info-card::after,
-.challenge-row.position-right .challenge-super_in_progress .challenge-info-card::after {
+.challenge-row.position-right.challenge-super_locked .challenge-info-card::after,
+.challenge-row.position-right.challenge-super_available .challenge-info-card::after,
+.challenge-row.position-right.challenge-super_in_progress .challenge-info-card::after {
   left: -12px;
   right: auto;
 }
