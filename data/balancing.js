@@ -386,91 +386,175 @@ export const BACKGROUNDS = useDevBalancing ? DEV_BACKGROUNDS : DEFAULT_BACKGROUN
  * - endMonth/endDay: Event end date (month 1-12, day 1-31)
  * - popupTitle: Title for the event start popup
  * - popupDescription: Short description for the event start popup
+ * 
+ * To add a new event:
+ * 1. Add a new entry with unique id
+ * 2. Define all required properties (name, emoticon, currencyName, dates, popup content)
+ * 3. Create a subfolder in assets/backgrounds/{eventId}/ for seasonal backgrounds
+ * 4. Add seasonal backgrounds to SEASONAL_BACKGROUNDS with eventId matching this event
  */
 const DEFAULT_SEASONAL_EVENTS = {
   christmas: {
     id: 'christmas',
     name: 'Weihnachten',
-    emoticon: '❄️',
-    currencyName: 'Schneeflocken',
-    currencyNameSingular: 'Schneeflocke',
+    emoticon: '🍭',
+    currencyName: 'Zuckerstangen',
+    currencyNameSingular: 'Zuckerstange',
     startMonth: 12,
     startDay: 1,
     endMonth: 12,
     endDay: 31,
     popupTitle: 'Weihnachts-Event',
-    popupDescription: 'Sammle Schneeflocken und schalte winterliche Hintergründe frei!'
+    popupDescription: 'Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!'
   },
-  spring: {
-    id: 'spring',
-    name: 'Frühling',
-    emoticon: '🌸',
-    currencyName: 'Blütenblätter',
-    currencyNameSingular: 'Blütenblatt',
+  newYear: {
+    id: 'newYear',
+    name: 'Neujahr',
+    emoticon: '🎆',
+    currencyName: 'Feuerwerksblitze',
+    currencyNameSingular: 'Feuerwerksblitz',
+    startMonth: 1,
+    startDay: 1,
+    endMonth: 1,
+    endDay: 7,
+    popupTitle: 'Neujahrs-Event',
+    popupDescription: 'Sammle Feuerwerksblitze und schalte festliche Hintergründe frei!'
+  },
+  valentines: {
+    id: 'valentines',
+    name: 'Valentinstag',
+    emoticon: '🌹',
+    currencyName: 'Rosen',
+    currencyNameSingular: 'Rose',
+    startMonth: 2,
+    startDay: 7,
+    endMonth: 2,
+    endDay: 14,
+    popupTitle: 'Valentinstags-Event',
+    popupDescription: 'Sammle Rosen und schalte romantische Hintergründe frei!'
+  },
+  easter: {
+    id: 'easter',
+    name: 'Ostern',
+    emoticon: '🥚',
+    currencyName: 'Ostereier',
+    currencyNameSingular: 'Osterei',
     startMonth: 3,
     startDay: 15,
     endMonth: 4,
-    endDay: 5,
-    popupTitle: 'Frühlings-Event',
-    popupDescription: 'Sammle Blütenblätter und schalte frühlingshafte Hintergründe frei!'
+    endDay: 21,
+    popupTitle: 'Oster-Event',
+    popupDescription: 'Sammle Ostereier und schalte frühlingshafte Hintergründe frei!'
   },
   summer: {
     id: 'summer',
-    name: 'Sommer',
+    name: 'Sommerferien',
     emoticon: '☀️',
-    currencyName: 'Sonnenstrahlen',
-    currencyNameSingular: 'Sonnenstrahl',
+    currencyName: 'Sonnen',
+    currencyNameSingular: 'Sonne',
     startMonth: 7,
     startDay: 1,
     endMonth: 8,
     endDay: 31,
-    popupTitle: 'Sommer-Event',
-    popupDescription: 'Sammle Sonnenstrahlen und schalte sommerliche Hintergründe frei!'
+    popupTitle: 'Sommerferien-Event',
+    popupDescription: 'Sammle Sonnen und schalte sommerliche Hintergründe frei!'
+  },
+  halloween: {
+    id: 'halloween',
+    name: 'Halloween',
+    emoticon: '🎃',
+    currencyName: 'Kürbislaternen',
+    currencyNameSingular: 'Kürbislaterne',
+    startMonth: 10,
+    startDay: 15,
+    endMonth: 10,
+    endDay: 31,
+    popupTitle: 'Halloween-Event',
+    popupDescription: 'Sammle Kürbislaternen und schalte gruselige Hintergründe frei!'
   }
 };
 
 /**
- * Dev seasonal events configuration (shorter event periods for testing)
+ * Dev seasonal events configuration (extended event periods for testing)
  */
 const DEV_SEASONAL_EVENTS = {
   christmas: {
     id: 'christmas',
     name: 'Weihnachten',
-    emoticon: '❄️',
-    currencyName: 'Schneeflocken',
-    currencyNameSingular: 'Schneeflocke',
+    emoticon: '🍭',
+    currencyName: 'Zuckerstangen',
+    currencyNameSingular: 'Zuckerstange',
     startMonth: 11,
     startDay: 1,
     endMonth: 12,
     endDay: 31,
     popupTitle: 'Weihnachts-Event',
-    popupDescription: 'Sammle Schneeflocken und schalte winterliche Hintergründe frei!'
+    popupDescription: 'Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!'
   },
-  spring: {
-    id: 'spring',
-    name: 'Frühling',
-    emoticon: '🌸',
-    currencyName: 'Blütenblätter',
-    currencyNameSingular: 'Blütenblatt',
+  newYear: {
+    id: 'newYear',
+    name: 'Neujahr',
+    emoticon: '🎆',
+    currencyName: 'Feuerwerksblitze',
+    currencyNameSingular: 'Feuerwerksblitz',
+    startMonth: 1,
+    startDay: 1,
+    endMonth: 1,
+    endDay: 15,
+    popupTitle: 'Neujahrs-Event',
+    popupDescription: 'Sammle Feuerwerksblitze und schalte festliche Hintergründe frei!'
+  },
+  valentines: {
+    id: 'valentines',
+    name: 'Valentinstag',
+    emoticon: '🌹',
+    currencyName: 'Rosen',
+    currencyNameSingular: 'Rose',
+    startMonth: 2,
+    startDay: 1,
+    endMonth: 2,
+    endDay: 20,
+    popupTitle: 'Valentinstags-Event',
+    popupDescription: 'Sammle Rosen und schalte romantische Hintergründe frei!'
+  },
+  easter: {
+    id: 'easter',
+    name: 'Ostern',
+    emoticon: '🥚',
+    currencyName: 'Ostereier',
+    currencyNameSingular: 'Osterei',
     startMonth: 3,
     startDay: 1,
     endMonth: 4,
     endDay: 30,
-    popupTitle: 'Frühlings-Event',
-    popupDescription: 'Sammle Blütenblätter und schalte frühlingshafte Hintergründe frei!'
+    popupTitle: 'Oster-Event',
+    popupDescription: 'Sammle Ostereier und schalte frühlingshafte Hintergründe frei!'
   },
   summer: {
     id: 'summer',
-    name: 'Sommer',
+    name: 'Sommerferien',
     emoticon: '☀️',
-    currencyName: 'Sonnenstrahlen',
-    currencyNameSingular: 'Sonnenstrahl',
+    currencyName: 'Sonnen',
+    currencyNameSingular: 'Sonne',
     startMonth: 6,
     startDay: 1,
     endMonth: 8,
     endDay: 31,
-    popupTitle: 'Sommer-Event',
-    popupDescription: 'Sammle Sonnenstrahlen und schalte sommerliche Hintergründe frei!'
+    popupTitle: 'Sommerferien-Event',
+    popupDescription: 'Sammle Sonnen und schalte sommerliche Hintergründe frei!'
+  },
+  halloween: {
+    id: 'halloween',
+    name: 'Halloween',
+    emoticon: '🎃',
+    currencyName: 'Kürbislaternen',
+    currencyNameSingular: 'Kürbislaterne',
+    startMonth: 10,
+    startDay: 1,
+    endMonth: 10,
+    endDay: 31,
+    popupTitle: 'Halloween-Event',
+    popupDescription: 'Sammle Kürbislaternen und schalte gruselige Hintergründe frei!'
   }
 };
 
@@ -484,9 +568,22 @@ export const SEASONAL_EVENTS = useDevBalancing ? DEV_SEASONAL_EVENTS : DEFAULT_S
  * Production seasonal backgrounds configuration
  * Seasonal backgrounds are only available during their associated event.
  * They cost seasonal currency (not diamonds) and require tasks completed during the event.
- * Seasonal backgrounds are organized in subfolders: christmas/, spring/, summer/
+ * 
+ * Seasonal backgrounds are organized in subfolders by eventId:
+ * - backgrounds/christmas/
+ * - backgrounds/newyear/
+ * - backgrounds/valentines/
+ * - backgrounds/easter/
+ * - backgrounds/summer/
+ * - backgrounds/halloween/
+ * 
+ * To add a new seasonal background:
+ * 1. Add the image file to the appropriate event subfolder
+ * 2. Add a new entry here with eventId matching the event
+ * 3. The background will automatically appear during that event
  */
 const DEFAULT_SEASONAL_BACKGROUNDS = {
+  // Christmas backgrounds
   gingerbread: {
     id: 'gingerbread',
     name: 'Lebkuchen',
@@ -505,31 +602,64 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
     eventId: 'christmas',
     isSeasonal: true
   },
-  springBlossoms: {
-    id: 'springBlossoms',
-    name: 'Kirschblüten',
-    file: 'backgrounds/background_compressed.webp', // TODO: Add spring background to backgrounds/spring/
+  // New Year's backgrounds
+  newYearFireworks: {
+    id: 'newYearFireworks',
+    name: 'Feuerwerk',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/newyear/
     cost: 2,
-    tasksRequired: 80,
-    eventId: 'spring',
+    tasksRequired: 50,
+    eventId: 'newYear',
     isSeasonal: true
   },
+  // Valentine's Day backgrounds
+  valentinesHearts: {
+    id: 'valentinesHearts',
+    name: 'Herzchen',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/valentines/
+    cost: 2,
+    tasksRequired: 60,
+    eventId: 'valentines',
+    isSeasonal: true
+  },
+  // Easter backgrounds
+  easterBunny: {
+    id: 'easterBunny',
+    name: 'Osterhase',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/easter/
+    cost: 2,
+    tasksRequired: 70,
+    eventId: 'easter',
+    isSeasonal: true
+  },
+  // Summer backgrounds
   summerBeach: {
     id: 'summerBeach',
     name: 'Strandparadies',
-    file: 'backgrounds/background_compressed.webp', // TODO: Add summer background to backgrounds/summer/
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/summer/
     cost: 2,
     tasksRequired: 90,
     eventId: 'summer',
+    isSeasonal: true
+  },
+  // Halloween backgrounds
+  halloweenSpooky: {
+    id: 'halloweenSpooky',
+    name: 'Gruselhaus',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/halloween/
+    cost: 2,
+    tasksRequired: 80,
+    eventId: 'halloween',
     isSeasonal: true
   }
 };
 
 /**
  * Dev seasonal backgrounds configuration (lower requirements for testing)
- * Seasonal backgrounds are organized in subfolders: christmas/, spring/, summer/
+ * Seasonal backgrounds are organized in subfolders by eventId
  */
 const DEV_SEASONAL_BACKGROUNDS = {
+  // Christmas backgrounds
   gingerbread: {
     id: 'gingerbread',
     name: 'Lebkuchen',
@@ -548,22 +678,54 @@ const DEV_SEASONAL_BACKGROUNDS = {
     eventId: 'christmas',
     isSeasonal: true
   },
-  springBlossoms: {
-    id: 'springBlossoms',
-    name: 'Kirschblüten',
-    file: 'backgrounds/background_compressed.webp', // TODO: Add spring background to backgrounds/spring/
+  // New Year's backgrounds
+  newYearFireworks: {
+    id: 'newYearFireworks',
+    name: 'Feuerwerk',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/newyear/
     cost: 2,
-    tasksRequired: 8,
-    eventId: 'spring',
+    tasksRequired: 5,
+    eventId: 'newYear',
     isSeasonal: true
   },
+  // Valentine's Day backgrounds
+  valentinesHearts: {
+    id: 'valentinesHearts',
+    name: 'Herzchen',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/valentines/
+    cost: 2,
+    tasksRequired: 6,
+    eventId: 'valentines',
+    isSeasonal: true
+  },
+  // Easter backgrounds
+  easterBunny: {
+    id: 'easterBunny',
+    name: 'Osterhase',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/easter/
+    cost: 2,
+    tasksRequired: 7,
+    eventId: 'easter',
+    isSeasonal: true
+  },
+  // Summer backgrounds
   summerBeach: {
     id: 'summerBeach',
     name: 'Strandparadies',
-    file: 'backgrounds/background_compressed.webp', // TODO: Add summer background to backgrounds/summer/
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/summer/
     cost: 2,
     tasksRequired: 9,
     eventId: 'summer',
+    isSeasonal: true
+  },
+  // Halloween backgrounds
+  halloweenSpooky: {
+    id: 'halloweenSpooky',
+    name: 'Gruselhaus',
+    file: 'backgrounds/background_compressed.webp', // TODO: Add to backgrounds/halloween/
+    cost: 2,
+    tasksRequired: 8,
+    eventId: 'halloween',
     isSeasonal: true
   }
 };
