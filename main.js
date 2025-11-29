@@ -429,19 +429,19 @@ function loadChallengesScreen(container) {
   const daysUntilEventEnd = getDaysUntilEventEnd();
   const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
   
-  // Build event countdown HTML
+  // Build event countdown HTML for row 2
   let eventCountdownHtml = '';
   if (activeEvent && daysUntilEventEnd !== null) {
     const dayText = daysUntilEventEnd === 1 ? 'Tag' : 'Tage';
     eventCountdownHtml = `
       <div class="event-countdown">
         <span class="event-emoticon">${activeEvent.emoticon}</span>
-        <span class="event-countdown-text">Event: Noch ${daysUntilEventEnd} ${dayText}</span>
+        <span class="event-countdown-text">Noch ${daysUntilEventEnd} ${dayText}</span>
       </div>
     `;
   }
   
-  // Build seasonal currency display HTML
+  // Build seasonal currency display HTML for row 1
   let seasonalCurrencyHtml = '';
   if (activeEvent) {
     seasonalCurrencyHtml = `
@@ -452,33 +452,43 @@ function loadChallengesScreen(container) {
     `;
   }
   
-  // Create fixed header with player stats and navigation
+  // Create fixed header with two-row layout
+  // Row 1: Left (streak, diamonds, seasonal currency) | Right (shop, burger menu)
+  // Row 2: Left (diamond progress) | Right (event countdown)
   const header = document.createElement('div');
   header.className = 'challenges-header';
   
   header.innerHTML = `
-    <div class="header-left">
-      <div class="header-stats">
-        <div class="${streakClass}">
-          <span class="stat-icon">${streakIcon}</span>
-          <span class="stat-value">${streakInfo.currentStreak}</span>
+    <div class="header-row header-row-1">
+      <div class="header-row-left">
+        <div class="header-stats">
+          <div class="${streakClass}">
+            <span class="stat-icon">${streakIcon}</span>
+            <span class="stat-value">${streakInfo.currentStreak}</span>
+          </div>
+          <div class="stat-capsule">
+            <span class="stat-icon">💎</span>
+            <span class="stat-value">${diamondInfo.current}</span>
+          </div>
+          ${seasonalCurrencyHtml}
         </div>
-        <div class="stat-capsule">
-          <span class="stat-icon">💎</span>
-          <span class="stat-value">${diamondInfo.current}</span>
-        </div>
-        ${seasonalCurrencyHtml}
       </div>
-      <div class="diamond-progress-info">${progressText}</div>
+      <div class="header-row-right">
+        <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
+          <span class="shop-icon">🛒</span>
+        </button>
+        <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
+          <span class="burger-icon">☰</span>
+        </button>
+      </div>
     </div>
-    <div class="header-right">
-      ${eventCountdownHtml}
-      <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
-        <span class="shop-icon">🛒</span>
-      </button>
-      <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
-        <span class="burger-icon">☰</span>
-      </button>
+    <div class="header-row header-row-2">
+      <div class="header-row-left">
+        <div class="diamond-progress-info">${progressText}</div>
+      </div>
+      <div class="header-row-right">
+        ${eventCountdownHtml}
+      </div>
     </div>
   `;
   
@@ -1396,13 +1406,22 @@ function showSuperChallengeStartPopup(challengeIndex) {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card super-challenge-popup-card';
   
+  // Check if a seasonal event is active to show appropriate reward
+  const activeEvent = getActiveEvent();
+  let rewardHtml;
+  if (activeEvent) {
+    rewardHtml = `<span>+1 ${activeEvent.emoticon}</span>`;
+  } else {
+    rewardHtml = `<span>+1 💎</span>`;
+  }
+  
   popupCard.innerHTML = `
     <div class="super-icon">⭐</div>
     <h2>Super Challenge</h2>
     <p class="super-description">Das ist eine besondere Herausforderung!<br>Löse alle Aufgaben ohne Fehler.</p>
     <div class="super-reward-info">
       <span>🎯 Belohnung:</span>
-      <span>+1 💎</span>
+      ${rewardHtml}
     </div>
     <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
   `;
