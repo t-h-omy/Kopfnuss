@@ -1110,7 +1110,7 @@ button,
 }
 
 .challenge-super_locked .challenge-info-card::after {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .challenge-super_available .challenge-info-card::after {
