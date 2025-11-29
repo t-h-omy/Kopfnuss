@@ -1,7 +1,11 @@
 // Kopfnuss - Visual Effects Manager
 // Centralized visual effects for sparkles, highlights, and scroll animations
 
-import { ANIMATION_TIMING, SPARKLE_CONFIG } from '../data/constants.js';
+import { ANIMATION_TIMING, SPARKLE_CONFIG, SUPER_CHALLENGE_SPARKLE_CONFIG } from '../data/constants.js';
+import { CONFIG } from '../data/balancing.js';
+
+// Track super challenge sparkle interval for cleanup
+let superChallengeSparkleInterval = null;
 
 /**
  * Create sparkle effects around an element
@@ -40,6 +44,89 @@ export function createSparklesAroundElement(element) {
     setTimeout(() => {
       sparkle.remove();
     }, ANIMATION_TIMING.SPARKLE_ANIMATION_DURATION);
+  }
+}
+
+/**
+ * Start the super challenge sparkle overlay effect
+ * Creates a continuous subtle sparkle animation across the screen
+ * Sparkle count is configurable via CONFIG.SUPER_CHALLENGE_SPARKLE_COUNT
+ */
+export function startSuperChallengeSparkles() {
+  // Stop any existing sparkle interval
+  stopSuperChallengeSparkles();
+  
+  // Create container for sparkles
+  let container = document.getElementById('super-challenge-sparkle-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'super-challenge-sparkle-container';
+    container.className = 'super-challenge-sparkle-container';
+    document.body.appendChild(container);
+  }
+  
+  // Get sparkle count from config (balanceable)
+  const sparkleCount = CONFIG.SUPER_CHALLENGE_SPARKLE_COUNT || 12;
+  
+  // Create initial sparkles
+  for (let i = 0; i < sparkleCount; i++) {
+    setTimeout(() => {
+      createSuperChallengeSparkle(container);
+    }, i * (SUPER_CHALLENGE_SPARKLE_CONFIG.SPAWN_INTERVAL / 2));
+  }
+  
+  // Continuously spawn new sparkles
+  superChallengeSparkleInterval = setInterval(() => {
+    createSuperChallengeSparkle(container);
+  }, SUPER_CHALLENGE_SPARKLE_CONFIG.SPAWN_INTERVAL);
+}
+
+/**
+ * Create a single super challenge sparkle particle
+ * @param {HTMLElement} container - Container to append sparkle to
+ */
+function createSuperChallengeSparkle(container) {
+  if (!container) return;
+  
+  const sparkle = document.createElement('div');
+  sparkle.className = 'super-challenge-sparkle';
+  
+  // Random position avoiding center UI elements (stay in corners/edges)
+  const positions = [
+    { x: Math.random() * 25, y: Math.random() * 100 },      // Left edge
+    { x: 75 + Math.random() * 25, y: Math.random() * 100 }, // Right edge
+    { x: Math.random() * 100, y: Math.random() * 15 },      // Top edge
+    { x: Math.random() * 100, y: 85 + Math.random() * 15 }  // Bottom edge
+  ];
+  const pos = positions[Math.floor(Math.random() * positions.length)];
+  
+  sparkle.style.left = `${pos.x}%`;
+  sparkle.style.top = `${pos.y}%`;
+  
+  // Random animation delay for variety
+  sparkle.style.animationDelay = `${Math.random() * 0.5}s`;
+  
+  container.appendChild(sparkle);
+  
+  // Remove sparkle after animation
+  setTimeout(() => {
+    sparkle.remove();
+  }, SUPER_CHALLENGE_SPARKLE_CONFIG.PARTICLE_DURATION);
+}
+
+/**
+ * Stop the super challenge sparkle overlay effect
+ */
+export function stopSuperChallengeSparkles() {
+  if (superChallengeSparkleInterval) {
+    clearInterval(superChallengeSparkleInterval);
+    superChallengeSparkleInterval = null;
+  }
+  
+  // Remove container and all sparkles
+  const container = document.getElementById('super-challenge-sparkle-container');
+  if (container) {
+    container.remove();
   }
 }
 

@@ -104,21 +104,21 @@
       "name": "Elefant",
       "file": "backgrounds/elephant_background_less_saturated.webp",
       "cost": 2,
-      "tasksRequired": 5
+      "tasksRequired": 530
     },
     "pomeranian": {
       "id": "pomeranian",
       "name": "Pomeranian",
       "file": "backgrounds/pomeranian_background_soft_optimized.webp",
       "cost": 2,
-      "tasksRequired": 5
+      "tasksRequired": 710
     },
     "snakeJungle": {
       "id": "snakeJungle",
       "name": "Dschungelschlange",
       "file": "backgrounds/snake_jungle_background_optimized.webp",
       "cost": 2,
-      "tasksRequired": 5
+      "tasksRequired": 230
     }
   }
 }

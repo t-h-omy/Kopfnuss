@@ -62,6 +62,19 @@ export const SPARKLE_CONFIG = {
 };
 
 /**
+ * Super Challenge sparkle overlay configuration
+ * Note: PARTICLE_COUNT is configured in balancing.js CONFIG.SUPER_CHALLENGE_SPARKLE_COUNT
+ * Applied in: logic/visualEffects.js - startSuperChallengeSparkles()
+ */
+export const SUPER_CHALLENGE_SPARKLE_CONFIG = {
+  // Time in ms between spawning new sparkle particles
+  SPAWN_INTERVAL: 400,
+  
+  // Duration in ms for each sparkle particle animation
+  PARTICLE_DURATION: 3000
+};
+
+/**
  * Confetti effect configuration
  * Applied in: logic/popupManager.js - createConfettiEffect()
  */

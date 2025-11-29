@@ -190,13 +190,24 @@ export function completeCurrentChallenge() {
     return null;
   }
   
-  // Mark challenge as complete
-  completeChallenge(currentChallengeIndex, errors);
+  const challenge = getChallenge(currentChallengeIndex);
+  
+  // Determine super challenge result if applicable
+  let superChallengeSuccess = null;
+  let superChallengeAwardedDiamond = false;
+  
+  if (challenge && challenge.isSuperChallenge) {
+    // Super challenge success requires zero errors
+    superChallengeSuccess = errors === 0;
+    superChallengeAwardedDiamond = superChallengeSuccess;
+  }
+  
+  // Mark challenge as complete (with super challenge result if applicable)
+  completeChallenge(currentChallengeIndex, errors, superChallengeSuccess);
   
   // Update overall progress - only increment challenges completed
   // Tasks are already counted in nextTask() when each task is solved
   const progress = loadProgress();
-  const challenge = getChallenge(currentChallengeIndex);
   
   progress.totalChallengesCompleted = (progress.totalChallengesCompleted || 0) + 1;
   progress.lastPlayedDate = new Date().toISOString().split('T')[0];
@@ -232,7 +243,11 @@ export function completeCurrentChallenge() {
     answers: answers,
     progress: progress,
     streakUnfrozen: streakUnfrozenResult && streakUnfrozenResult.wasUnfrozen ? streakUnfrozenResult.newStreak : null,
-    streakIncremented: streakIncrementedResult && streakIncrementedResult.wasIncremented ? streakIncrementedResult.newStreak : null
+    streakIncremented: streakIncrementedResult && streakIncrementedResult.wasIncremented ? streakIncrementedResult.newStreak : null,
+    // Super challenge specific results
+    isSuperChallenge: challenge?.isSuperChallenge || false,
+    superChallengeSuccess: superChallengeSuccess,
+    superChallengeAwardedDiamond: superChallengeAwardedDiamond
   };
   
   // Reset task flow state
@@ -256,11 +271,15 @@ export function resetTaskFlow() {
  * @returns {Object} Current state
  */
 export function getTaskFlowState() {
+  const challenge = currentChallengeIndex !== null ? getChallenge(currentChallengeIndex) : null;
+  
   return {
     challengeIndex: currentChallengeIndex,
     taskIndex: currentTaskIndex,
     errors: errors,
-    answersCount: answers.length
+    answersCount: answers.length,
+    isSuperChallenge: challenge?.isSuperChallenge || false,
+    superChallengeFailed: challenge?.isSuperChallenge && errors > 0
   };
 }
 

@@ -1077,8 +1077,326 @@ button,
 
 
 /* ===========================
-   8. SCREEN: TASK
+   7.5. SUPER CHALLENGE STATES
    =========================== */
+
+/* Super Challenge Star Badge - positioned on info card corner (opposite from node) */
+/* Star must be on top of everything: info-card (z-index: 1) < node (z-index: 3) < lock (z-index: 4) < star (z-index: 5) */
+.challenge-super_locked .challenge-info-card::after,
+.challenge-super_available .challenge-info-card::after,
+.challenge-super_in_progress .challenge-info-card::after {
+  content: '⭐';
+  position: absolute;
+  top: -12px;
+  font-size: 32px;
+  z-index: 5;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+  animation: starSwivel 3s ease-in-out infinite;
+}
+
+/* Star on right for left-positioned challenges (node is on left, star goes to right of info card) */
+.challenge-row.position-left.challenge-super_locked .challenge-info-card::after,
+.challenge-row.position-left.challenge-super_available .challenge-info-card::after,
+.challenge-row.position-left.challenge-super_in_progress .challenge-info-card::after {
+  right: -12px;
+  left: auto;
+}
+
+/* Star on left for right-positioned challenges (node is on right, star goes to left of info card) */
+.challenge-row.position-right.challenge-super_locked .challenge-info-card::after,
+.challenge-row.position-right.challenge-super_available .challenge-info-card::after,
+.challenge-row.position-right.challenge-super_in_progress .challenge-info-card::after {
+  left: -12px;
+  right: auto;
+}
+
+.challenge-super_locked .challenge-info-card::after {
+  opacity: 1;
+}
+
+.challenge-super_available .challenge-info-card::after {
+  animation: starSwivel 2s ease-in-out infinite;
+}
+
+/* Ensure info card creates stacking context for the star */
+/* Layering order: info-card (z-index: 1) < node (z-index: 3) < lock (z-index: 4) < star (z-index: 5) */
+.challenge-super_locked .challenge-info-card,
+.challenge-super_available .challenge-info-card,
+.challenge-super_in_progress .challenge-info-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Super Challenge Locked */
+.challenge-super_locked .challenge-node-wrapper {
+  background: linear-gradient(135deg, #7B68EE 0%, #9370DB 50%, #7B68EE 100%);
+  box-shadow: 0 0 15px rgba(123, 104, 238, 0.5);
+}
+
+.challenge-super_locked .challenge-node {
+  border: 3px solid rgba(255, 215, 0, 0.6);
+  background: white;
+}
+
+.challenge-super_locked .challenge-node .node-icon {
+  filter: saturate(0.6);
+}
+
+.challenge-super_locked .splash-ray {
+  color: #9370DB;
+  background: linear-gradient(to bottom, #9370DB, transparent);
+  opacity: 0.6;
+}
+
+.challenge-super_locked .challenge-info-card {
+  position: relative;
+  border: 3px solid #9370DB;
+  background: linear-gradient(135deg, #F5F0FF 0%, #E8E0F0 100%);
+  box-shadow: 0 0 12px rgba(147, 112, 219, 0.3);
+}
+
+/* Super Challenge Available */
+.challenge-super_available .challenge-node-wrapper {
+  background: linear-gradient(135deg, #7B68EE 0%, #9370DB 50%, #7B68EE 100%);
+  animation: pulsePurple 1.5s ease-in-out infinite;
+  box-shadow: 0 0 25px rgba(123, 104, 238, 0.6);
+}
+
+.challenge-super_available .challenge-node {
+  border: 3px solid #FFD700;
+  cursor: pointer;
+  background: white;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.challenge-super_available .challenge-node:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 30px rgba(123, 104, 238, 0.7), 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.challenge-super_available .challenge-node:active {
+  transform: scale(1.06);
+}
+
+.challenge-super_available .splash-ray {
+  color: #9370DB;
+  background: linear-gradient(to bottom, #9370DB, transparent);
+  animation: superSplashPulse 1s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+.challenge-super_available .challenge-info-card {
+  position: relative;
+  border: 3px solid #7B68EE;
+  background: linear-gradient(135deg, #F0EBFF 0%, #E0D6F5 100%);
+  box-shadow: 0 0 20px rgba(123, 104, 238, 0.4);
+  animation: superCardGlow 2s ease-in-out infinite;
+}
+
+/* Super Challenge status text wobble */
+.challenge-super_available .challenge-status,
+.challenge-super_in_progress .challenge-status {
+  animation: wobble 2s ease-in-out infinite;
+  display: inline-block;
+  color: #7B68EE;
+  font-weight: 600;
+}
+
+/* Super Challenge In Progress */
+.challenge-super_in_progress .challenge-node-wrapper {
+  background: linear-gradient(135deg, #8A2BE2 0%, #9370DB 50%, #8A2BE2 100%);
+  animation: pulsePurple 1.2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+}
+
+.challenge-super_in_progress .challenge-node {
+  border: 3px solid #FFD700;
+  cursor: pointer;
+  background: white;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.challenge-super_in_progress .challenge-node:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px rgba(138, 43, 226, 0.6);
+}
+
+.challenge-super_in_progress .splash-ray {
+  color: #9370DB;
+  background: linear-gradient(to bottom, #9370DB, transparent);
+}
+
+.challenge-super_in_progress .challenge-info-card {
+  position: relative;
+  border: 3px solid #8A2BE2;
+  background: linear-gradient(135deg, #F5F0FF 0%, #E8E0F0 100%);
+}
+
+/* Super Challenge Completed */
+.challenge-super_completed .challenge-node-wrapper {
+  background: linear-gradient(135deg, #7B68EE 0%, #FFD700 50%, #7B68EE 100%);
+}
+
+.challenge-super_completed .challenge-node {
+  border: none;
+  background: white;
+}
+
+.challenge-super_completed .status-icon {
+  color: #FFD700;
+  animation: starPop 0.5s ease;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+.challenge-super_completed .splash-ray {
+  color: #FFD700;
+  background: linear-gradient(to bottom, #FFD700, transparent);
+}
+
+.challenge-super_completed .challenge-info-card {
+  position: relative;
+  border: 3px solid #FFD700;
+  background: linear-gradient(135deg, #FFFEF0 0%, #FFF8DC 100%);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Super Challenge Failed (completed challenge but didn't get diamond) */
+.challenge-super_failed .challenge-node-wrapper {
+  background: linear-gradient(135deg, #9370DB 0%, #C0C0C0 50%, #9370DB 100%);
+}
+
+.challenge-super_failed .challenge-node {
+  border: none;
+  background: white;
+}
+
+.challenge-super_failed .status-icon {
+  color: silver;
+}
+
+.challenge-super_failed .splash-ray {
+  color: #9370DB;
+  background: linear-gradient(to bottom, #9370DB, transparent);
+  opacity: 0.5;
+}
+
+.challenge-super_failed .challenge-info-card {
+  position: relative;
+  border: 2px solid #9370DB;
+  background: linear-gradient(135deg, #F5F0FF 0%, #E8E0F0 100%);
+}
+
+/* Super Challenge Sparkle Overlay */
+.super-challenge-sparkle-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.super-challenge-sparkle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  animation: superSparkleFloat 3s ease-in-out forwards;
+}
+
+.super-challenge-sparkle::before {
+  content: '✨';
+  font-size: 16px;
+  position: absolute;
+  animation: superSparkleRotate 2s linear infinite;
+}
+
+/* Super Challenge Popup Styles */
+.super-challenge-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+}
+
+.super-challenge-popup-card .super-icon {
+  font-size: 72px;
+  margin-bottom: var(--spacing-md);
+  animation: bounceIn 0.8s ease;
+}
+
+.super-challenge-popup-card h2 {
+  color: #9932CC;
+}
+
+.super-challenge-popup-card .super-description {
+  font-size: 15px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.super-challenge-popup-card .super-reward-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #7B1FA2;
+}
+
+.btn-super-challenge {
+  background: linear-gradient(135deg, #9932CC 0%, #BA55D3 100%);
+  color: white;
+  animation: wobble 2s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(153, 50, 204, 0.4);
+}
+
+.btn-super-challenge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(153, 50, 204, 0.5);
+}
+
+/* Super Challenge Success Popup */
+.super-success-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+}
+
+.super-success-popup-card h2 {
+  color: #9932CC;
+}
+
+.super-success-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #F3E5F5 0%, #CE93D8 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.super-success-icon {
+  font-size: 32px;
+  animation: starBurst 1s ease 3;
+}
+
+.super-success-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #7B1FA2;
+}
+
+/* Super Challenge Failure Popup */
+.super-failure-popup-card h2 {
+  color: #666;
+}
 
 .task-screen {
   max-width: 600px;
@@ -2084,6 +2402,71 @@ button,
 
 /* Animation Classes */
 .unlock-animation { animation: unlockBounce 0.6s ease; }
+
+/* Super Challenge Animations */
+@keyframes pulsePurple {
+  0% { box-shadow: 0 0 0 0 rgba(186, 85, 211, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(186, 85, 211, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(186, 85, 211, 0); }
+}
+
+@keyframes superSplashPulse {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes superSparkleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translateY(-20px) scale(1);
+  }
+  80% {
+    opacity: 0.6;
+    transform: translateY(-60px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.3);
+  }
+}
+
+@keyframes superSparkleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-2deg); }
+  30% { transform: rotate(2deg); }
+  45% { transform: rotate(-1deg); }
+  60% { transform: rotate(1deg); }
+  75% { transform: rotate(0deg); }
+}
+
+@keyframes starSwivel {
+  0%, 85%, 100% { transform: rotate(0deg) scale(1); }
+  90% { transform: rotate(-15deg) scale(1.1); }
+  95% { transform: rotate(15deg) scale(1.1); }
+}
+
+@keyframes superCardGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(123, 104, 238, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(123, 104, 238, 0.6), 0 0 15px rgba(255, 215, 0, 0.3);
+  }
+}
 
 
 /* ===========================

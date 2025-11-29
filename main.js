@@ -1,7 +1,7 @@
 // Kopfnuss - Main Application Entry Point
 // Routing und App-Initialisierung
 
-import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE } from './logic/challengeGenerator.js';
+import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE, isSuperChallengeState } from './logic/challengeGenerator.js';
 import { completeChallenge as completeChallengeState } from './logic/challengeStateManager.js';
 import { 
   getStreakInfo, 
@@ -29,7 +29,9 @@ import { CONFIG, BACKGROUNDS } from './data/balancing.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
-  scrollToAndHighlightRewardButton 
+  scrollToAndHighlightRewardButton,
+  startSuperChallengeSparkles,
+  stopSuperChallengeSparkles
 } from './logic/visualEffects.js';
 import { 
   createConfettiEffect, 
@@ -161,6 +163,7 @@ let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge 
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
+let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean}
 
 // Preload celebration images for faster display
 const celebrationImageCache = [];
@@ -214,14 +217,18 @@ function updateHeaderStreakDisplay(streakCount, isFrozen = false) {
  * @returns {number} Index of the current unlocked challenge, or -1 if none found
  */
 function findCurrentUnlockedChallengeIndex(challenges) {
-  // First, look for an in_progress challenge
-  const inProgressIndex = challenges.findIndex(c => c.state === 'in_progress');
+  // First, look for an in_progress challenge (regular or super)
+  const inProgressIndex = challenges.findIndex(c => 
+    c.state === 'in_progress' || c.state === 'super_in_progress'
+  );
   if (inProgressIndex !== -1) {
     return inProgressIndex;
   }
   
-  // Then, look for the first available challenge
-  const availableIndex = challenges.findIndex(c => c.state === 'available');
+  // Then, look for the first available challenge (regular or super)
+  const availableIndex = challenges.findIndex(c => 
+    c.state === 'available' || c.state === 'super_available'
+  );
   if (availableIndex !== -1) {
     return availableIndex;
   }
@@ -298,10 +305,16 @@ function loadChallengesScreen(container) {
   const justCompletedChallengeIndex = currentChallengeIndex;
   
   // Handle popup display when returning from task screen
-  // Queue popups to show sequentially: first diamond, then streak, then background unlock
+  // Queue popups to show sequentially: first super challenge result, then diamond, then streak, then background unlock
   // After all popups close, scroll to the current unlocked challenge or reward button
   if (returningFromTaskScreen) {
     returningFromTaskScreen = false;
+    
+    // Check for super challenge result
+    const showSuperChallengeSuccess = superChallengeResult && superChallengeResult.success;
+    const showSuperChallengeFailure = superChallengeResult && !superChallengeResult.success;
+    const storedSuperChallengeResult = superChallengeResult;
+    superChallengeResult = null; // Reset the flag
     
     const showDiamond = diamondResult.awarded > 0;
     // Check if streak was unfrozen during challenge (streakWasUnfrozen is the new streak value or false)
@@ -334,9 +347,14 @@ function loadChallengesScreen(container) {
       }
     };
     
-    // Queue popups: unfrozen first, then diamond, then streak, then background unlock
+    // Queue popups: super challenge result first, then unfrozen, then diamond, then streak, then background unlock
     const popupsToShow = [];
     
+    if (showSuperChallengeSuccess) {
+      popupsToShow.push((next) => showSuperChallengeSuccessPopup(next));
+    } else if (showSuperChallengeFailure) {
+      popupsToShow.push((next) => showSuperChallengeFailurePopup(next));
+    }
     if (showUnfrozen) {
       popupsToShow.push((next) => showStreakUnfrozenPopup(unfrozenStreakValue, next));
     }
@@ -459,7 +477,12 @@ function loadChallengesScreen(container) {
       'available': 'Verfügbar',
       'in_progress': 'In Bearbeitung',
       'completed': 'Abgeschlossen',
-      'failed': 'Fehlgeschlagen'
+      'failed': 'Fehlgeschlagen',
+      'super_locked': 'Gesperrt',
+      'super_available': 'Super Challenge',
+      'super_in_progress': 'Super Challenge',
+      'super_completed': 'Super Abgeschlossen',
+      'super_failed': 'Abgeschlossen'
     }[challenge.state];
     
     // Create challenge row
@@ -487,8 +510,8 @@ function loadChallengesScreen(container) {
     }
     nodeContainer.appendChild(splash);
     
-    // Add background graphic for completed challenges
-    if (challenge.state === 'completed') {
+    // Add background graphic for completed challenges (regular and super)
+    if (challenge.state === 'completed' || challenge.state === 'super_completed') {
       const bgGraphic = document.createElement('div');
       bgGraphic.className = 'challenge-bg-graphic';
       
@@ -533,13 +556,19 @@ function loadChallengesScreen(container) {
     iconSpan.innerHTML = challenge.icon;
     node.appendChild(iconSpan);
     
-    // Add status icon
+    // Add status icon based on state
     if (challenge.state === 'completed') {
       const statusIcon = document.createElement('span');
       statusIcon.className = 'status-icon';
       statusIcon.innerHTML = '⭐';
       node.appendChild(statusIcon);
-    } else if (challenge.state === 'locked') {
+    } else if (challenge.state === 'super_completed') {
+      const statusIcon = document.createElement('span');
+      statusIcon.className = 'status-icon';
+      // Show diamond if super challenge was successful, otherwise star
+      statusIcon.innerHTML = challenge.superChallengeResult === 'success' ? '💎' : '⭐';
+      node.appendChild(statusIcon);
+    } else if (challenge.state === 'locked' || challenge.state === 'super_locked') {
       const statusIcon = document.createElement('span');
       statusIcon.className = 'status-icon';
       statusIcon.innerHTML = '🔒';
@@ -561,11 +590,18 @@ function loadChallengesScreen(container) {
     challengeRow.appendChild(nodeContainer);
     challengeRow.appendChild(infoCard);
     
-    // Add click handler for available challenges
-    if (challenge.state === 'available' || challenge.state === 'in_progress') {
+    // Add click handler for available challenges (regular and super)
+    if (challenge.state === 'available' || challenge.state === 'in_progress' ||
+        challenge.state === 'super_available' || challenge.state === 'super_in_progress') {
       nodeContainer.style.cursor = 'pointer';
       nodeContainer.addEventListener('click', () => {
-        showScreen('taskScreen', index);
+        if (challenge.isSuperChallenge && 
+            (challenge.state === 'super_available' || challenge.state === 'available')) {
+          // Show super challenge popup before starting
+          showSuperChallengeStartPopup(index);
+        } else {
+          showScreen('taskScreen', index);
+        }
       });
     }
     
@@ -724,6 +760,8 @@ async function loadTaskScreen(container, challengeIndex) {
   // Add event listener for back button
   const backButton = document.getElementById('back-button');
   backButton.addEventListener('click', () => {
+    // Stop super challenge sparkles if running
+    stopSuperChallengeSparkles();
     showScreen('challenges');
   });
   
@@ -1277,6 +1315,132 @@ export function notifyStreakIncremented(newStreak) {
 }
 
 /**
+ * Notify super challenge result
+ * This sets a flag that will trigger the appropriate popup when returning to challenges screen
+ * @param {boolean} success - Whether the super challenge was completed without errors
+ * @param {boolean} awardedDiamond - Whether a diamond was awarded
+ */
+export function notifySuperChallengeResult(success, awardedDiamond) {
+  superChallengeResult = { success, awardedDiamond };
+}
+
+/**
+ * Show super challenge start popup
+ * Displayed when player taps a super challenge to explain the rules
+ * @param {number} challengeIndex - Index of the challenge to start after popup closes
+ */
+function showSuperChallengeStartPopup(challengeIndex) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'super-challenge-start-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card super-challenge-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="super-icon">⭐</div>
+    <h2>Super Challenge</h2>
+    <p class="super-description">Das ist eine besondere Herausforderung!<br>Löse alle Aufgaben ohne Fehler.</p>
+    <div class="super-reward-info">
+      <span>🎯 Belohnung:</span>
+      <span>+1 💎</span>
+    </div>
+    <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const startButton = document.getElementById('super-challenge-start-button');
+  startButton.addEventListener('click', () => {
+    overlay.remove();
+    showScreen('taskScreen', challengeIndex);
+  });
+}
+
+/**
+ * Show super challenge success popup
+ * Displayed when player completes a super challenge without errors
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showSuperChallengeSuccessPopup(onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'super-challenge-success-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card super-success-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🎉</div>
+    <h2>Super Challenge geschafft!</h2>
+    <div class="super-success-display">
+      <span class="super-success-icon">💎</span>
+      <span class="super-success-text">+1 Diamant</span>
+    </div>
+    <p>Ich hab's gewusst: Du bist SUPER!</p>
+    <button id="super-success-close-button" class="btn-primary btn-super-challenge">Super!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Award the diamond
+  addDiamonds(1);
+  
+  // Update diamond display in header if visible
+  const diamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+  if (diamondDisplay) {
+    diamondDisplay.textContent = loadDiamonds();
+  }
+  
+  createConfettiEffect();
+  
+  const closeButton = document.getElementById('super-success-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    removeConfettiPieces();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show super challenge failure popup
+ * Displayed when player makes an error during a super challenge
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showSuperChallengeFailurePopup(onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'super-challenge-failure-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card super-failure-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">😞</div>
+    <h2>Super Challenge nicht geschafft</h2>
+    <p>Beim nächsten Mal klappt es bestimmt!</p>
+    <button id="super-failure-close-button" class="btn-primary">Nächstes Mal</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('super-failure-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
  * Show settings popup with options to reset data or generate new challenges
  */
 function showSettingsPopup() {
@@ -1724,9 +1888,12 @@ function setupDevSettingsListeners() {
     completeChallengeBtn.addEventListener('click', () => {
       const challenges = getTodaysChallenges();
       
-      // Find the first available or in_progress challenge
+      // Find the first available or in_progress challenge (regular or super)
       const challengeIndex = challenges.findIndex(c => 
-        c.state === CHALLENGE_STATE.AVAILABLE || c.state === CHALLENGE_STATE.IN_PROGRESS
+        c.state === CHALLENGE_STATE.AVAILABLE || 
+        c.state === CHALLENGE_STATE.IN_PROGRESS ||
+        c.state === CHALLENGE_STATE.SUPER_AVAILABLE ||
+        c.state === CHALLENGE_STATE.SUPER_IN_PROGRESS
       );
       
       if (challengeIndex === -1) {
