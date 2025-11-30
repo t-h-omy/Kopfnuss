@@ -67,10 +67,29 @@ export const BACKGROUNDS = balancingData.BACKGROUNDS;
 export const SEASONAL_EVENTS = balancingData.SEASONAL_EVENTS;
 
 /**
- * Seasonal backgrounds configuration
- * Applied in: logic/backgroundManager.js, logic/eventManager.js
+ * Individual event background sections
+ * Each event has its own section for better organization
  */
-export const SEASONAL_BACKGROUNDS = balancingData.SEASONAL_BACKGROUNDS;
+export const CHRISTMAS_BACKGROUNDS = balancingData.CHRISTMAS_BACKGROUNDS;
+export const NEWYEAR_BACKGROUNDS = balancingData.NEWYEAR_BACKGROUNDS;
+export const VALENTINES_BACKGROUNDS = balancingData.VALENTINES_BACKGROUNDS;
+export const EASTER_BACKGROUNDS = balancingData.EASTER_BACKGROUNDS;
+export const SUMMER_BACKGROUNDS = balancingData.SUMMER_BACKGROUNDS;
+export const HALLOWEEN_BACKGROUNDS = balancingData.HALLOWEEN_BACKGROUNDS;
+
+/**
+ * Seasonal backgrounds configuration (merged from all event sections)
+ * Applied in: logic/backgroundManager.js, logic/eventManager.js
+ * This combines all event-specific backgrounds for backward compatibility
+ */
+export const SEASONAL_BACKGROUNDS = {
+  ...balancingData.CHRISTMAS_BACKGROUNDS,
+  ...balancingData.NEWYEAR_BACKGROUNDS,
+  ...balancingData.VALENTINES_BACKGROUNDS,
+  ...balancingData.EASTER_BACKGROUNDS,
+  ...balancingData.SUMMER_BACKGROUNDS,
+  ...balancingData.HALLOWEEN_BACKGROUNDS
+};
 
 /**
  * Check if currently using dev balancing

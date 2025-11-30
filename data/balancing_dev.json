@@ -238,7 +238,7 @@
       "popupDescription": "Sammle Kürbislaternen und schalte gruselige Hintergründe frei!"
     }
   },
-  "SEASONAL_BACKGROUNDS": {
+  "CHRISTMAS_BACKGROUNDS": {
     "gingerbread": {
       "id": "gingerbread",
       "name": "Lebkuchen",
@@ -257,6 +257,26 @@
       "eventId": "christmas",
       "isSeasonal": true
     },
+    "christmasCookies": {
+      "id": "christmasCookies",
+      "name": "Weihnachtskekse",
+      "file": "backgrounds/christmas/cookies_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 15,
+      "eventId": "christmas",
+      "isSeasonal": true
+    },
+    "snowyWinter": {
+      "id": "snowyWinter",
+      "name": "Schneelandschaft",
+      "file": "backgrounds/christmas/snow_background_mobile_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 20,
+      "eventId": "christmas",
+      "isSeasonal": true
+    }
+  },
+  "NEWYEAR_BACKGROUNDS": {
     "newYearFireworks": {
       "id": "newYearFireworks",
       "name": "Feuerwerk",
@@ -265,7 +285,9 @@
       "tasksRequired": 5,
       "eventId": "newYear",
       "isSeasonal": true
-    },
+    }
+  },
+  "VALENTINES_BACKGROUNDS": {
     "valentinesHearts": {
       "id": "valentinesHearts",
       "name": "Herzchen",
@@ -274,7 +296,9 @@
       "tasksRequired": 6,
       "eventId": "valentines",
       "isSeasonal": true
-    },
+    }
+  },
+  "EASTER_BACKGROUNDS": {
     "easterBunny": {
       "id": "easterBunny",
       "name": "Osterhase",
@@ -283,7 +307,9 @@
       "tasksRequired": 7,
       "eventId": "easter",
       "isSeasonal": true
-    },
+    }
+  },
+  "SUMMER_BACKGROUNDS": {
     "summerBeach": {
       "id": "summerBeach",
       "name": "Strandparadies",
@@ -292,7 +318,9 @@
       "tasksRequired": 9,
       "eventId": "summer",
       "isSeasonal": true
-    },
+    }
+  },
+  "HALLOWEEN_BACKGROUNDS": {
     "halloweenSpooky": {
       "id": "halloweenSpooky",
       "name": "Gruselhaus",
