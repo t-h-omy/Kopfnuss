@@ -1,7 +1,7 @@
 // Kopfnuss - Diamond Manager
 // Manages diamond earning and spending
 
-import { CONFIG } from '../data/balancing.js';
+import { CONFIG } from '../data/balancingLoader.js';
 import { 
   loadDiamonds, 
   saveDiamonds as saveToStorage,

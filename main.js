@@ -26,7 +26,7 @@ import {
   saveSelectedBackground as saveSelectedBackgroundToStorage
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
-import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancing.js';
+import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancingLoader.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
@@ -58,6 +58,7 @@ import {
   getSeasonalCurrency,
   addSeasonalCurrency,
   getSeasonalTaskCount,
+  incrementSeasonalTasks,
   getAllActiveSeasonalBackgrounds,
   unlockSeasonalBackground,
   shouldShowEventStartPopup,
@@ -86,7 +87,7 @@ setAppHeight();
 document.documentElement.style.setProperty('--background-opacity', VISUAL_CONFIG.BACKGROUND_OPACITY);
 
 // Set shadow CSS variables from balancing config
-// These values can be tuned in data/balancing.js without touching CSS
+// These values can be tuned in data/balancing_prod.json or balancing_dev.json without touching CSS
 document.documentElement.style.setProperty('--shadow-color', CONFIG.SHADOW_COLOR);
 document.documentElement.style.setProperty('--shadow-blur-small', CONFIG.SHADOW_BLUR_SMALL);
 document.documentElement.style.setProperty('--shadow-blur-large', CONFIG.SHADOW_BLUR_LARGE);
@@ -2203,6 +2204,17 @@ function setupDevSettingsListeners() {
       progress.totalTasksCompleted = newTotal;
       saveProgress(progress);
       
+      // Also increment seasonal tasks if an event is active
+      const activeEvent = getActiveEvent();
+      if (activeEvent) {
+        incrementSeasonalTasks(10);
+        // Update seasonal task display in header if visible
+        const seasonalTaskValue = document.querySelector('.event-stat-value');
+        if (seasonalTaskValue) {
+          seasonalTaskValue.textContent = getSeasonalTaskCount();
+        }
+      }
+      
       // Award diamonds if earned
       if (diamondsEarned > 0) {
         let currentDiamonds = loadDiamonds();
@@ -3292,10 +3304,18 @@ class KopfnussApp {
 }
 
 // App initialisieren wenn DOM bereit ist
-document.addEventListener('DOMContentLoaded', () => {
+// Note: With top-level await in balancingLoader.js, DOMContentLoaded may have already fired
+// by the time this module executes. We need to check readyState to handle both cases.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    const app = new KopfnussApp();
+    app.init();
+  });
+} else {
+  // DOM is already ready, init immediately
   const app = new KopfnussApp();
   app.init();
-});
+}
 
 // Exports für Module
 export { Router, KopfnussApp };

@@ -1,7 +1,7 @@
 // Kopfnuss - Background Manager
 // Manages background unlocking, selection, and display
 
-import { BACKGROUNDS } from '../data/balancing.js';
+import { BACKGROUNDS } from '../data/balancingLoader.js';
 import { 
   loadUnlockedBackgrounds, 
   saveUnlockedBackgrounds,

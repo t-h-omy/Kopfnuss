@@ -1,7 +1,7 @@
 // Kopfnuss - Streak Manager
 // Manages daily streak system
 
-import { CONFIG } from '../data/balancing.js';
+import { CONFIG } from '../data/balancingLoader.js';
 import { 
   loadStreak, 
   saveStreak, 

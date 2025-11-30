@@ -2,7 +2,7 @@
 // Centralized visual effects for sparkles, highlights, and scroll animations
 
 import { ANIMATION_TIMING, SPARKLE_CONFIG, SUPER_CHALLENGE_SPARKLE_CONFIG } from '../data/constants.js';
-import { CONFIG } from '../data/balancing.js';
+import { CONFIG } from '../data/balancingLoader.js';
 
 // Track super challenge sparkle interval for cleanup
 let superChallengeSparkleInterval = null;

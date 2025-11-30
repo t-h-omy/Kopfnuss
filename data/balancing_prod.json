@@ -29,6 +29,8 @@
     "STREAK_RESCUE_COST": 1,
     "FREEZE_AFTER_DAYS": 1,
     "LOSE_AFTER_DAYS": 2,
+    "SUPER_CHALLENGE_SPAWN_CHANCE": 0.25,
+    "SUPER_CHALLENGE_SPARKLE_COUNT": 12,
     "SHADOW_COLOR": "rgba(0, 0, 0, 0.12)",
     "SHADOW_BLUR_SMALL": "8px",
     "SHADOW_BLUR_LARGE": "16px",
@@ -160,28 +162,28 @@
     "christmas": {
       "id": "christmas",
       "name": "Weihnachten",
-      "emoticon": "🍭",
-      "currencyName": "Zuckerstangen",
-      "currencyNameSingular": "Zuckerstange",
+      "emoticon": "❄️",
+      "currencyName": "Schneeflocken",
+      "currencyNameSingular": "Schneeflocke",
       "startMonth": 12,
       "startDay": 1,
       "endMonth": 12,
       "endDay": 28,
       "popupTitle": "Weihnachts-Event",
-      "popupDescription": "Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!"
+      "popupDescription": "Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!"
     },
     "newYear": {
       "id": "newYear",
       "name": "Neujahr",
-      "emoticon": "🎆",
-      "currencyName": "Feuerwerk",
-      "currencyNameSingular": "Feuerwerk",
-      "startMonth": 1,
-      "startDay": 1,
+      "emoticon": "🍀",
+      "currencyName": "Kleeblätter",
+      "currencyNameSingular": "Kleeblatt",
+      "startMonth": 12,
+      "startDay": 31,
       "endMonth": 1,
       "endDay": 7,
       "popupTitle": "Neujahrs-Event",
-      "popupDescription": "Sammle Feuerwerke und schalte festliche Hintergründe frei!"
+      "popupDescription": "Sammle Kleeblätter und schalte festliche Hintergründe frei!"
     },
     "valentines": {
       "id": "valentines",
@@ -236,12 +238,12 @@
       "popupDescription": "Sammle Kürbislaternen und schalte gruselige Hintergründe frei!"
     }
   },
-  "SEASONAL_BACKGROUNDS": {
+  "CHRISTMAS_BACKGROUNDS": {
     "gingerbread": {
       "id": "gingerbreadman",
       "name": "Gingerbreadman",
       "file": "backgrounds/christmas/gingerbread_optimized.webp",
-      "cost": 2,
+      "cost": 1,
       "tasksRequired": 40,
       "eventId": "christmas",
       "isSeasonal": true
@@ -255,15 +257,55 @@
       "eventId": "christmas",
       "isSeasonal": true
     },
+    "christmasCookies": {
+      "id": "christmasCookies",
+      "name": "Weihnachtskekse",
+      "file": "backgrounds/christmas/cookies_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 160,
+      "eventId": "christmas",
+      "isSeasonal": true
+    },
+    "snowyWinter": {
+      "id": "snowyWinter",
+      "name": "Schneelandschaft",
+      "file": "backgrounds/christmas/snow_background_mobile_optimized.webp",
+      "cost": 4,
+      "tasksRequired": 220,
+      "eventId": "christmas",
+      "isSeasonal": true
+    }
+  },
+  "NEWYEAR_BACKGROUNDS": {
     "newYearFireworks": {
       "id": "newYearFireworks",
-      "name": "Feuerwerk",
-      "file": "backgrounds/background_compressed.webp",
+      "name": "Silvester-Feuerwerk",
+      "file": "backgrounds/newyear/silvester_fireworks_optimized.webp",
       "cost": 2,
       "tasksRequired": 50,
       "eventId": "newYear",
       "isSeasonal": true
     },
+    "confetti": {
+      "id": "confetti",
+      "name": "Konfetti",
+      "file": "backgrounds/newyear/confetti_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 80,
+      "eventId": "newYear",
+      "isSeasonal": true
+    },
+    "luckySymbols": {
+      "id": "luckySymbols",
+      "name": "Glückssymbole",
+      "file": "backgrounds/newyear/lucky_symbols_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 120,
+      "eventId": "newYear",
+      "isSeasonal": true
+    }
+  },
+  "VALENTINES_BACKGROUNDS": {
     "valentinesHearts": {
       "id": "valentinesHearts",
       "name": "Herzchen",
@@ -272,7 +314,9 @@
       "tasksRequired": 60,
       "eventId": "valentines",
       "isSeasonal": true
-    },
+    }
+  },
+  "EASTER_BACKGROUNDS": {
     "easterBunny": {
       "id": "easterBunny",
       "name": "Osterhase",
@@ -281,7 +325,9 @@
       "tasksRequired": 70,
       "eventId": "easter",
       "isSeasonal": true
-    },
+    }
+  },
+  "SUMMER_BACKGROUNDS": {
     "summerBeach": {
       "id": "summerBeach",
       "name": "Strandparadies",
@@ -290,7 +336,9 @@
       "tasksRequired": 90,
       "eventId": "summer",
       "isSeasonal": true
-    },
+    }
+  },
+  "HALLOWEEN_BACKGROUNDS": {
     "halloweenSpooky": {
       "id": "halloweenSpooky",
       "name": "Gruselhaus",

@@ -4,7 +4,7 @@
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.20.0';
+const APP_VERSION = '1.21.1';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
@@ -15,9 +15,9 @@ const urlsToCache = [
   './main.js',
   './manifest.json',
   './version.js',
-  './data/balancing.js',
-  './data/balancing.production.json',
-  './data/balancing.dev.json',
+  './data/balancingLoader.js',
+  './data/balancing_prod.json',
+  './data/balancing_dev.json',
   './data/constants.js',
   './logic/taskGenerators.js',
   './logic/challengeGenerator.js',
