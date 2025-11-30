@@ -168,7 +168,7 @@
       "startMonth": 12,
       "startDay": 1,
       "endMonth": 12,
-      "endDay": 31,
+      "endDay": 28,
       "popupTitle": "Weihnachts-Event",
       "popupDescription": "Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!"
     },
@@ -178,10 +178,10 @@
       "emoticon": "🍀",
       "currencyName": "Kleeblätter",
       "currencyNameSingular": "Kleeblatt",
-      "startMonth": 11,
-      "startDay": 30,
+      "startMonth": 12,
+      "startDay": 31,
       "endMonth": 1,
-      "endDay": 15,
+      "endDay": 7,
       "popupTitle": "Neujahrs-Event",
       "popupDescription": "Sammle Kleeblätter und schalte festliche Hintergründe frei!"
     },
