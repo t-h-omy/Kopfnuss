@@ -175,15 +175,15 @@
     "newYear": {
       "id": "newYear",
       "name": "Neujahr",
-      "emoticon": "🎆",
-      "currencyName": "Feuerwerksblitze",
-      "currencyNameSingular": "Feuerwerksblitz",
+      "emoticon": "🍀",
+      "currencyName": "Kleeblätter",
+      "currencyNameSingular": "Kleeblatt",
       "startMonth": 11,
       "startDay": 30,
       "endMonth": 1,
       "endDay": 15,
       "popupTitle": "Neujahrs-Event",
-      "popupDescription": "Sammle Feuerwerksblitze und schalte festliche Hintergründe frei!"
+      "popupDescription": "Sammle Kleeblätter und schalte festliche Hintergründe frei!"
     },
     "valentines": {
       "id": "valentines",
