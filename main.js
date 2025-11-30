@@ -22,10 +22,11 @@ import {
   loadProgress,
   saveProgress,
   loadStreak,
-  saveStreak
+  saveStreak,
+  saveSelectedBackground as saveSelectedBackgroundToStorage
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
-import { CONFIG, BACKGROUNDS } from './data/balancing.js';
+import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancing.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
@@ -50,6 +51,24 @@ import {
   BACKGROUND_STATE,
   checkForNewlyPurchasableBackgrounds
 } from './logic/backgroundManager.js';
+import {
+  getActiveEvent,
+  isEventActive,
+  getDaysUntilEventEnd,
+  getSeasonalCurrency,
+  addSeasonalCurrency,
+  getSeasonalTaskCount,
+  getAllActiveSeasonalBackgrounds,
+  unlockSeasonalBackground,
+  shouldShowEventStartPopup,
+  markEventStartPopupShown,
+  shouldShowEventEndPopup,
+  markEventEndPopupShown,
+  checkAndResetSeasonalBackground,
+  isSeasonalBackgroundUsable,
+  clearEventData,
+  checkForNewlyPurchasableSeasonalBackgrounds
+} from './logic/eventManager.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -173,7 +192,7 @@ let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge 
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
-let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean}
+let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean, seasonalCurrencyAwarded: object|null}
 
 // Preload celebration images for faster display
 const celebrationImageCache = [];
@@ -332,10 +351,15 @@ function loadChallengesScreen(container) {
     // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
     const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
     
-    // Check for newly purchasable backgrounds
+    // Check for newly purchasable backgrounds (regular)
     const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
     const showBackgroundUnlock = backgroundUnlockResult.hasNew;
     const newlyPurchasableBackground = backgroundUnlockResult.firstNewBackground;
+    
+    // Check for newly purchasable seasonal backgrounds
+    const seasonalBackgroundUnlockResult = checkForNewlyPurchasableSeasonalBackgrounds();
+    const showSeasonalBackgroundUnlock = seasonalBackgroundUnlockResult.hasNew;
+    const newlyPurchasableSeasonalBackground = seasonalBackgroundUnlockResult.firstNewBackground;
     
     // Reset the flags
     const unfrozenStreakValue = streakWasUnfrozen;
@@ -361,7 +385,7 @@ function loadChallengesScreen(container) {
     const popupsToShow = [];
     
     if (showSuperChallengeSuccess) {
-      popupsToShow.push((next) => showSuperChallengeSuccessPopup(next));
+      popupsToShow.push((next) => showSuperChallengeSuccessPopup(storedSuperChallengeResult, next));
     } else if (showSuperChallengeFailure) {
       popupsToShow.push((next) => showSuperChallengeFailurePopup(next));
     }
@@ -378,6 +402,10 @@ function loadChallengesScreen(container) {
     if (showBackgroundUnlock && newlyPurchasableBackground) {
       // Show background unlock celebration popup when a new background becomes purchasable
       popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(newlyPurchasableBackground, next));
+    }
+    if (showSeasonalBackgroundUnlock && newlyPurchasableSeasonalBackground) {
+      // Show seasonal background unlock celebration popup when a new seasonal background becomes purchasable
+      popupsToShow.push((next) => showSeasonalBackgroundUnlockCelebrationPopup(newlyPurchasableSeasonalBackground, next));
     }
     
     // Chain popups together
@@ -406,31 +434,71 @@ function loadChallengesScreen(container) {
   const streakIcon = streakInfo.isFrozen ? '🧊' : '🔥';
   const streakClass = streakInfo.isFrozen ? 'stat-capsule streak-frozen' : 'stat-capsule';
   
-  // Create fixed header with player stats and navigation
+  // Check for active seasonal event
+  const activeEvent = getActiveEvent();
+  const daysUntilEventEnd = getDaysUntilEventEnd();
+  const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
+  
+  // Build event countdown HTML for row 2
+  let eventCountdownHtml = '';
+  if (activeEvent && daysUntilEventEnd !== null) {
+    const dayText = daysUntilEventEnd === 1 ? 'Tag' : 'Tage';
+    eventCountdownHtml = `
+      <div class="event-countdown">
+        <span class="event-emoticon">${activeEvent.emoticon}</span>
+        <span class="event-countdown-text">Noch ${daysUntilEventEnd} ${dayText}</span>
+      </div>
+    `;
+  }
+  
+  // Build seasonal currency display HTML for row 1
+  let seasonalCurrencyHtml = '';
+  if (activeEvent) {
+    seasonalCurrencyHtml = `
+      <div class="stat-capsule seasonal-currency">
+        <span class="stat-icon">${activeEvent.emoticon}</span>
+        <span class="stat-value">${seasonalCurrency}</span>
+      </div>
+    `;
+  }
+  
+  // Create fixed header with two-row layout
+  // Row 1: Left (streak, diamonds, seasonal currency) | Right (shop, burger menu)
+  // Row 2: Left (diamond progress) | Right (event countdown)
   const header = document.createElement('div');
   header.className = 'challenges-header';
   
   header.innerHTML = `
-    <div class="header-left">
-      <div class="header-stats">
-        <div class="${streakClass}">
-          <span class="stat-icon">${streakIcon}</span>
-          <span class="stat-value">${streakInfo.currentStreak}</span>
-        </div>
-        <div class="stat-capsule">
-          <span class="stat-icon">💎</span>
-          <span class="stat-value">${diamondInfo.current}</span>
+    <div class="header-row header-row-1">
+      <div class="header-row-left">
+        <div class="header-stats">
+          <div class="${streakClass}">
+            <span class="stat-icon">${streakIcon}</span>
+            <span class="stat-value">${streakInfo.currentStreak}</span>
+          </div>
+          <div class="stat-capsule">
+            <span class="stat-icon">💎</span>
+            <span class="stat-value">${diamondInfo.current}</span>
+          </div>
+          ${seasonalCurrencyHtml}
         </div>
       </div>
-      <div class="diamond-progress-info">${progressText}</div>
+      <div class="header-row-right">
+        <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
+          <span class="shop-icon">🛒</span>
+        </button>
+        <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
+          <span class="burger-icon">☰</span>
+        </button>
+      </div>
     </div>
-    <div class="header-right">
-      <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
-        <span class="shop-icon">🛒</span>
-      </button>
-      <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
-        <span class="burger-icon">☰</span>
-      </button>
+    <div class="header-row header-row-2">
+      <div class="header-row-left">
+        <div class="diamond-progress-info">${progressText}</div>
+      </div>
+      <div class="header-row-right">
+        ${eventCountdownHtml}
+      </div>
     </div>
   `;
   
@@ -1026,6 +1094,58 @@ function closeBackgroundUnlockCelebrationPopup() {
 }
 
 /**
+ * Show seasonal background unlock celebration popup
+ * Displayed when a seasonal background becomes purchasable (task requirement met)
+ * @param {Object} background - The seasonal background that became purchasable
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showSeasonalBackgroundUnlockCelebrationPopup(background, onClose = null) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay background-unlock-celebration-overlay';
+  overlay.id = 'seasonal-background-unlock-celebration-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card background-unlock-celebration-card seasonal-unlock-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">${background.eventEmoticon}</div>
+    <h2>Saisonaler Hintergrund verfügbar!</h2>
+    <div class="background-unlock-preview-container">
+      <img src="./assets/${background.file}" alt="${background.name}" class="background-unlock-preview">
+    </div>
+    <p class="background-unlock-name"><strong>${background.name}</strong></p>
+    <p>Du kannst diesen Hintergrund jetzt im Shop für ${background.eventEmoticon} kaufen!</p>
+    <button id="seasonal-background-unlock-celebration-close-button" class="btn-primary btn-event">Super!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add confetti effect
+  createConfettiEffect();
+  
+  // Add event listener for close button
+  const closeButton = document.getElementById('seasonal-background-unlock-celebration-close-button');
+  closeButton.addEventListener('click', () => {
+    closeSeasonalBackgroundUnlockCelebrationPopup();
+    // Call onClose callback if provided (for sequential popups)
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Close the seasonal background unlock celebration popup
+ */
+function closeSeasonalBackgroundUnlockCelebrationPopup() {
+  closePopup('seasonal-background-unlock-celebration-popup-overlay', true);
+}
+
+/**
  * Show frozen streak information popup
  * Displayed when app opens and streak is frozen
  * @param {number} currentStreak - Current streak count
@@ -1329,9 +1449,10 @@ export function notifyStreakIncremented(newStreak) {
  * This sets a flag that will trigger the appropriate popup when returning to challenges screen
  * @param {boolean} success - Whether the super challenge was completed without errors
  * @param {boolean} awardedDiamond - Whether a diamond was awarded
+ * @param {Object|null} seasonalCurrencyAwarded - Seasonal currency info if awarded
  */
-export function notifySuperChallengeResult(success, awardedDiamond) {
-  superChallengeResult = { success, awardedDiamond };
+export function notifySuperChallengeResult(success, awardedDiamond, seasonalCurrencyAwarded = null) {
+  superChallengeResult = { success, awardedDiamond, seasonalCurrencyAwarded };
 }
 
 /**
@@ -1347,13 +1468,22 @@ function showSuperChallengeStartPopup(challengeIndex) {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card super-challenge-popup-card';
   
+  // Check if a seasonal event is active to show appropriate reward
+  const activeEvent = getActiveEvent();
+  let rewardHtml;
+  if (activeEvent) {
+    rewardHtml = `<span>+1 ${activeEvent.emoticon}</span>`;
+  } else {
+    rewardHtml = `<span>+1 💎</span>`;
+  }
+  
   popupCard.innerHTML = `
     <div class="super-icon">⭐</div>
     <h2>Super Challenge</h2>
     <p class="super-description">Das ist eine besondere Herausforderung!<br>Löse alle Aufgaben ohne Fehler.</p>
     <div class="super-reward-info">
       <span>🎯 Belohnung:</span>
-      <span>+1 💎</span>
+      ${rewardHtml}
     </div>
     <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
   `;
@@ -1371,9 +1501,10 @@ function showSuperChallengeStartPopup(challengeIndex) {
 /**
  * Show super challenge success popup
  * Displayed when player completes a super challenge without errors
+ * @param {Object} challengeResult - The super challenge result with seasonalCurrencyAwarded info
  * @param {Function} onClose - Callback when popup closes
  */
-function showSuperChallengeSuccessPopup(onClose = null) {
+function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay reward-popup-overlay';
   overlay.id = 'super-challenge-success-popup-overlay';
@@ -1381,28 +1512,46 @@ function showSuperChallengeSuccessPopup(onClose = null) {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card reward-popup-card super-success-popup-card';
   
+  // Check if seasonal currency was awarded (passed in challengeResult)
+  const seasonalReward = challengeResult && challengeResult.seasonalCurrencyAwarded;
+  
+  let rewardDisplayHtml;
+  if (seasonalReward) {
+    // Seasonal currency reward - use singular form
+    rewardDisplayHtml = `
+      <div class="super-success-display seasonal-reward">
+        <span class="super-success-icon">${seasonalReward.emoticon}</span>
+        <span class="super-success-text">+1 ${seasonalReward.currencyNameSingular}</span>
+      </div>
+    `;
+  } else {
+    // Diamond reward
+    rewardDisplayHtml = `
+      <div class="super-success-display">
+        <span class="super-success-icon">💎</span>
+        <span class="super-success-text">+1 Diamant</span>
+      </div>
+    `;
+    // Award the diamond only if not seasonal reward
+    addDiamonds(1);
+    
+    // Update diamond display in header if visible
+    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+    if (diamondDisplay) {
+      diamondDisplay.textContent = loadDiamonds();
+    }
+  }
+  
   popupCard.innerHTML = `
     <div class="reward-celebration">🎉</div>
     <h2>Super Challenge geschafft!</h2>
-    <div class="super-success-display">
-      <span class="super-success-icon">💎</span>
-      <span class="super-success-text">+1 Diamant</span>
-    </div>
+    ${rewardDisplayHtml}
     <p>Ich hab's gewusst: Du bist SUPER!</p>
     <button id="super-success-close-button" class="btn-primary btn-super-challenge">Super!</button>
   `;
   
   overlay.appendChild(popupCard);
   document.body.appendChild(overlay);
-  
-  // Award the diamond
-  addDiamonds(1);
-  
-  // Update diamond display in header if visible
-  const diamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
-  if (diamondDisplay) {
-    diamondDisplay.textContent = loadDiamonds();
-  }
   
   createConfettiEffect();
   
@@ -1451,6 +1600,115 @@ function showSuperChallengeFailurePopup(onClose = null) {
 }
 
 /**
+ * Show seasonal event start popup
+ * Displayed on first app launch during an active event
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showEventStartPopup(onClose = null) {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    if (onClose) onClose();
+    return;
+  }
+  
+  const daysRemaining = getDaysUntilEventEnd();
+  const dayText = daysRemaining === 1 ? 'Tag' : 'Tage';
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay event-popup-overlay';
+  overlay.id = 'event-start-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card event-popup-card event-start-card';
+  
+  popupCard.innerHTML = `
+    <div class="event-emoticon-large">${activeEvent.emoticon}</div>
+    <h2>${activeEvent.popupTitle}</h2>
+    <p class="event-description">${activeEvent.popupDescription}</p>
+    <div class="event-info-section">
+      <p class="event-how-to">Schließe Super Challenges ab, um <strong>${activeEvent.currencyName}</strong> zu sammeln!</p>
+      <p class="event-unlock-info">Schalte besondere saisonale Hintergründe frei!</p>
+    </div>
+    <div class="event-end-date">
+      <span>⏰ Noch <strong>${daysRemaining} ${dayText}</strong></span>
+    </div>
+    <button id="event-start-close-button" class="btn-primary btn-event">${activeEvent.emoticon} Hol ich mir!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  createConfettiEffect();
+  
+  const closeButton = document.getElementById('event-start-close-button');
+  closeButton.addEventListener('click', () => {
+    markEventStartPopupShown();
+    overlay.remove();
+    removeConfettiPieces();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show seasonal event end popup
+ * Displayed on first app launch after an event ends
+ * @param {Object} event - The event that ended
+ * @param {boolean} backgroundWasReset - Whether a seasonal background was reset
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showEventEndPopup(event, backgroundWasReset = false, onClose = null) {
+  if (!event) {
+    if (onClose) onClose();
+    return;
+  }
+  
+  // Clear all seasonal data for this event (currency, tasks, unlocked backgrounds)
+  // This ensures the player must earn everything again next time the event occurs
+  clearEventData(event.id);
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay event-popup-overlay';
+  overlay.id = 'event-end-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card event-popup-card event-end-card';
+  
+  let backgroundResetText = '';
+  if (backgroundWasReset) {
+    backgroundResetText = '<p class="event-background-reset">Dein saisonaler Hintergrund wurde auf den Standard zurückgesetzt.</p>';
+  }
+  
+  popupCard.innerHTML = `
+    <div class="event-emoticon-large">${event.emoticon}</div>
+    <h2>${event.name}-Event beendet</h2>
+    <p class="event-end-info">Das ${event.name}-Event ist vorbei!</p>
+    <div class="event-end-details">
+      <p>• Deine ${event.currencyName} wurden entfernt</p>
+      <p>• Saisonale Hintergründe sind nicht mehr verfügbar</p>
+      ${backgroundResetText}
+    </div>
+    <p class="event-next-time">Bis zum nächsten Mal!</p>
+    <button id="event-end-close-button" class="btn-primary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('event-end-close-button');
+  closeButton.addEventListener('click', () => {
+    markEventEndPopupShown(event.id);
+    overlay.remove();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
  * Show settings popup with options to reset data or generate new challenges
  */
 function showSettingsPopup() {
@@ -1469,6 +1727,22 @@ function showSettingsPopup() {
   const devModeToggleClass = isDevMode ? 'dev-mode-toggle active' : 'dev-mode-toggle';
   const devModeToggleText = isDevMode ? 'AN' : 'AUS';
   
+  // Check for active seasonal event (for dev controls)
+  const activeEventForDev = isDevMode ? getActiveEvent() : null;
+  const seasonalCurrencyForDev = activeEventForDev ? getSeasonalCurrency() : 0;
+  
+  // Seasonal currency controls (only visible during events in dev mode)
+  const seasonalCurrencyHtml = activeEventForDev ? `
+    <div class="dev-setting-row">
+      <label>${activeEventForDev.emoticon} ${activeEventForDev.currencyName}:</label>
+      <div class="dev-setting-controls">
+        <button id="dev-seasonal-minus" class="dev-btn-small">-</button>
+        <span id="dev-seasonal-value" class="dev-value">${seasonalCurrencyForDev}</span>
+        <button id="dev-seasonal-plus" class="dev-btn-small">+</button>
+      </div>
+    </div>
+  ` : '';
+  
   // Dev settings section HTML (only visible in dev mode)
   const devSettingsHtml = isDevMode ? `
     <div class="dev-settings-section">
@@ -1482,6 +1756,7 @@ function showSettingsPopup() {
             <button id="dev-diamonds-plus" class="dev-btn-small">+</button>
           </div>
         </div>
+        ${seasonalCurrencyHtml}
         <div class="dev-setting-row">
           <label>🔥 Streak:</label>
           <div class="dev-setting-controls">
@@ -1990,6 +2265,44 @@ function setupDevSettingsListeners() {
       });
     });
   }
+  
+  // Seasonal currency controls (only available during events)
+  const seasonalMinus = document.getElementById('dev-seasonal-minus');
+  const seasonalPlus = document.getElementById('dev-seasonal-plus');
+  const seasonalValue = document.getElementById('dev-seasonal-value');
+  
+  if (seasonalMinus) {
+    seasonalMinus.addEventListener('click', () => {
+      const activeEvent = getActiveEvent();
+      if (!activeEvent) return;
+      
+      const current = getSeasonalCurrency();
+      if (current > 0) {
+        addSeasonalCurrency(-1);
+        const newValue = getSeasonalCurrency();
+        if (seasonalValue) seasonalValue.textContent = newValue;
+        // Update main UI seasonal currency display
+        const mainSeasonalDisplay = document.querySelector('.stat-capsule.seasonal-currency .stat-value');
+        if (mainSeasonalDisplay) mainSeasonalDisplay.textContent = newValue;
+        showDevFeedback(`${activeEvent.emoticon} ${newValue}`);
+      }
+    });
+  }
+  
+  if (seasonalPlus) {
+    seasonalPlus.addEventListener('click', () => {
+      const activeEvent = getActiveEvent();
+      if (!activeEvent) return;
+      
+      addSeasonalCurrency(1);
+      const newValue = getSeasonalCurrency();
+      if (seasonalValue) seasonalValue.textContent = newValue;
+      // Update main UI seasonal currency display
+      const mainSeasonalDisplay = document.querySelector('.stat-capsule.seasonal-currency .stat-value');
+      if (mainSeasonalDisplay) mainSeasonalDisplay.textContent = newValue;
+      showDevFeedback(`${activeEvent.emoticon} ${newValue}`);
+    });
+  }
 }
 
 /**
@@ -2139,12 +2452,18 @@ function executeFullReset() {
 /**
  * Show background shop popup with all available backgrounds
  * Supports four states: locked, purchasable, unlocked, active
+ * Includes seasonal backgrounds section when an event is active
  * @param {string|null} scrollToBackgroundId - Optional background ID to scroll to and highlight
  */
 function showBackgroundShopPopup(scrollToBackgroundId = null) {
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
+  
+  // Get seasonal event info
+  const activeEvent = getActiveEvent();
+  const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
+  const seasonalBackgrounds = activeEvent ? getAllActiveSeasonalBackgrounds() : [];
   
   // Create popup overlay
   const overlay = document.createElement('div');
@@ -2155,19 +2474,92 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card background-shop-card';
   
-  // Create header with diamond count
-  let headerHtml = `
-    <h2>🎨 Hintergründe</h2>
-    <div class="background-shop-header">
-      <div class="background-shop-diamonds">
-        <span>💎</span>
-        <span id="shop-diamond-count">${diamonds}</span>
-      </div>
+  // Create header with diamond count and seasonal currency if active
+  let currencyDisplayHtml = `
+    <div class="background-shop-diamonds">
+      <span>💎</span>
+      <span id="shop-diamond-count">${diamonds}</span>
     </div>
   `;
   
-  // Create grid of background tiles
-  let tilesHtml = '<div class="backgrounds-grid" id="backgrounds-grid">';
+  if (activeEvent) {
+    currencyDisplayHtml += `
+      <div class="background-shop-seasonal-currency">
+        <span>${activeEvent.emoticon}</span>
+        <span id="shop-seasonal-count">${seasonalCurrency}</span>
+      </div>
+    `;
+  }
+  
+  let headerHtml = `
+    <h2>🎨 Hintergründe</h2>
+    <div class="background-shop-header">
+      ${currencyDisplayHtml}
+    </div>
+  `;
+  
+  // Create seasonal section if event is active
+  let seasonalSectionHtml = '';
+  if (activeEvent && seasonalBackgrounds.length > 0) {
+    seasonalSectionHtml = `
+      <div class="seasonal-backgrounds-section">
+        <h3 class="seasonal-section-title">${activeEvent.emoticon} ${activeEvent.name}-Event</h3>
+        <div class="seasonal-backgrounds-grid">
+    `;
+    
+    seasonalBackgrounds.forEach(bg => {
+      const isUnlocked = bg.isUnlocked;
+      const canAfford = bg.canAfford;
+      const hasEnoughTasks = bg.hasEnoughTasks;
+      const isActive = selectedBg.id === bg.id;
+      
+      let tileClass = 'background-tile seasonal-tile';
+      let costHtml = '';
+      let statusHtml = '';
+      let lockIcon = '';
+      
+      if (isActive) {
+        tileClass += ' state-active selected';
+        costHtml = '<span class="background-cost">✓ Aktiv</span>';
+        statusHtml = '<div class="background-selected-badge">Aktiv</div>';
+      } else if (isUnlocked) {
+        tileClass += ' state-unlocked unlocked';
+        costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
+      } else if (!hasEnoughTasks) {
+        tileClass += ' state-locked locked';
+        const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
+        costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
+        lockIcon = '<div class="background-lock-icon">🔒</div>';
+      } else {
+        tileClass += ' state-purchasable purchasable seasonal-purchasable';
+        costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
+      }
+      
+      seasonalSectionHtml += `
+        <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="true">
+          <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
+          ${lockIcon}
+          ${statusHtml}
+          <div class="background-info">
+            <div class="background-name">${bg.name}</div>
+            ${costHtml}
+          </div>
+        </div>
+      `;
+    });
+    
+    seasonalSectionHtml += `
+        </div>
+      </div>
+    `;
+  }
+  
+  // Create grid of regular background tiles
+  let tilesHtml = '<div class="regular-backgrounds-section">';
+  if (activeEvent) {
+    tilesHtml += '<h3 class="regular-section-title">🎨 Hintergründe</h3>';
+  }
+  tilesHtml += '<div class="backgrounds-grid" id="backgrounds-grid">';
   
   backgrounds.forEach(bg => {
     const state = bg.state;
@@ -2209,7 +2601,7 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
     
     tilesHtml += `
-      <div class="${tileClass}" data-bg-id="${bg.id}">
+      <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="false">
         <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
         ${lockIcon}
         ${activeBadge}
@@ -2221,11 +2613,12 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     `;
   });
   
-  tilesHtml += '</div>';
+  tilesHtml += '</div></div>';
   
   popupCard.innerHTML = `
     <div class="background-shop-content">
       ${headerHtml}
+      ${seasonalSectionHtml}
       ${tilesHtml}
     </div>
     <button id="close-background-shop" class="btn-secondary background-shop-close">Schließen</button>
@@ -2234,9 +2627,9 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
   overlay.appendChild(popupCard);
   document.body.appendChild(overlay);
   
-  // Add click handlers for tiles (only for interactive states)
-  const tiles = popupCard.querySelectorAll('.background-tile');
-  tiles.forEach(tile => {
+  // Add click handlers for tiles (regular backgrounds)
+  const regularTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="false"]');
+  regularTiles.forEach(tile => {
     const bgId = tile.dataset.bgId;
     const bg = backgrounds.find(b => b.id === bgId);
     
@@ -2244,6 +2637,20 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     if (bg && bg.state !== BACKGROUND_STATE.LOCKED) {
       tile.addEventListener('click', () => {
         handleBackgroundTileClick(bgId);
+      });
+    }
+  });
+  
+  // Add click handlers for seasonal tiles
+  const seasonalTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="true"]');
+  seasonalTiles.forEach(tile => {
+    const bgId = tile.dataset.bgId;
+    const bg = seasonalBackgrounds.find(b => b.id === bgId);
+    
+    // Only make tiles clickable if they are purchasable, unlocked, or active
+    if (bg && (bg.isUnlocked || bg.hasEnoughTasks)) {
+      tile.addEventListener('click', () => {
+        handleSeasonalBackgroundTileClick(bgId);
       });
     }
   });
@@ -2316,6 +2723,175 @@ function handleBackgroundTileClick(bgId) {
     showBackgroundUnlockConfirmPopup(bg);
   }
   // Note: LOCKED state tiles are not clickable, so no handler needed
+}
+
+/**
+ * Handle click on a seasonal background tile
+ * @param {string} bgId - The ID of the seasonal background
+ */
+function handleSeasonalBackgroundTileClick(bgId) {
+  const seasonalBackgrounds = getAllActiveSeasonalBackgrounds();
+  const bg = seasonalBackgrounds.find(b => b.id === bgId);
+  if (!bg) return;
+  
+  const selectedBg = getSelectedBackground();
+  const isActive = selectedBg.id === bgId;
+  
+  if (isActive) {
+    // Already active, do nothing
+    return;
+  }
+  
+  if (bg.isUnlocked) {
+    // Seasonal background is unlocked - show selection confirmation
+    showSeasonalBackgroundSelectConfirmPopup(bg);
+  } else if (bg.hasEnoughTasks && bg.canAfford) {
+    // Seasonal background is purchasable - show unlock confirmation
+    showSeasonalBackgroundUnlockConfirmPopup(bg);
+  } else if (bg.hasEnoughTasks) {
+    // Has enough tasks but not enough currency
+    showNotEnoughSeasonalCurrencyHint();
+  }
+}
+
+/**
+ * Show popup to confirm selecting a seasonal background
+ * @param {Object} background - The seasonal background object
+ */
+function showSeasonalBackgroundSelectConfirmPopup(background) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-confirm-overlay';
+  overlay.id = 'seasonal-background-select-confirm-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-confirm-card';
+  
+  popupCard.innerHTML = `
+    <h2>Hintergrund wählen?</h2>
+    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
+    <p><strong>${background.name}</strong></p>
+    <p class="seasonal-warning">⚠️ Dieser Hintergrund ist nur während des Events verfügbar.</p>
+    <div class="background-confirm-buttons">
+      <button id="confirm-seasonal-select-button" class="btn-primary">Ja</button>
+      <button id="cancel-seasonal-select-button" class="btn-secondary">Nein</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const confirmBtn = document.getElementById('confirm-seasonal-select-button');
+  const cancelBtn = document.getElementById('cancel-seasonal-select-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      // Select the seasonal background
+      saveSelectedBackgroundToStorage(background.id);
+      applySeasonalBackground(background);
+      
+      overlay.remove();
+      closeBackgroundShopPopup();
+      showBackgroundShopPopup();
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+  }
+}
+
+/**
+ * Show popup to confirm unlocking a seasonal background
+ * @param {Object} background - The seasonal background object
+ */
+function showSeasonalBackgroundUnlockConfirmPopup(background) {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) return;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-confirm-overlay';
+  overlay.id = 'seasonal-background-unlock-confirm-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-confirm-card';
+  
+  popupCard.innerHTML = `
+    <h2>Hintergrund freischalten?</h2>
+    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
+    <p><strong>${background.name}</strong></p>
+    <div class="background-confirm-cost seasonal-cost">
+      <span>${activeEvent.emoticon}</span>
+      <span>${background.cost} ${activeEvent.currencyName}</span>
+    </div>
+    <p class="seasonal-warning">⚠️ Dieser Hintergrund ist nur während des Events verfügbar.</p>
+    <div class="background-confirm-buttons">
+      <button id="confirm-seasonal-unlock-button" class="btn-primary">Freischalten</button>
+      <button id="cancel-seasonal-unlock-button" class="btn-secondary">Abbrechen</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const confirmBtn = document.getElementById('confirm-seasonal-unlock-button');
+  const cancelBtn = document.getElementById('cancel-seasonal-unlock-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      const result = unlockSeasonalBackground(background.id);
+      
+      overlay.remove();
+      
+      if (result.success) {
+        closeBackgroundShopPopup();
+        showBackgroundShopPopup();
+        createConfettiEffect();
+      }
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+  }
+}
+
+/**
+ * Apply a seasonal background
+ * @param {Object} background - The seasonal background object
+ */
+function applySeasonalBackground(background) {
+  const backgroundPath = `./assets/${background.file}`;
+  document.documentElement.style.setProperty('--selected-background', `url('${backgroundPath}')`);
+}
+
+/**
+ * Show a hint when player doesn't have enough seasonal currency
+ */
+function showNotEnoughSeasonalCurrencyHint() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) return;
+  
+  // Remove any existing hint
+  const existingHint = document.querySelector('.not-enough-currency-hint');
+  if (existingHint) {
+    existingHint.remove();
+  }
+  
+  // Create hint element
+  const hint = document.createElement('div');
+  hint.className = 'not-enough-currency-hint not-enough-diamonds-hint';
+  hint.textContent = `${activeEvent.emoticon} Nicht genug ${activeEvent.currencyName}!`;
+  
+  document.body.appendChild(hint);
+  
+  // Remove after animation completes (3 seconds)
+  setTimeout(() => {
+    hint.remove();
+  }, 3000);
 }
 
 /**
@@ -2594,13 +3170,46 @@ class KopfnussApp {
     // Load challenges screen by default
     showScreen('challenges');
     
-    // Show streak status popups after initial load if needed
-    // This handles frozen/lost streaks on app open
-    if (streakStatus.showPopup && !wasStreakStatusHandledToday()) {
-      setTimeout(() => {
-        showStreakPopupForStatus(streakStatus);
-      }, ANIMATION_TIMING.INITIAL_POPUP_DELAY);
-    }
+    // Check for seasonal event popups first (before streak popups)
+    // Handle event end popup first (background reset), then event start popup
+    const eventEndResult = shouldShowEventEndPopup();
+    const backgroundResetResult = checkAndResetSeasonalBackground();
+    
+    // Chain of popups: event end -> event start -> streak
+    const showEventEndPopupIfNeeded = () => {
+      if (eventEndResult.shouldShow) {
+        setTimeout(() => {
+          showEventEndPopup(eventEndResult.event, backgroundResetResult.wasReset, () => {
+            showEventStartPopupIfNeeded();
+          });
+        }, ANIMATION_TIMING.INITIAL_POPUP_DELAY);
+      } else {
+        showEventStartPopupIfNeeded();
+      }
+    };
+    
+    const showEventStartPopupIfNeeded = () => {
+      if (shouldShowEventStartPopup()) {
+        setTimeout(() => {
+          showEventStartPopup(() => {
+            showStreakPopupIfNeeded();
+          });
+        }, ANIMATION_TIMING.INITIAL_POPUP_DELAY);
+      } else {
+        showStreakPopupIfNeeded();
+      }
+    };
+    
+    const showStreakPopupIfNeeded = () => {
+      if (streakStatus.showPopup && !wasStreakStatusHandledToday()) {
+        setTimeout(() => {
+          showStreakPopupForStatus(streakStatus);
+        }, ANIMATION_TIMING.INITIAL_POPUP_DELAY);
+      }
+    };
+    
+    // Start the popup chain
+    showEventEndPopupIfNeeded();
   }
   
   handleOfflineStatus() {

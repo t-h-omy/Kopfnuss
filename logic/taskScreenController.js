@@ -209,7 +209,7 @@ function handleChallengeCompletion() {
   
   // Notify main.js if this was a super challenge
   if (results.isSuperChallenge) {
-    notifySuperChallengeResult(results.superChallengeSuccess, results.superChallengeAwardedDiamond);
+    notifySuperChallengeResult(results.superChallengeSuccess, results.superChallengeAwardedDiamond, results.seasonalCurrencyAwarded);
   }
   
   // Get appropriate motivation phrase

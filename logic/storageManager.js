@@ -68,7 +68,13 @@ const BASE_STORAGE_KEYS = {
   DIAMONDS_EARNED: 'kopfnuss_diamonds_earned',
   UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
   SELECTED_BACKGROUND: 'kopfnuss_selected_background',
-  LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds'
+  LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds',
+  // Seasonal event storage keys (appended with event ID)
+  SEASONAL_CURRENCY: 'kopfnuss_seasonal_currency_',
+  SEASONAL_TASK_COUNT: 'kopfnuss_seasonal_tasks_',
+  SEASONAL_UNLOCKED_BACKGROUNDS: 'kopfnuss_seasonal_backgrounds_',
+  EVENT_POPUP_SHOWN: 'kopfnuss_event_popup_shown_',
+  EVENT_END_POPUP_SHOWN: 'kopfnuss_event_end_popup_shown_'
 };
 
 /**
@@ -104,7 +110,14 @@ const STORAGE_KEYS = {
   get DIAMONDS_EARNED() { return getStorageKey('kopfnuss_diamonds_earned'); },
   get UNLOCKED_BACKGROUNDS() { return getStorageKey('kopfnuss_unlocked_backgrounds'); },
   get SELECTED_BACKGROUND() { return getStorageKey('kopfnuss_selected_background'); },
-  get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); }
+  get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); },
+  // Seasonal event storage keys (appended with event ID)
+  get SEASONAL_CURRENCY() { return getStorageKey('kopfnuss_seasonal_currency_'); },
+  get SEASONAL_TASK_COUNT() { return getStorageKey('kopfnuss_seasonal_tasks_'); },
+  get SEASONAL_UNLOCKED_BACKGROUNDS() { return getStorageKey('kopfnuss_seasonal_backgrounds_'); },
+  get SEASONAL_LAST_KNOWN_PURCHASABLE() { return getStorageKey('kopfnuss_seasonal_last_purchasable_'); },
+  get EVENT_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_popup_shown_'); },
+  get EVENT_END_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_end_popup_shown_'); }
 };
 
 /**
@@ -382,6 +395,136 @@ export function getStorageInfo() {
     console.error('Error getting storage info:', error);
     return null;
   }
+}
+
+// ============================================
+// SEASONAL EVENT STORAGE FUNCTIONS
+// ============================================
+
+/**
+ * Save seasonal currency for an event
+ * @param {string} eventId - ID of the event
+ * @param {number} amount - Amount of seasonal currency
+ * @returns {boolean} Success status
+ */
+export function saveSeasonalCurrency(eventId, amount) {
+  const key = STORAGE_KEYS.SEASONAL_CURRENCY + eventId;
+  return saveToStorage(key, amount);
+}
+
+/**
+ * Load seasonal currency for an event
+ * @param {string} eventId - ID of the event
+ * @returns {number} Amount of seasonal currency (defaults to 0)
+ */
+export function loadSeasonalCurrency(eventId) {
+  const key = STORAGE_KEYS.SEASONAL_CURRENCY + eventId;
+  return loadFromStorage(key, 0);
+}
+
+/**
+ * Save seasonal task count for an event
+ * @param {string} eventId - ID of the event
+ * @param {number} count - Number of tasks completed during the event
+ * @returns {boolean} Success status
+ */
+export function saveSeasonalTaskCount(eventId, count) {
+  const key = STORAGE_KEYS.SEASONAL_TASK_COUNT + eventId;
+  return saveToStorage(key, count);
+}
+
+/**
+ * Load seasonal task count for an event
+ * @param {string} eventId - ID of the event
+ * @returns {number} Number of tasks completed (defaults to 0)
+ */
+export function loadSeasonalTaskCount(eventId) {
+  const key = STORAGE_KEYS.SEASONAL_TASK_COUNT + eventId;
+  return loadFromStorage(key, 0);
+}
+
+/**
+ * Save seasonal unlocked backgrounds for an event
+ * @param {string} eventId - ID of the event
+ * @param {Array<string>} backgroundIds - Array of unlocked background IDs
+ * @returns {boolean} Success status
+ */
+export function saveSeasonalUnlockedBackgrounds(eventId, backgroundIds) {
+  const key = STORAGE_KEYS.SEASONAL_UNLOCKED_BACKGROUNDS + eventId;
+  return saveToStorage(key, backgroundIds);
+}
+
+/**
+ * Load seasonal unlocked backgrounds for an event
+ * @param {string} eventId - ID of the event
+ * @returns {Array<string>} Array of unlocked background IDs (defaults to empty array)
+ */
+export function loadSeasonalUnlockedBackgrounds(eventId) {
+  const key = STORAGE_KEYS.SEASONAL_UNLOCKED_BACKGROUNDS + eventId;
+  return loadFromStorage(key, []);
+}
+
+/**
+ * Save event popup shown status
+ * @param {string} eventId - ID of the event
+ * @param {boolean} shown - Whether the popup was shown
+ * @returns {boolean} Success status
+ */
+export function saveEventPopupShown(eventId, shown) {
+  const key = STORAGE_KEYS.EVENT_POPUP_SHOWN + eventId;
+  return saveToStorage(key, shown);
+}
+
+/**
+ * Load event popup shown status
+ * @param {string} eventId - ID of the event
+ * @returns {boolean} Whether the popup was shown (defaults to false)
+ */
+export function loadEventPopupShown(eventId) {
+  const key = STORAGE_KEYS.EVENT_POPUP_SHOWN + eventId;
+  return loadFromStorage(key, false);
+}
+
+/**
+ * Save event end popup shown status
+ * @param {string} eventId - ID of the event
+ * @param {boolean} shown - Whether the end popup was shown
+ * @returns {boolean} Success status
+ */
+export function saveEventEndPopupShown(eventId, shown) {
+  const key = STORAGE_KEYS.EVENT_END_POPUP_SHOWN + eventId;
+  return saveToStorage(key, shown);
+}
+
+/**
+ * Load event end popup shown status
+ * @param {string} eventId - ID of the event
+ * @returns {boolean} Whether the end popup was shown (defaults to false)
+ */
+export function loadEventEndPopupShown(eventId) {
+  const key = STORAGE_KEYS.EVENT_END_POPUP_SHOWN + eventId;
+  return loadFromStorage(key, false);
+}
+
+/**
+ * Save last known purchasable seasonal backgrounds for an event
+ * @param {string} eventId - ID of the event
+ * @param {Array<string>} backgroundIds - Array of background IDs that were purchasable
+ * @returns {boolean} Success status
+ */
+export function saveSeasonalLastKnownPurchasable(eventId, backgroundIds) {
+  const key = STORAGE_KEYS.SEASONAL_LAST_KNOWN_PURCHASABLE + eventId;
+  return saveToStorage(key, backgroundIds);
+}
+
+/**
+ * Load last known purchasable seasonal backgrounds for an event
+ * @param {string} eventId - ID of the event
+ * @returns {Array<string>} Array of background IDs (defaults to empty array)
+ */
+export function loadSeasonalLastKnownPurchasable(eventId) {
+  const key = STORAGE_KEYS.SEASONAL_LAST_KNOWN_PURCHASABLE + eventId;
+  return loadFromStorage(key, []);
 }
 
 export { STORAGE_KEYS };

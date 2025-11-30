@@ -103,29 +103,202 @@
       "id": "maineCoon",
       "name": "Maine Coon",
       "file": "backgrounds/maine_coon_background_optimized.webp",
-      "cost": 2,
+      "cost": 4,
       "tasksRequired": 350
     },
     "elephant": {
       "id": "elephant",
       "name": "Elefant",
       "file": "backgrounds/elephant_background_less_saturated.webp",
-      "cost": 2,
+      "cost": 4,
       "tasksRequired": 530
     },
     "pomeranian": {
       "id": "pomeranian",
       "name": "Pomeranian",
       "file": "backgrounds/pomeranian_background_soft_optimized.webp",
-      "cost": 2,
+      "cost": 3,
       "tasksRequired": 710
     },
     "snakeJungle": {
       "id": "snakeJungle",
       "name": "Dschungelschlange",
       "file": "backgrounds/snake_jungle_background_optimized.webp",
-      "cost": 2,
+      "cost": 4,
       "tasksRequired": 230
+    },
+    "capybara": {
+      "id": "capybara",
+      "name": "Capybara",
+      "file": "backgrounds/capybara_background_less_saturated.webp",
+      "cost": 4,
+      "tasksRequired": 850
+    },
+    "dino": {
+      "id": "dino",
+      "name": "Dinosaurier",
+      "file": "backgrounds/dino_background_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 1000
+    },
+    "instruments": {
+      "id": "instruments",
+      "name": "Musikinstrumente",
+      "file": "backgrounds/instruments_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 1180
+    },
+    "orca": {
+      "id": "orca",
+      "name": "Orca",
+      "file": "backgrounds/orca_background_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 1350
+    }
+  },
+  "SEASONAL_EVENTS": {
+    "christmas": {
+      "id": "christmas",
+      "name": "Weihnachten",
+      "emoticon": "🍭",
+      "currencyName": "Zuckerstangen",
+      "currencyNameSingular": "Zuckerstange",
+      "startMonth": 12,
+      "startDay": 1,
+      "endMonth": 12,
+      "endDay": 28,
+      "popupTitle": "Weihnachts-Event",
+      "popupDescription": "Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!"
+    },
+    "newYear": {
+      "id": "newYear",
+      "name": "Neujahr",
+      "emoticon": "🎆",
+      "currencyName": "Feuerwerk",
+      "currencyNameSingular": "Feuerwerk",
+      "startMonth": 1,
+      "startDay": 1,
+      "endMonth": 1,
+      "endDay": 7,
+      "popupTitle": "Neujahrs-Event",
+      "popupDescription": "Sammle Feuerwerke und schalte festliche Hintergründe frei!"
+    },
+    "valentines": {
+      "id": "valentines",
+      "name": "Valentinstag",
+      "emoticon": "🌹",
+      "currencyName": "Rosen",
+      "currencyNameSingular": "Rose",
+      "startMonth": 2,
+      "startDay": 7,
+      "endMonth": 2,
+      "endDay": 15,
+      "popupTitle": "Valentinstags-Event",
+      "popupDescription": "Sammle Rosen und schalte romantische Hintergründe frei!"
+    },
+    "easter": {
+      "id": "easter",
+      "name": "Ostern",
+      "emoticon": "🥚",
+      "currencyName": "Ostereier",
+      "currencyNameSingular": "Osterei",
+      "startMonth": 3,
+      "startDay": 20,
+      "endMonth": 4,
+      "endDay": 21,
+      "popupTitle": "Oster-Event",
+      "popupDescription": "Sammle Ostereier und schalte frühlingshafte Hintergründe frei!"
+    },
+    "summer": {
+      "id": "summer",
+      "name": "Sommerferien",
+      "emoticon": "☀️",
+      "currencyName": "Sonnen",
+      "currencyNameSingular": "Sonne",
+      "startMonth": 7,
+      "startDay": 25,
+      "endMonth": 9,
+      "endDay": 10,
+      "popupTitle": "Sommerferien-Event",
+      "popupDescription": "Sammle Sonnen und schalte sommerliche Hintergründe frei!"
+    },
+    "halloween": {
+      "id": "halloween",
+      "name": "Halloween",
+      "emoticon": "🎃",
+      "currencyName": "Kürbislaternen",
+      "currencyNameSingular": "Kürbislaterne",
+      "startMonth": 10,
+      "startDay": 15,
+      "endMonth": 11,
+      "endDay": 1,
+      "popupTitle": "Halloween-Event",
+      "popupDescription": "Sammle Kürbislaternen und schalte gruselige Hintergründe frei!"
+    }
+  },
+  "SEASONAL_BACKGROUNDS": {
+    "gingerbread": {
+      "id": "gingerbreadman",
+      "name": "Gingerbreadman",
+      "file": "backgrounds/christmas/gingerbread_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 40,
+      "eventId": "christmas",
+      "isSeasonal": true
+    },
+    "christmasTree": {
+      "id": "christmasTree",
+      "name": "Weihnachtsbaum",
+      "file": "backgrounds/christmas/christmas_tree_presents_mobile.webp",
+      "cost": 2,
+      "tasksRequired": 100,
+      "eventId": "christmas",
+      "isSeasonal": true
+    },
+    "newYearFireworks": {
+      "id": "newYearFireworks",
+      "name": "Feuerwerk",
+      "file": "backgrounds/background_compressed.webp",
+      "cost": 2,
+      "tasksRequired": 50,
+      "eventId": "newYear",
+      "isSeasonal": true
+    },
+    "valentinesHearts": {
+      "id": "valentinesHearts",
+      "name": "Herzchen",
+      "file": "backgrounds/background_compressed.webp",
+      "cost": 2,
+      "tasksRequired": 60,
+      "eventId": "valentines",
+      "isSeasonal": true
+    },
+    "easterBunny": {
+      "id": "easterBunny",
+      "name": "Osterhase",
+      "file": "backgrounds/background_compressed.webp",
+      "cost": 2,
+      "tasksRequired": 70,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "summerBeach": {
+      "id": "summerBeach",
+      "name": "Strandparadies",
+      "file": "backgrounds/background_compressed.webp",
+      "cost": 2,
+      "tasksRequired": 90,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "halloweenSpooky": {
+      "id": "halloweenSpooky",
+      "name": "Gruselhaus",
+      "file": "backgrounds/background_compressed.webp",
+      "cost": 2,
+      "tasksRequired": 80,
+      "eventId": "halloween",
+      "isSeasonal": true
     }
   }
 }
