@@ -306,12 +306,57 @@
     }
   },
   "VALENTINES_BACKGROUNDS": {
-    "valentinesHearts": {
-      "id": "valentinesHearts",
-      "name": "Herzchen",
-      "file": "backgrounds/background_compressed.webp",
+    "neonHearts": {
+      "id": "neonHearts",
+      "name": "Neon-Herzen",
+      "file": "backgrounds/valentines/neon_hearts.webp",
+      "cost": 1,
+      "tasksRequired": 4,
+      "eventId": "valentines",
+      "isSeasonal": true
+    },
+    "sunsetHearts": {
+      "id": "sunsetHearts",
+      "name": "Sonnenuntergang mit Herzen",
+      "file": "backgrounds/valentines/sunset_hearts.webp",
       "cost": 2,
-      "tasksRequired": 6,
+      "tasksRequired": 8,
+      "eventId": "valentines",
+      "isSeasonal": true
+    },
+    "rosePond": {
+      "id": "rosePond",
+      "name": "Rosenteich",
+      "file": "backgrounds/valentines/rose_pond.webp",
+      "cost": 2,
+      "tasksRequired": 12,
+      "eventId": "valentines",
+      "isSeasonal": true
+    },
+    "pixelatedHearts": {
+      "id": "pixelatedHearts",
+      "name": "Pixel-Herzen",
+      "file": "backgrounds/valentines/pixelated_hearts.webp",
+      "cost": 2,
+      "tasksRequired": 16,
+      "eventId": "valentines",
+      "isSeasonal": true
+    },
+    "origamiHeart": {
+      "id": "origamiHeart",
+      "name": "Origami-Herz",
+      "file": "backgrounds/valentines/origami_heart.webp",
+      "cost": 2,
+      "tasksRequired": 20,
+      "eventId": "valentines",
+      "isSeasonal": true
+    },
+    "pixelHeartsMobile": {
+      "id": "pixelHeartsMobile",
+      "name": "Wolkenherzen",
+      "file": "backgrounds/valentines/pixel_hearts_mobile.webp",
+      "cost": 2,
+      "tasksRequired": 24,
       "eventId": "valentines",
       "isSeasonal": true
     }
