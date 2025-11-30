@@ -3251,6 +3251,11 @@ class KopfnussApp {
     const eventEndResult = shouldShowEventEndPopup();
     const backgroundResetResult = checkAndResetSeasonalBackground();
     
+    // Apply the default background if a seasonal background was reset
+    if (backgroundResetResult.wasReset) {
+      applySelectedBackground();
+    }
+    
     // Chain of popups: event end -> event start -> streak
     const showEventEndPopupIfNeeded = () => {
       if (eventEndResult.shouldShow) {
