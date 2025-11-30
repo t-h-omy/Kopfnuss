@@ -397,15 +397,15 @@ const DEFAULT_SEASONAL_EVENTS = {
   christmas: {
     id: 'christmas',
     name: 'Weihnachten',
-    emoticon: '🍭',
-    currencyName: 'Zuckerstangen',
-    currencyNameSingular: 'Zuckerstange',
+    emoticon: '❄️',
+    currencyName: 'Schneeflocken',
+    currencyNameSingular: 'Schneeflocke',
     startMonth: 12,
     startDay: 1,
     endMonth: 12,
     endDay: 28,
     popupTitle: 'Weihnachts-Event',
-    popupDescription: 'Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!'
+    popupDescription: 'Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!'
   },
   newYear: {
     id: 'newYear',
@@ -481,15 +481,15 @@ const DEV_SEASONAL_EVENTS = {
   christmas: {
     id: 'christmas',
     name: 'Weihnachten',
-    emoticon: '🍭',
-    currencyName: 'Zuckerstangen',
-    currencyNameSingular: 'Zuckerstange',
+    emoticon: '❄️',
+    currencyName: 'Schneeflocken',
+    currencyNameSingular: 'Schneeflocke',
     startMonth: 11,
     startDay: 1,
     endMonth: 12,
     endDay: 31,
     popupTitle: 'Weihnachts-Event',
-    popupDescription: 'Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!'
+    popupDescription: 'Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!'
   },
   newYear: {
     id: 'newYear',
@@ -602,6 +602,24 @@ const DEFAULT_SEASONAL_BACKGROUNDS = {
     eventId: 'christmas',
     isSeasonal: true
   },
+  christmasCookies: {
+    id: 'christmasCookies',
+    name: 'Weihnachtskekse',
+    file: 'backgrounds/christmas/cookies_optimized.webp',
+    cost: 3,
+    tasksRequired: 160,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  snowyWinter: {
+    id: 'snowyWinter',
+    name: 'Schneelandschaft',
+    file: 'backgrounds/christmas/snow_background_mobile_optimized.webp',
+    cost: 4,
+    tasksRequired: 220,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
   // New Year's backgrounds
   newYearFireworks: {
     id: 'newYearFireworks',
@@ -675,6 +693,24 @@ const DEV_SEASONAL_BACKGROUNDS = {
     file: 'backgrounds/christmas/christmas_tree_presents_mobile.webp',
     cost: 2,
     tasksRequired: 10,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  christmasCookies: {
+    id: 'christmasCookies',
+    name: 'Weihnachtskekse',
+    file: 'backgrounds/christmas/cookies_optimized.webp',
+    cost: 2,
+    tasksRequired: 15,
+    eventId: 'christmas',
+    isSeasonal: true
+  },
+  snowyWinter: {
+    id: 'snowyWinter',
+    name: 'Schneelandschaft',
+    file: 'backgrounds/christmas/snow_background_mobile_optimized.webp',
+    cost: 2,
+    tasksRequired: 20,
     eventId: 'christmas',
     isSeasonal: true
   },
