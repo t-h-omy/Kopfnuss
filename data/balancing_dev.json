@@ -178,8 +178,8 @@
       "emoticon": "🎆",
       "currencyName": "Feuerwerksblitze",
       "currencyNameSingular": "Feuerwerksblitz",
-      "startMonth": 1,
-      "startDay": 1,
+      "startMonth": 11,
+      "startDay": 30,
       "endMonth": 1,
       "endDay": 15,
       "popupTitle": "Neujahrs-Event",
@@ -279,10 +279,28 @@
   "NEWYEAR_BACKGROUNDS": {
     "newYearFireworks": {
       "id": "newYearFireworks",
-      "name": "Feuerwerk",
-      "file": "backgrounds/background_compressed.webp",
+      "name": "Silvester-Feuerwerk",
+      "file": "backgrounds/newyear/silvester_fireworks_optimized.webp",
       "cost": 2,
       "tasksRequired": 5,
+      "eventId": "newYear",
+      "isSeasonal": true
+    },
+    "confetti": {
+      "id": "confetti",
+      "name": "Konfetti",
+      "file": "backgrounds/newyear/confetti_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 10,
+      "eventId": "newYear",
+      "isSeasonal": true
+    },
+    "luckySymbols": {
+      "id": "luckySymbols",
+      "name": "Glückssymbole",
+      "file": "backgrounds/newyear/lucky_symbols_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 15,
       "eventId": "newYear",
       "isSeasonal": true
     }

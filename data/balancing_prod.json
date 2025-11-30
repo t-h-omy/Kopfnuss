@@ -279,10 +279,28 @@
   "NEWYEAR_BACKGROUNDS": {
     "newYearFireworks": {
       "id": "newYearFireworks",
-      "name": "Feuerwerk",
-      "file": "backgrounds/background_compressed.webp",
+      "name": "Silvester-Feuerwerk",
+      "file": "backgrounds/newyear/silvester_fireworks_optimized.webp",
       "cost": 2,
       "tasksRequired": 50,
+      "eventId": "newYear",
+      "isSeasonal": true
+    },
+    "confetti": {
+      "id": "confetti",
+      "name": "Konfetti",
+      "file": "backgrounds/newyear/confetti_optimized.webp",
+      "cost": 2,
+      "tasksRequired": 80,
+      "eventId": "newYear",
+      "isSeasonal": true
+    },
+    "luckySymbols": {
+      "id": "luckySymbols",
+      "name": "Glückssymbole",
+      "file": "backgrounds/newyear/lucky_symbols_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 120,
       "eventId": "newYear",
       "isSeasonal": true
     }
