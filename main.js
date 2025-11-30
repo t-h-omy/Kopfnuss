@@ -58,6 +58,7 @@ import {
   getSeasonalCurrency,
   addSeasonalCurrency,
   getSeasonalTaskCount,
+  incrementSeasonalTasks,
   getAllActiveSeasonalBackgrounds,
   unlockSeasonalBackground,
   shouldShowEventStartPopup,
@@ -2202,6 +2203,17 @@ function setupDevSettingsListeners() {
       
       progress.totalTasksCompleted = newTotal;
       saveProgress(progress);
+      
+      // Also increment seasonal tasks if an event is active
+      const activeEvent = getActiveEvent();
+      if (activeEvent) {
+        incrementSeasonalTasks(10);
+        // Update seasonal task display in header if visible
+        const seasonalTaskValue = document.querySelector('.event-stat-value');
+        if (seasonalTaskValue) {
+          seasonalTaskValue.textContent = getSeasonalTaskCount();
+        }
+      }
       
       // Award diamonds if earned
       if (diamondsEarned > 0) {
