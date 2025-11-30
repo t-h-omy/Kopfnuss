@@ -1,7 +1,7 @@
 // Kopfnuss - Background Manager
 // Manages background unlocking, selection, and display
 
-import { BACKGROUNDS } from '../data/balancingLoader.js';
+import { BACKGROUNDS, SEASONAL_BACKGROUNDS } from '../data/balancingLoader.js';
 import { 
   loadUnlockedBackgrounds, 
   saveUnlockedBackgrounds,
@@ -135,14 +135,21 @@ export function checkForNewlyPurchasableBackgrounds() {
  */
 export function getSelectedBackground() {
   const selectedId = loadSelectedBackground();
-  const background = BACKGROUNDS[selectedId];
   
-  // If selected background doesn't exist, return default
-  if (!background) {
-    return BACKGROUNDS.default;
+  // Check regular backgrounds first
+  const background = BACKGROUNDS[selectedId];
+  if (background) {
+    return background;
   }
   
-  return background;
+  // Check seasonal backgrounds
+  const seasonalBackground = SEASONAL_BACKGROUNDS[selectedId];
+  if (seasonalBackground) {
+    return seasonalBackground;
+  }
+  
+  // If selected background doesn't exist in either, return default
+  return BACKGROUNDS.default;
 }
 
 /**
