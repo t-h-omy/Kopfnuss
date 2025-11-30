@@ -162,15 +162,15 @@
     "christmas": {
       "id": "christmas",
       "name": "Weihnachten",
-      "emoticon": "🍭",
-      "currencyName": "Zuckerstangen",
-      "currencyNameSingular": "Zuckerstange",
+      "emoticon": "❄️",
+      "currencyName": "Schneeflocken",
+      "currencyNameSingular": "Schneeflocke",
       "startMonth": 11,
       "startDay": 1,
       "endMonth": 12,
       "endDay": 31,
       "popupTitle": "Weihnachts-Event",
-      "popupDescription": "Sammle Zuckerstangen und schalte weihnachtliche Hintergründe frei!"
+      "popupDescription": "Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!"
     },
     "newYear": {
       "id": "newYear",
