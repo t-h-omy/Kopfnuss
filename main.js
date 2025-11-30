@@ -515,6 +515,14 @@ function loadChallengesScreen(container) {
     showBackgroundShopPopup(scrollToId);
   });
   
+  // Add click handler for event countdown capsule (opens event popup)
+  const eventCountdown = header.querySelector('.event-countdown');
+  if (eventCountdown) {
+    eventCountdown.addEventListener('click', () => {
+      queuePopup(() => showEventInfoPopup());
+    });
+  }
+  
   // Create page title (below fixed header)
   const pageTitle = document.createElement('h1');
   pageTitle.className = 'challenges-title';
@@ -1648,6 +1656,65 @@ function showEventStartPopup(onClose = null) {
     if (onClose && typeof onClose === 'function') {
       onClose();
     }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show event info popup when countdown capsule is tapped
+ * Similar to event start popup but doesn't mark as shown (can be viewed multiple times)
+ * Uses popup queue system for sequential display
+ */
+function showEventInfoPopup() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    processPopupQueue();
+    return;
+  }
+  
+  const daysRemaining = getDaysUntilEventEnd();
+  const dayText = daysRemaining === 1 ? 'Tag' : 'Tage';
+  const seasonalCurrency = getSeasonalCurrency();
+  const seasonalTasks = getSeasonalTaskCount();
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay event-popup-overlay';
+  overlay.id = 'event-info-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card event-popup-card event-info-card';
+  
+  popupCard.innerHTML = `
+    <div class="event-emoticon-large">${activeEvent.emoticon}</div>
+    <h2>${activeEvent.popupTitle}</h2>
+    <p class="event-description">${activeEvent.popupDescription}</p>
+    <div class="event-info-section">
+      <div class="event-stats">
+        <div class="event-stat">
+          <span class="event-stat-icon">${activeEvent.emoticon}</span>
+          <span class="event-stat-value">${seasonalCurrency}</span>
+          <span class="event-stat-label">${activeEvent.currencyName}</span>
+        </div>
+        <div class="event-stat">
+          <span class="event-stat-icon">✅</span>
+          <span class="event-stat-value">${seasonalTasks}</span>
+          <span class="event-stat-label">Aufgaben</span>
+        </div>
+      </div>
+      <p class="event-how-to">Schließe Super Challenges ab, um <strong>${activeEvent.currencyName}</strong> zu sammeln!</p>
+    </div>
+    <div class="event-end-date">
+      <span>⏰ Noch <strong>${daysRemaining} ${dayText}</strong></span>
+    </div>
+    <button id="event-info-close-button" class="btn-primary btn-event">${activeEvent.emoticon} Weiter!</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('event-info-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
     processPopupQueue();
   });
 }
