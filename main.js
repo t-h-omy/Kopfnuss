@@ -518,7 +518,6 @@ function loadChallengesScreen(container) {
   // Add click handler for event countdown capsule (opens event popup)
   const eventCountdown = header.querySelector('.event-countdown');
   if (eventCountdown) {
-    eventCountdown.style.cursor = 'pointer';
     eventCountdown.addEventListener('click', () => {
       queuePopup(() => showEventInfoPopup());
     });
