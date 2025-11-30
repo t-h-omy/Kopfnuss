@@ -86,7 +86,7 @@ setAppHeight();
 document.documentElement.style.setProperty('--background-opacity', VISUAL_CONFIG.BACKGROUND_OPACITY);
 
 // Set shadow CSS variables from balancing config
-// These values can be tuned in data/balancing.js without touching CSS
+// These values can be tuned in data/balancing_prod.json or balancing_dev.json without touching CSS
 document.documentElement.style.setProperty('--shadow-color', CONFIG.SHADOW_COLOR);
 document.documentElement.style.setProperty('--shadow-blur-small', CONFIG.SHADOW_BLUR_SMALL);
 document.documentElement.style.setProperty('--shadow-blur-large', CONFIG.SHADOW_BLUR_LARGE);
