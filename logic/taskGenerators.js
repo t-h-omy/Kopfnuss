@@ -1,7 +1,7 @@
 // Kopfnuss - Task Generators
 // Generate mathematical tasks based on balancing values
 
-import { BALANCING } from '../data/balancing.js';
+import { BALANCING } from '../data/balancingLoader.js';
 
 /**
  * Helper function to generate random integer between min and max (inclusive)

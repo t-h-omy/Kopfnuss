@@ -1,7 +1,7 @@
 // Kopfnuss - Event Manager
 // Manages seasonal events, seasonal currency, and event-based backgrounds
 
-import { SEASONAL_EVENTS, SEASONAL_BACKGROUNDS } from '../data/balancing.js';
+import { SEASONAL_EVENTS, SEASONAL_BACKGROUNDS } from '../data/balancingLoader.js';
 import {
   loadSeasonalCurrency,
   saveSeasonalCurrency,

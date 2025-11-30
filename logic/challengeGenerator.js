@@ -2,7 +2,7 @@
 // Generates and manages daily challenges
 
 import { generateTask } from './taskGenerators.js';
-import { CONFIG, CHALLENGE_TYPES } from '../data/balancing.js';
+import { CONFIG, CHALLENGE_TYPES } from '../data/balancingLoader.js';
 import { saveChallenges, loadChallenges, getTodayDate } from './storageManager.js';
 
 /**

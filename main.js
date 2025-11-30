@@ -26,7 +26,7 @@ import {
   saveSelectedBackground as saveSelectedBackgroundToStorage
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
-import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancing.js';
+import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancingLoader.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 
@@ -3292,10 +3292,18 @@ class KopfnussApp {
 }
 
 // App initialisieren wenn DOM bereit ist
-document.addEventListener('DOMContentLoaded', () => {
+// Note: With top-level await in balancingLoader.js, DOMContentLoaded may have already fired
+// by the time this module executes. We need to check readyState to handle both cases.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    const app = new KopfnussApp();
+    app.init();
+  });
+} else {
+  // DOM is already ready, init immediately
   const app = new KopfnussApp();
   app.init();
-});
+}
 
 // Exports für Module
 export { Router, KopfnussApp };
