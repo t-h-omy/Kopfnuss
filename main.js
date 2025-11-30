@@ -509,11 +509,8 @@ function loadChallengesScreen(container) {
   
   const shopButton = header.querySelector('#shop-button');
   shopButton.addEventListener('click', () => {
-    // Check for purchasable backgrounds to scroll to
-    const backgrounds = getAllBackgrounds();
-    const purchasableBackground = backgrounds.find(bg => bg.state === BACKGROUND_STATE.PURCHASABLE);
-    const scrollToId = purchasableBackground ? purchasableBackground.id : null;
-    showBackgroundShopPopup(scrollToId);
+    // Open shop without auto-scrolling - shop will show event backgrounds at top by default
+    showBackgroundShopPopup(null);
   });
   
   // Add click handler for event countdown capsule (opens event popup)
