@@ -594,6 +594,7 @@ function loadChallengesScreen(container) {
     const isZeitCompleted = zeitChallenge.state === ZEIT_CHALLENGE_STATE.COMPLETED;
     const isZeitFailed = zeitChallenge.state === ZEIT_CHALLENGE_STATE.FAILED;
     const zeitRowClass = isZeitCompleted ? 'zeit-row zeit-completed' : 'zeit-row';
+    const zeitEntryCost = CONFIG.ZEIT_CHALLENGE_ENTRY_COST || 1;
     
     // Build status icon
     let zeitStatusIcon = '';
@@ -623,7 +624,7 @@ function loadChallengesScreen(container) {
           </div>
           <div class="zeit-info-card">
             <h3>Zeit-Challenge</h3>
-            <p class="zeit-cost">Kosten: 1 💎</p>
+            <p class="zeit-cost">Kosten: ${zeitEntryCost} 💎</p>
             <p class="zeit-hint">${zeitHintText}</p>
           </div>
         </div>

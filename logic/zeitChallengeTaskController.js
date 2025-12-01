@@ -110,13 +110,15 @@ function startTimer() {
   timerInterval = setInterval(() => {
     timeRemaining--;
     
-    // Save time remaining to state
-    updateZeitChallenge({
-      timeRemaining: timeRemaining
-    });
-    
     // Update display
     updateTimerDisplay();
+    
+    // Save time remaining to state less frequently (every 10 seconds) to reduce I/O
+    if (timeRemaining % 10 === 0 || timeRemaining <= 10) {
+      updateZeitChallenge({
+        timeRemaining: timeRemaining
+      });
+    }
     
     // Check if time ran out
     if (timeRemaining <= 0) {
@@ -418,6 +420,11 @@ function setupTaskScreenEventListeners() {
  */
 export function cleanupZeitChallengeTaskScreen() {
   stopTimer();
+  // Reset all module-level variables to prevent state leakage
+  zeitState = null;
+  currentTaskIndex = 0;
+  errors = 0;
+  timeRemaining = 0;
   isInputDisabled = false;
 }
 
