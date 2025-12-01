@@ -31,6 +31,10 @@
     "LOSE_AFTER_DAYS": 2,
     "SUPER_CHALLENGE_SPAWN_CHANCE": 0.75,
     "SUPER_CHALLENGE_SPARKLE_COUNT": 12,
+    "KOPFNUSS_SPAWN_PROBABILITY": 0.75,
+    "KOPFNUSS_TASK_COUNT": 3,
+    "KOPFNUSS_ENTRY_COST": 1,
+    "KOPFNUSS_REWARD_AMOUNT": 2,
     "SHADOW_COLOR": "rgba(0, 0, 0, 0.12)",
     "SHADOW_BLUR_SMALL": "8px",
     "SHADOW_BLUR_LARGE": "16px",
@@ -38,6 +42,13 @@
     "SHADOW_SPREAD_LARGE": "2px",
     "SHADOW_OFFSET_Y_SMALL": "4px",
     "SHADOW_OFFSET_Y_LARGE": "6px"
+  },
+  "KOPFNUSS_DIFFICULTY": {
+    "addition": { "minA": 100, "maxA": 500, "minB": 100, "maxB": 500 },
+    "subtraction": { "minA": 200, "maxA": 999, "minB": 100, "maxB": 500 },
+    "multiplication": { "factor1": { "min": 10, "max": 25 }, "factor2": { "min": 10, "max": 25 } },
+    "division": { "divisor": { "min": 5, "max": 15 }, "quotient": { "min": 10, "max": 30 } },
+    "squared": { "min": 10, "max": 25 }
   },
   "CHALLENGE_TYPES": {
     "addition": {

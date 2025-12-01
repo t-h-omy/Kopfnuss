@@ -117,7 +117,9 @@ const STORAGE_KEYS = {
   get SEASONAL_UNLOCKED_BACKGROUNDS() { return getStorageKey('kopfnuss_seasonal_backgrounds_'); },
   get SEASONAL_LAST_KNOWN_PURCHASABLE() { return getStorageKey('kopfnuss_seasonal_last_purchasable_'); },
   get EVENT_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_popup_shown_'); },
-  get EVENT_END_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_end_popup_shown_'); }
+  get EVENT_END_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_end_popup_shown_'); },
+  // Kopfnuss Challenge storage keys (appended with date)
+  get KOPFNUSS_CHALLENGE() { return getStorageKey('kopfnuss_kopfnuss_challenge_'); }
 };
 
 /**
@@ -525,6 +527,31 @@ export function saveSeasonalLastKnownPurchasable(eventId, backgroundIds) {
 export function loadSeasonalLastKnownPurchasable(eventId) {
   const key = STORAGE_KEYS.SEASONAL_LAST_KNOWN_PURCHASABLE + eventId;
   return loadFromStorage(key, []);
+}
+
+// ============================================
+// KOPFNUSS CHALLENGE STORAGE FUNCTIONS
+// ============================================
+
+/**
+ * Save Kopfnuss Challenge state for a specific date
+ * @param {Object} kopfnussState - Kopfnuss Challenge state object
+ * @param {string} date - Date string (YYYY-MM-DD), defaults to today
+ * @returns {boolean} Success status
+ */
+export function saveKopfnussChallenge(kopfnussState, date = getTodayDate()) {
+  const key = STORAGE_KEYS.KOPFNUSS_CHALLENGE + date;
+  return saveToStorage(key, kopfnussState);
+}
+
+/**
+ * Load Kopfnuss Challenge state for a specific date
+ * @param {string} date - Date string (YYYY-MM-DD), defaults to today
+ * @returns {Object|null} Kopfnuss Challenge state or null if not found
+ */
+export function loadKopfnussChallenge(date = getTodayDate()) {
+  const key = STORAGE_KEYS.KOPFNUSS_CHALLENGE + date;
+  return loadFromStorage(key, null);
 }
 
 export { STORAGE_KEYS };
