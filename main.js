@@ -588,6 +588,18 @@ function loadChallengesScreen(container) {
   const kopfnussChallenge = getOrCreateKopfnussChallenge();
   const zeitChallenge = getOrCreateZeitChallenge();
   
+  // Helper function to generate splash rays HTML (same as standard challenges)
+  function generateSplashRaysHtml(className = 'challenge-splash') {
+    const numRays = 12;
+    let raysHtml = '';
+    for (let i = 0; i < numRays; i++) {
+      const angle = (i * 360 / numRays);
+      const length = 25 + ((i % 3) * 6);
+      raysHtml += `<div class="splash-ray" style="transform: translate(-50%, 0) rotate(${angle}deg); height: ${length}px;"></div>`;
+    }
+    return `<div class="${className}">${raysHtml}</div>`;
+  }
+  
   // Create Zeit-Challenge section (if spawned and not completed)
   let zeitSectionHtml = '';
   if (zeitChallenge && zeitChallenge.spawned) {
@@ -623,6 +635,9 @@ function loadChallengesScreen(container) {
       zeitHintText = 'Erneut versuchen?';
     }
     
+    // Build splash rays (same as standard challenges)
+    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash');
+    
     // Build celebration background for completed state
     let zeitCelebrationBg = '';
     if (isZeitCompleted) {
@@ -646,6 +661,7 @@ function loadChallengesScreen(container) {
       <div class="zeit-section" id="zeit-section">
         <div class="${zeitRowClass}">
           <div class="zeit-node-container" id="zeit-node-container">
+            ${zeitSplashRays}
             ${zeitCelebrationBg}
             <div class="zeit-glow"></div>
             <div class="zeit-node-wrapper">
@@ -671,11 +687,23 @@ function loadChallengesScreen(container) {
     const isKopfnussCompleted = kopfnussChallenge.state === KOPFNUSS_STATE.COMPLETED;
     const isKopfnussFailed = kopfnussChallenge.state === KOPFNUSS_STATE.FAILED;
     const kopfnussRowClass = isKopfnussCompleted ? 'kopfnuss-row kopfnuss-completed' : 'kopfnuss-row';
+    const kopfnussRewardAmount = CONFIG.KOPFNUSS_REWARD_AMOUNT || 2;
     
     // Build status icon
     let kopfnussStatusIcon = '';
     if (isKopfnussCompleted) {
       kopfnussStatusIcon = '<span class="kopfnuss-status-icon">⭐</span>';
+    }
+    
+    // Build cost/reward text - show reward if completed, cost otherwise
+    let kopfnussCostOrRewardText = 'Kosten: 1 💎';
+    if (isKopfnussCompleted) {
+      const activeEvent = getActiveEvent();
+      if (activeEvent) {
+        kopfnussCostOrRewardText = `Belohnung: +${kopfnussRewardAmount} ${activeEvent.emoticon}`;
+      } else {
+        kopfnussCostOrRewardText = `Belohnung: +${kopfnussRewardAmount} 💎`;
+      }
     }
     
     // Build hint text
@@ -686,10 +714,33 @@ function loadChallengesScreen(container) {
       hintText = 'Erneut versuchen?';
     }
     
+    // Build splash rays (same as standard challenges)
+    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash');
+    
+    // Build celebration background for completed state
+    let kopfnussCelebrationBg = '';
+    if (isKopfnussCompleted) {
+      const kopfnussCelebrationGraphics = [
+        'celebration/challenge-node-bg-1.webp', 
+        'celebration/challenge-node-bg-2.webp', 
+        'celebration/challenge-node-bg-3.webp', 
+        'celebration/challenge-node-bg-4.webp', 
+        'celebration/challenge-node-bg-5.webp'
+      ];
+      const graphicIndex = Math.floor(Math.random() * kopfnussCelebrationGraphics.length);
+      kopfnussCelebrationBg = `
+        <div class="kopfnuss-bg-graphic challenge-bg-graphic challenge-bg-animate">
+          <img src="./assets/${kopfnussCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
+        </div>
+      `;
+    }
+    
     kopfnussSectionHtml = `
       <div class="kopfnuss-section" id="kopfnuss-section">
         <div class="${kopfnussRowClass}">
           <div class="kopfnuss-node-container" id="kopfnuss-node-container">
+            ${kopfnussSplashRays}
+            ${kopfnussCelebrationBg}
             <div class="kopfnuss-glow"></div>
             <div class="kopfnuss-node-wrapper">
               <div class="kopfnuss-node">
@@ -700,7 +751,7 @@ function loadChallengesScreen(container) {
           </div>
           <div class="kopfnuss-info-card">
             <h3>Kopfnuss-Challenge</h3>
-            <p class="kopfnuss-cost">Kosten: 1 💎</p>
+            <p class="kopfnuss-cost">${kopfnussCostOrRewardText}</p>
             <p class="kopfnuss-hint">${hintText}</p>
           </div>
         </div>
