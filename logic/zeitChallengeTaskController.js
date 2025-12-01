@@ -70,18 +70,26 @@ function formatTime(seconds) {
  * Initialize Zeit-Challenge task screen
  */
 export function initZeitChallengeTaskScreen() {
+  // Clear any existing timer first to prevent multiple timers
+  stopTimer();
+  
   // Load the Zeit-Challenge
   zeitState = getTodaysZeitChallenge();
   
   if (!zeitState || !zeitState.spawned || zeitState.state !== ZEIT_CHALLENGE_STATE.IN_PROGRESS) {
-    console.error('Zeit-Challenge not in progress');
+    console.error('Zeit-Challenge not in progress, state:', zeitState?.state);
     showScreen('challenges');
     return;
   }
   
   currentTaskIndex = zeitState.currentTaskIndex || 0;
   errors = zeitState.errors || 0;
-  timeRemaining = zeitState.timeRemaining || CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
+  
+  // Get time remaining, but ensure it's at least 1 second to prevent immediate timeout
+  const storedTime = zeitState.timeRemaining;
+  const defaultTime = CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
+  timeRemaining = (storedTime && storedTime > 0) ? storedTime : defaultTime;
+  
   isInputDisabled = false;
   
   // Display first task
@@ -178,8 +186,9 @@ function handleTimeout() {
   // Fail the challenge
   failZeitChallenge(errors, currentTaskIndex);
   
-  // Notify main.js about the failure (no reward)
-  notifyZeitChallengeResult(false, null);
+  // Don't notify main.js - we show the result popup here in the task screen
+  // The popup in main.js is only shown when returning from a successful completion
+  // For timeout, we show the failure screen directly here to avoid duplicate popups
   
   // Get timeout phrase
   const motivationPhrase = getRandomPhrase(ZEIT_TIMEOUT_PHRASES);
