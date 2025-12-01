@@ -1834,11 +1834,18 @@ function showSuperChallengeStartPopup(challengeIndex) {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card super-challenge-popup-card';
   
-  // Check if a seasonal event is active to show appropriate reward
+  // Check if a seasonal event is active to show appropriate reward choice
   const activeEvent = getActiveEvent();
   let rewardHtml;
   if (activeEvent) {
-    rewardHtml = `<span>+1 ${activeEvent.emoticon}</span>`;
+    // Show that player can choose between diamonds or event currency
+    rewardHtml = `
+      <div class="reward-choice-display" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+        <span style="padding: 6px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">+1 💎</span>
+        <span style="font-weight: bold; color: #9932CC;">oder</span>
+        <span style="padding: 6px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">+1 ${activeEvent.emoticon}</span>
+      </div>
+    `;
   } else {
     rewardHtml = `<span>+1 💎</span>`;
   }
@@ -1878,18 +1885,40 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card reward-popup-card super-success-popup-card';
   
-  // Check if seasonal currency was awarded (passed in challengeResult)
+  // Check if seasonal currency was marked as pending choice
   const seasonalReward = challengeResult && challengeResult.seasonalCurrencyAwarded;
+  const pendingChoice = seasonalReward && seasonalReward.pendingChoice;
   
   let rewardDisplayHtml;
-  if (seasonalReward) {
-    // Seasonal currency reward - use singular form
+  let buttonsHtml;
+  
+  if (pendingChoice) {
+    // Show choice buttons - player can pick diamonds or seasonal currency
+    rewardDisplayHtml = `
+      <div class="super-success-display" style="margin-bottom: 16px;">
+        <p style="font-size: 14px; color: #9932CC; margin-bottom: 12px;">Wähle deine Belohnung:</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button id="super-choose-diamonds" class="reward-choice-btn" style="padding: 16px 24px; font-size: 20px; border: 2px solid #9932CC; border-radius: 12px; background: linear-gradient(135deg, #E8E0F0 0%, #D8BFD8 100%); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 24px;">💎</span>
+            <span>+1 Diamant</span>
+          </button>
+          <button id="super-choose-seasonal" class="reward-choice-btn" style="padding: 16px 24px; font-size: 20px; border: 2px solid #9932CC; border-radius: 12px; background: linear-gradient(135deg, #E8E0F0 0%, #D8BFD8 100%); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 24px;">${seasonalReward.emoticon}</span>
+            <span>+1 ${seasonalReward.currencyNameSingular}</span>
+          </button>
+        </div>
+      </div>
+    `;
+    buttonsHtml = ''; // No close button, choices are the buttons
+  } else if (seasonalReward && !pendingChoice) {
+    // Seasonal currency already chosen/awarded
     rewardDisplayHtml = `
       <div class="super-success-display seasonal-reward">
         <span class="super-success-icon">${seasonalReward.emoticon}</span>
         <span class="super-success-text">+1 ${seasonalReward.currencyNameSingular}</span>
       </div>
     `;
+    buttonsHtml = '<button id="super-success-close-button" class="btn-primary btn-super-challenge">Einsammeln</button>';
   } else {
     // Diamond reward
     rewardDisplayHtml = `
@@ -1898,7 +1927,7 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
         <span class="super-success-text">+1 Diamant</span>
       </div>
     `;
-    // Award the diamond only if not seasonal reward
+    // Award the diamond only if not seasonal reward and no pending choice
     addDiamonds(1);
     
     // Update diamond display in header if visible
@@ -1906,6 +1935,7 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     if (diamondDisplay) {
       diamondDisplay.textContent = loadDiamonds();
     }
+    buttonsHtml = '<button id="super-success-close-button" class="btn-primary btn-super-challenge">Einsammeln</button>';
   }
   
   popupCard.innerHTML = `
@@ -1913,7 +1943,7 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     <h2>Super Challenge geschafft!</h2>
     ${rewardDisplayHtml}
     <p>Ich hab's gewusst: Du bist SUPER!</p>
-    <button id="super-success-close-button" class="btn-primary btn-super-challenge">Super!</button>
+    ${buttonsHtml}
   `;
   
   overlay.appendChild(popupCard);
@@ -1921,15 +1951,52 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
   
   createConfettiEffect();
   
-  const closeButton = document.getElementById('super-success-close-button');
-  closeButton.addEventListener('click', () => {
-    overlay.remove();
-    removeConfettiPieces();
-    if (onClose && typeof onClose === 'function') {
-      onClose();
+  // Handle choice buttons if pending choice
+  if (pendingChoice) {
+    const chooseDiamondsBtn = document.getElementById('super-choose-diamonds');
+    const chooseSeasonalBtn = document.getElementById('super-choose-seasonal');
+    
+    if (chooseDiamondsBtn) {
+      chooseDiamondsBtn.addEventListener('click', () => {
+        addDiamonds(1);
+        // Update diamond display
+        const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+        if (diamondDisplay) {
+          diamondDisplay.textContent = loadDiamonds();
+        }
+        overlay.remove();
+        removeConfettiPieces();
+        if (onClose && typeof onClose === 'function') {
+          onClose();
+        }
+        processPopupQueue();
+      });
     }
-    processPopupQueue();
-  });
+    
+    if (chooseSeasonalBtn) {
+      chooseSeasonalBtn.addEventListener('click', () => {
+        addSeasonalCurrency(1);
+        overlay.remove();
+        removeConfettiPieces();
+        if (onClose && typeof onClose === 'function') {
+          onClose();
+        }
+        processPopupQueue();
+      });
+    }
+  } else {
+    const closeButton = document.getElementById('super-success-close-button');
+    if (closeButton) {
+      closeButton.addEventListener('click', () => {
+        overlay.remove();
+        removeConfettiPieces();
+        if (onClose && typeof onClose === 'function') {
+          onClose();
+        }
+        processPopupQueue();
+      });
+    }
+  }
 }
 
 /**
@@ -1979,11 +2046,18 @@ function showKopfnussChallengeStartPopup() {
   const rewardAmount = CONFIG.KOPFNUSS_REWARD_AMOUNT || 2;
   const hasDiamond = diamonds >= entryCost;
   
-  // Check if a seasonal event is active to show appropriate reward
+  // Check if a seasonal event is active to show appropriate reward choice
   const activeEvent = getActiveEvent();
   let rewardHtml;
   if (activeEvent) {
-    rewardHtml = `<span>+${rewardAmount} ${activeEvent.emoticon}</span>`;
+    // Show that player can choose between diamonds or event currency
+    rewardHtml = `
+      <div class="reward-choice-display" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+        <span style="padding: 6px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">+${rewardAmount} 💎</span>
+        <span style="font-weight: bold; color: #8B4513;">oder</span>
+        <span style="padding: 6px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">+${rewardAmount} ${activeEvent.emoticon}</span>
+      </div>
+    `;
   } else {
     rewardHtml = `<span>+${rewardAmount} 💎</span>`;
   }
@@ -2189,11 +2263,18 @@ function showZeitChallengeStartPopup() {
   const timeLimitMinutes = Math.floor(timeLimitSeconds / 60);
   const hasDiamond = diamonds >= entryCost;
   
-  // Check if a seasonal event is active to show appropriate reward
+  // Check if a seasonal event is active to show appropriate reward choice
   const activeEvent = getActiveEvent();
   let rewardHtml;
   if (activeEvent) {
-    rewardHtml = `<span>+${rewardAmount} ${activeEvent.emoticon}</span>`;
+    // Show that player can choose between diamonds or event currency
+    rewardHtml = `
+      <div class="reward-choice-display" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+        <span style="padding: 6px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">+${rewardAmount} 💎</span>
+        <span style="font-weight: bold; color: #006064;">oder</span>
+        <span style="padding: 6px 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">+${rewardAmount} ${activeEvent.emoticon}</span>
+      </div>
+    `;
   } else {
     rewardHtml = `<span>+${rewardAmount} 💎</span>`;
   }

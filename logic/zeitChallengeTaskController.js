@@ -353,27 +353,23 @@ function handleZeitChallengeCompletion() {
   // Complete the challenge (always success if all tasks solved in time)
   const result = completeZeitChallenge(errors);
   
-  // Handle rewards (always give reward regardless of errors)
+  // Get reward info but don't award yet - let player choose in popup
   const rewardAmount = CONFIG.ZEIT_CHALLENGE_REWARD_AMOUNT || 2;
   const eventActive = isEventActive();
   const activeEvent = eventActive ? getActiveEvent() : null;
   
-  let rewardInfo = null;
-  if (eventActive && activeEvent) {
-    // Award seasonal currency
-    addSeasonalCurrency(rewardAmount);
-    rewardInfo = {
-      isDiamond: false,
-      amount: rewardAmount,
-      emoticon: activeEvent.emoticon
-    };
-  } else {
-    // Award diamonds
+  // Prepare reward info - mark as pending choice if event is active
+  let rewardInfo = {
+    amount: rewardAmount,
+    eventActive: eventActive,
+    pendingChoice: eventActive, // Player can choose if event is active
+    emoticon: activeEvent ? activeEvent.emoticon : null
+  };
+  
+  // If no event, award diamonds immediately
+  if (!eventActive) {
     addDiamonds(rewardAmount);
-    rewardInfo = {
-      isDiamond: true,
-      amount: rewardAmount
-    };
+    rewardInfo.isDiamond = true;
   }
   
   // Notify main.js about the result so popup shows when returning to challenges
@@ -382,10 +378,26 @@ function handleZeitChallengeCompletion() {
   // Get success phrase
   const motivationPhrase = getRandomPhrase(ZEIT_SUCCESS_PHRASES);
   
-  // Build reward text
-  const rewardText = rewardInfo.isDiamond 
-    ? `+${rewardInfo.amount} 💎`
-    : `+${rewardInfo.amount} ${rewardInfo.emoticon}`;
+  // Build reward display - show choice if event is active
+  let rewardDisplayHtml;
+  if (rewardInfo.pendingChoice) {
+    rewardDisplayHtml = `
+      <div style="margin-top: 16px;">
+        <p style="font-size: 14px; color: #006064; margin-bottom: 8px;">Wähle deine Belohnung:</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button id="choose-diamonds" class="reward-choice-btn" style="padding: 12px 20px; font-size: 18px; border: 2px solid #00ACC1; border-radius: 12px; background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%); cursor: pointer; transition: all 0.2s;">
+            +${rewardInfo.amount} 💎
+          </button>
+          <button id="choose-seasonal" class="reward-choice-btn" style="padding: 12px 20px; font-size: 18px; border: 2px solid #00ACC1; border-radius: 12px; background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%); cursor: pointer; transition: all 0.2s;">
+            +${rewardInfo.amount} ${rewardInfo.emoticon}
+          </button>
+        </div>
+      </div>
+    `;
+  } else {
+    const rewardText = `+${rewardInfo.amount} 💎`;
+    rewardDisplayHtml = `<p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>`;
+  }
   
   // Calculate time used
   const totalTime = CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
@@ -408,9 +420,9 @@ function handleZeitChallengeCompletion() {
             <p style="font-size: 14px; color: #006064;">📊 ${zeitState.tasks.length} Aufgaben in ${timeUsedFormatted}</p>
             <p style="font-size: 14px; color: #006064;">⏰ Restzeit: ${timeRemainingFormatted}</p>
           </div>
-          <p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>
+          ${rewardDisplayHtml}
         </div>
-        <button id="back-to-challenges">Zurück zu Herausforderungen</button>
+        ${rewardInfo.pendingChoice ? '' : '<button id="back-to-challenges">Zurück zu Herausforderungen</button>'}
       </div>
     `;
   } else {
@@ -424,9 +436,9 @@ function handleZeitChallengeCompletion() {
             <p style="font-size: 14px; color: #006064;">📊 ${zeitState.tasks.length} Aufgaben in ${timeUsedFormatted}</p>
             <p style="font-size: 14px; color: #006064;">⏰ Restzeit: ${timeRemainingFormatted}</p>
           </div>
-          <p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>
+          ${rewardDisplayHtml}
         </div>
-        <button id="back-to-challenges">Zurück zu Herausforderungen</button>
+        ${rewardInfo.pendingChoice ? '' : '<button id="back-to-challenges">Zurück zu Herausforderungen</button>'}
       </div>
     `;
   }
@@ -439,12 +451,38 @@ function handleZeitChallengeCompletion() {
     // Add confetti effect for celebration
     createConfettiEffect();
     
-    // Add event listener for back button
-    const backButton = document.getElementById('back-to-challenges');
-    if (backButton) {
-      backButton.addEventListener('click', () => {
-        showScreen('challenges');
-      });
+    // Handle reward choice buttons if event is active
+    if (rewardInfo.pendingChoice) {
+      const chooseDiamondsBtn = document.getElementById('choose-diamonds');
+      const chooseSeasonalBtn = document.getElementById('choose-seasonal');
+      
+      if (chooseDiamondsBtn) {
+        chooseDiamondsBtn.addEventListener('click', () => {
+          addDiamonds(rewardInfo.amount);
+          rewardInfo.isDiamond = true;
+          rewardInfo.pendingChoice = false;
+          notifyZeitChallengeResult(true, rewardInfo);
+          showScreen('challenges');
+        });
+      }
+      
+      if (chooseSeasonalBtn) {
+        chooseSeasonalBtn.addEventListener('click', () => {
+          addSeasonalCurrency(rewardInfo.amount);
+          rewardInfo.isDiamond = false;
+          rewardInfo.pendingChoice = false;
+          notifyZeitChallengeResult(true, rewardInfo);
+          showScreen('challenges');
+        });
+      }
+    } else {
+      // Add event listener for back button
+      const backButton = document.getElementById('back-to-challenges');
+      if (backButton) {
+        backButton.addEventListener('click', () => {
+          showScreen('challenges');
+        });
+      }
     }
   }
 }

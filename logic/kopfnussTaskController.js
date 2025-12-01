@@ -193,28 +193,25 @@ function handleKopfnussChallengeCompletion() {
   // Complete the challenge
   const result = completeKopfnussChallenge(errors);
   
-  // Handle rewards
+  // Handle rewards - let player choose if event is active
   let rewardInfo = null;
   if (isPerfect) {
     const rewardAmount = CONFIG.KOPFNUSS_REWARD_AMOUNT || 2;
     const eventActive = isEventActive();
     const activeEvent = eventActive ? getActiveEvent() : null;
     
-    if (eventActive && activeEvent) {
-      // Award seasonal currency
-      addSeasonalCurrency(rewardAmount);
-      rewardInfo = {
-        isDiamond: false,
-        amount: rewardAmount,
-        emoticon: activeEvent.emoticon
-      };
-    } else {
-      // Award diamonds
+    // Prepare reward info - mark as pending choice if event is active
+    rewardInfo = {
+      amount: rewardAmount,
+      eventActive: eventActive,
+      pendingChoice: eventActive, // Player can choose if event is active
+      emoticon: activeEvent ? activeEvent.emoticon : null
+    };
+    
+    // If no event, award diamonds immediately
+    if (!eventActive) {
       addDiamonds(rewardAmount);
-      rewardInfo = {
-        isDiamond: true,
-        amount: rewardAmount
-      };
+      rewardInfo.isDiamond = true;
     }
     
     // Notify main.js about the result
@@ -232,18 +229,35 @@ function handleKopfnussChallengeCompletion() {
   // Build results content
   let resultContent;
   if (isPerfect) {
-    const rewardText = rewardInfo.isDiamond 
-      ? `+${rewardInfo.amount} 💎`
-      : `+${rewardInfo.amount} ${rewardInfo.emoticon}`;
+    // Build reward display - show choice if event is active
+    let rewardDisplayHtml;
+    if (rewardInfo.pendingChoice) {
+      rewardDisplayHtml = `
+        <div style="margin-top: 16px;">
+          <p style="font-size: 14px; color: #8B4513; margin-bottom: 8px;">Wähle deine Belohnung:</p>
+          <div style="display: flex; gap: 12px; justify-content: center;">
+            <button id="choose-diamonds" class="reward-choice-btn" style="padding: 12px 20px; font-size: 18px; border: 2px solid #DAA520; border-radius: 12px; background: linear-gradient(135deg, #FFFACD 0%, #FFE4B5 100%); cursor: pointer; transition: all 0.2s;">
+              +${rewardInfo.amount} 💎
+            </button>
+            <button id="choose-seasonal" class="reward-choice-btn" style="padding: 12px 20px; font-size: 18px; border: 2px solid #DAA520; border-radius: 12px; background: linear-gradient(135deg, #FFFACD 0%, #FFE4B5 100%); cursor: pointer; transition: all 0.2s;">
+              +${rewardInfo.amount} ${rewardInfo.emoticon}
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      const rewardText = `+${rewardInfo.amount} 💎`;
+      rewardDisplayHtml = `<p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>`;
+    }
     
     resultContent = `
       <div class="task-results" style="background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%); border: 3px solid #DAA520;">
         <h2 style="color: #8B4513;">Kopfnuss geknackt! 🤔💥</h2>
         <div class="results-summary">
           <p class="perfect">🌟 ${motivationPhrase}</p>
-          <p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>
+          ${rewardDisplayHtml}
         </div>
-        <button id="back-to-challenges">Zurück zu Herausforderungen</button>
+        ${rewardInfo.pendingChoice ? '' : '<button id="back-to-challenges">Zurück zu Herausforderungen</button>'}
       </div>
     `;
   } else {
@@ -265,12 +279,38 @@ function handleKopfnussChallengeCompletion() {
   if (container) {
     container.innerHTML = resultContent;
     
-    // Add event listener for back button
-    const backButton = document.getElementById('back-to-challenges');
-    if (backButton) {
-      backButton.addEventListener('click', () => {
-        showScreen('challenges');
-      });
+    // Handle reward choice buttons if event is active
+    if (isPerfect && rewardInfo.pendingChoice) {
+      const chooseDiamondsBtn = document.getElementById('choose-diamonds');
+      const chooseSeasonalBtn = document.getElementById('choose-seasonal');
+      
+      if (chooseDiamondsBtn) {
+        chooseDiamondsBtn.addEventListener('click', () => {
+          addDiamonds(rewardInfo.amount);
+          rewardInfo.isDiamond = true;
+          rewardInfo.pendingChoice = false;
+          notifyKopfnussChallengeResult(true, rewardInfo);
+          showScreen('challenges');
+        });
+      }
+      
+      if (chooseSeasonalBtn) {
+        chooseSeasonalBtn.addEventListener('click', () => {
+          addSeasonalCurrency(rewardInfo.amount);
+          rewardInfo.isDiamond = false;
+          rewardInfo.pendingChoice = false;
+          notifyKopfnussChallengeResult(true, rewardInfo);
+          showScreen('challenges');
+        });
+      }
+    } else {
+      // Add event listener for back button
+      const backButton = document.getElementById('back-to-challenges');
+      if (backButton) {
+        backButton.addEventListener('click', () => {
+          showScreen('challenges');
+        });
+      }
     }
   }
 }
