@@ -318,6 +318,11 @@ function generateKopfnussMixed() {
     generateKopfnussSquared
   ];
   
+  // Validate generators array
+  if (generators.length === 0) {
+    throw new Error('No Kopfnuss generators available');
+  }
+  
   // Randomly select a generator
   const randomGenerator = generators[randomInt(0, generators.length - 1)];
   const task = randomGenerator();

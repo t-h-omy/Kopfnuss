@@ -567,10 +567,6 @@ function loadChallengesScreen(container) {
     const isKopfnussFailed = kopfnussChallenge.state === KOPFNUSS_STATE.FAILED;
     const kopfnussRowClass = isKopfnussCompleted ? 'kopfnuss-row kopfnuss-completed' : 'kopfnuss-row';
     
-    // Get reward info for display
-    const rewardAmount = CONFIG.KOPFNUSS_REWARD_AMOUNT || 2;
-    const rewardIcon = activeEvent ? activeEvent.emoticon : '💎';
-    
     // Build status icon
     let kopfnussStatusIcon = '';
     if (isKopfnussCompleted) {

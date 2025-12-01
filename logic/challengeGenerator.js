@@ -281,8 +281,10 @@ export function getChallengeStats() {
  * @returns {Array} Array of high-difficulty task objects
  */
 function generateKopfnussTasksForChallenge(count = CONFIG.KOPFNUSS_TASK_COUNT) {
+  // Validate task count with fallback
+  const taskCount = Number(count) || 5;
   const tasks = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < taskCount; i++) {
     tasks.push(generateKopfnussTask());
   }
   return tasks;

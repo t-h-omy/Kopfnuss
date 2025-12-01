@@ -133,9 +133,9 @@ function handleAnswerSubmit() {
     return;
   }
   
-  // Parse answer
+  // Parse answer - use strict comparison with normalized input
   const normalizedAnswer = parseInt(userAnswer, 10);
-  if (isNaN(normalizedAnswer) || userAnswer !== normalizedAnswer.toString()) {
+  if (isNaN(normalizedAnswer)) {
     feedbackElement.textContent = 'Bitte gib eine ganze Zahl ein';
     feedbackElement.className = 'task-feedback feedback-error';
     return;
