@@ -1895,16 +1895,16 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
   if (pendingChoice) {
     // Show choice buttons - player can pick diamonds or seasonal currency
     rewardDisplayHtml = `
-      <div class="super-success-display" style="margin-bottom: 16px;">
-        <p style="font-size: 14px; color: #9932CC; margin-bottom: 12px;">Wähle deine Belohnung:</p>
-        <div style="display: flex; gap: 12px; justify-content: center;">
-          <button id="super-choose-diamonds" class="reward-choice-btn" style="padding: 16px 24px; font-size: 20px; border: 2px solid #9932CC; border-radius: 12px; background: linear-gradient(135deg, #E8E0F0 0%, #D8BFD8 100%); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 24px;">💎</span>
-            <span>+1 Diamant</span>
+      <div class="super-success-display" style="margin-bottom: 12px;">
+        <p style="font-size: 13px; color: #9932CC; margin-bottom: 10px;">Wähle deine Belohnung:</p>
+        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+          <button id="super-choose-diamonds" class="reward-choice-btn" style="padding: 10px 16px; font-size: 16px; border: 2px solid #9932CC; border-radius: 10px; background: linear-gradient(135deg, #E8E0F0 0%, #D8BFD8 100%); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 18px;">💎</span>
+            <span>+1</span>
           </button>
-          <button id="super-choose-seasonal" class="reward-choice-btn" style="padding: 16px 24px; font-size: 20px; border: 2px solid #9932CC; border-radius: 12px; background: linear-gradient(135deg, #E8E0F0 0%, #D8BFD8 100%); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 24px;">${seasonalReward.emoticon}</span>
-            <span>+1 ${seasonalReward.currencyNameSingular}</span>
+          <button id="super-choose-seasonal" class="reward-choice-btn" style="padding: 10px 16px; font-size: 16px; border: 2px solid #9932CC; border-radius: 10px; background: linear-gradient(135deg, #E8E0F0 0%, #D8BFD8 100%); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 18px;">${seasonalReward.emoticon}</span>
+            <span>+1</span>
           </button>
         </div>
       </div>
