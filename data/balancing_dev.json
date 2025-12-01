@@ -49,11 +49,11 @@
     "SHADOW_OFFSET_Y_LARGE": "6px"
   },
   "KOPFNUSS_DIFFICULTY": {
-    "addition": { "minA": 100, "maxA": 500, "minB": 100, "maxB": 500 },
-    "subtraction": { "minA": 200, "maxA": 999, "minB": 100, "maxB": 500 },
-    "multiplication": { "factor1": { "min": 10, "max": 25 }, "factor2": { "min": 10, "max": 25 } },
-    "division": { "divisor": { "min": 5, "max": 15 }, "quotient": { "min": 10, "max": 30 } },
-    "squared": { "min": 10, "max": 25 }
+    "addition": { "minA": 1, "maxA": 20, "minB": 1, "maxB": 20 },
+    "subtraction": { "minA": 5, "maxA": 30, "minB": 1, "maxB": 15 },
+    "multiplication": { "factor1": { "min": 2, "max": 5 }, "factor2": { "min": 2, "max": 5 } },
+    "division": { "divisor": { "min": 2, "max": 5 }, "quotient": { "min": 2, "max": 5 } },
+    "squared": { "min": 2, "max": 5 }
   },
   "CHALLENGE_TYPES": {
     "addition": {
