@@ -2112,7 +2112,7 @@ function showKopfnussSuccessPopup(rewardInfo, onClose = null) {
     <h2>Kopfnuss geknackt!</h2>
     ${rewardDisplayHtml}
     <p>Unglaublich! Du hast die Kopfnuss geknackt!</p>
-    <button id="kopfnuss-success-close-button" class="btn-primary btn-kopfnuss">${rewardInfo.isDiamond ? '+' + rewardInfo.amount + ' 💎' : '+' + rewardInfo.amount + ' ' + rewardInfo.emoticon}</button>
+    <button id="kopfnuss-success-close-button" class="btn-primary btn-kopfnuss">Einsammeln</button>
   `;
   
   overlay.appendChild(popupCard);
@@ -2326,7 +2326,7 @@ function showZeitChallengeSuccessPopup(rewardInfo, onClose = null) {
     <h2>Zeit-Challenge geschafft!</h2>
     ${rewardDisplayHtml}
     <p>Du hast der Zeit getrotzt!</p>
-    <button id="zeit-success-close-button" class="btn-primary btn-zeit">${rewardInfo.isDiamond ? '+' + rewardInfo.amount + ' 💎' : '+' + rewardInfo.amount + ' ' + rewardInfo.emoticon}</button>
+    <button id="zeit-success-close-button" class="btn-primary btn-zeit">Einsammeln</button>
   `;
   
   overlay.appendChild(popupCard);

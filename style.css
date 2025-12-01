@@ -2986,6 +2986,21 @@ button,
   background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);
 }
 
+/* Kopfnuss Splash Ray Styles - Available state animation */
+.kopfnuss-splash .splash-ray {
+  color: #DAA520;
+  background: linear-gradient(to bottom, #DAA520, transparent);
+}
+
+.kopfnuss-row:not(.kopfnuss-completed) .kopfnuss-splash .splash-ray {
+  animation: kopfnussSplashPulse 2s ease-in-out infinite;
+}
+
+@keyframes kopfnussSplashPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 /* Kopfnuss Status Icon */
 .kopfnuss-status-icon {
   position: absolute;
@@ -3287,6 +3302,21 @@ button,
 .zeit-row.zeit-completed .zeit-info-card {
   animation: none;
   background: linear-gradient(135deg, #B2EBF2 0%, #4DD0E1 100%);
+}
+
+/* Zeit-Challenge Splash Ray Styles - Available state animation */
+.zeit-splash .splash-ray {
+  color: #00ACC1;
+  background: linear-gradient(to bottom, #00ACC1, transparent);
+}
+
+.zeit-row:not(.zeit-completed) .zeit-splash .splash-ray {
+  animation: zeitSplashPulse 2s ease-in-out infinite;
+}
+
+@keyframes zeitSplashPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 /* Zeit-Challenge Status Icon */
