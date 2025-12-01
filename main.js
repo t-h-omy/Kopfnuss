@@ -1103,12 +1103,14 @@ async function loadTaskScreen(container, challengeIndex) {
     </div>
   `;
   
-  // Add event listener for back button
+  // Add event listener for back button with confirmation
   const backButton = document.getElementById('back-button');
   backButton.addEventListener('click', () => {
-    // Stop super challenge sparkles if running
-    stopSuperChallengeSparkles();
-    showScreen('challenges');
+    showTaskExitConfirmationPopup(() => {
+      // Stop super challenge sparkles if running
+      stopSuperChallengeSparkles();
+      showScreen('challenges');
+    }, 'standard');
   });
   
   // Initialize task screen controller
@@ -1147,10 +1149,12 @@ async function loadKopfnussTaskScreen(container) {
     </div>
   `;
   
-  // Add event listener for back button
+  // Add event listener for back button with confirmation
   const backButton = document.getElementById('back-button');
   backButton.addEventListener('click', () => {
-    showScreen('challenges');
+    showTaskExitConfirmationPopup(() => {
+      showScreen('challenges');
+    }, 'kopfnuss');
   });
   
   // Initialize Kopfnuss task screen controller
@@ -1197,16 +1201,18 @@ async function loadZeitChallengeTaskScreen(container) {
     </div>
   `;
   
-  // Add event listener for back button
+  // Add event listener for back button with confirmation
   const backButton = document.getElementById('back-button');
   backButton.addEventListener('click', () => {
-    // Cleanup timer before leaving
-    import('./logic/zeitChallengeTaskController.js').then(module => {
-      if (module.cleanupZeitChallengeTaskScreen) {
-        module.cleanupZeitChallengeTaskScreen();
-      }
-    });
-    showScreen('challenges');
+    showTaskExitConfirmationPopup(() => {
+      // Cleanup timer before leaving
+      import('./logic/zeitChallengeTaskController.js').then(module => {
+        if (module.cleanupZeitChallengeTaskScreen) {
+          module.cleanupZeitChallengeTaskScreen();
+        }
+      });
+      showScreen('challenges');
+    }, 'zeit');
   });
   
   // Initialize Zeit-Challenge task screen controller
@@ -2457,6 +2463,71 @@ function showZeitChallengeFailurePopup(onClose = null) {
       onClose();
     }
     processPopupQueue();
+  });
+}
+
+/**
+ * Show task screen exit confirmation popup
+ * Asks user to confirm before leaving the task screen mid-challenge
+ * @param {Function} onConfirm - Callback when user confirms exit
+ * @param {string} challengeType - Type of challenge ('standard', 'kopfnuss', 'zeit')
+ */
+function showTaskExitConfirmationPopup(onConfirm, challengeType = 'standard') {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'task-exit-confirmation-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card';
+  
+  // Customize message based on challenge type
+  let title, message, icon, headerColor;
+  switch(challengeType) {
+    case 'kopfnuss':
+      title = 'Kopfnuss abbrechen?';
+      message = 'Wenn du jetzt abbrichst, ist der Diamant verloren und du musst neu beginnen.';
+      icon = '🤔';
+      headerColor = '#8B4513';
+      break;
+    case 'zeit':
+      title = 'Zeit-Challenge abbrechen?';
+      message = 'Wenn du jetzt abbrichst, ist der Diamant verloren und die Zeit läuft weiter.';
+      icon = '⏱️';
+      headerColor = '#006064';
+      break;
+    default:
+      title = 'Challenge abbrechen?';
+      message = 'Bist du sicher, dass du die Challenge abbrechen möchtest?';
+      icon = '⚠️';
+      headerColor = '#555';
+  }
+  
+  popupCard.innerHTML = `
+    <div class="exit-confirmation-icon" style="font-size: 48px; margin-bottom: 12px;">${icon}</div>
+    <h2 style="color: ${headerColor}; margin-bottom: 12px;">${title}</h2>
+    <p style="margin-bottom: 20px; color: #666;">${message}</p>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <button id="exit-cancel-button" class="btn-secondary" style="padding: 12px 24px;">Weitermachen</button>
+      <button id="exit-confirm-button" class="btn-primary" style="padding: 12px 24px; background: #CD5C5C;">Abbrechen</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Cancel button - stay in task screen
+  const cancelButton = document.getElementById('exit-cancel-button');
+  cancelButton.addEventListener('click', () => {
+    overlay.remove();
+  });
+  
+  // Confirm button - exit task screen
+  const confirmButton = document.getElementById('exit-confirm-button');
+  confirmButton.addEventListener('click', () => {
+    overlay.remove();
+    if (onConfirm && typeof onConfirm === 'function') {
+      onConfirm();
+    }
   });
 }
 
