@@ -2507,8 +2507,8 @@ function showTaskExitConfirmationPopup(onConfirm, challengeType = 'standard') {
     <h2 style="color: ${headerColor}; margin-bottom: 12px;">${title}</h2>
     <p style="margin-bottom: 20px; color: #666;">${message}</p>
     <div style="display: flex; gap: 12px; justify-content: center;">
-      <button id="exit-cancel-button" class="btn-secondary" style="padding: 12px 24px;">Weitermachen</button>
-      <button id="exit-confirm-button" class="btn-primary" style="padding: 12px 24px; background: #CD5C5C;">Abbrechen</button>
+      <button id="exit-cancel-button" class="btn-secondary" style="padding: 12px 24px;">Nein, hier bleiben</button>
+      <button id="exit-confirm-button" class="btn-primary" style="padding: 12px 24px; background: #CD5C5C;">Ja, zurück</button>
     </div>
   `;
   
