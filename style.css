@@ -2987,9 +2987,16 @@ button,
 }
 
 /* Kopfnuss Splash Ray Styles - Available state animation */
+.kopfnuss-splash.challenge-splash {
+  width: 180px;
+  height: 180px;
+}
+
 .kopfnuss-splash .splash-ray {
   color: #DAA520;
   background: linear-gradient(to bottom, #DAA520, transparent);
+  height: 40px;
+  width: 7px;
 }
 
 .kopfnuss-row:not(.kopfnuss-completed) .kopfnuss-splash .splash-ray {
@@ -3305,9 +3312,16 @@ button,
 }
 
 /* Zeit-Challenge Splash Ray Styles - Available state animation */
+.zeit-splash.challenge-splash {
+  width: 180px;
+  height: 180px;
+}
+
 .zeit-splash .splash-ray {
   color: #00ACC1;
   background: linear-gradient(to bottom, #00ACC1, transparent);
+  height: 40px;
+  width: 7px;
 }
 
 .zeit-row:not(.zeit-completed) .zeit-splash .splash-ray {
