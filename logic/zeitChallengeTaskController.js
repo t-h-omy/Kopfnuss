@@ -9,7 +9,7 @@ import {
   ZEIT_CHALLENGE_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
-import { showScreen } from '../main.js';
+import { showScreen, notifyZeitChallengeResult } from '../main.js';
 import { 
   isEventActive, 
   getActiveEvent, 
@@ -188,19 +188,29 @@ function handleTimeout() {
   failZeitChallenge(errors, currentTaskIndex);
   
   // Don't notify main.js - we show the result popup here in the task screen
-  // The popup in main.js is only shown when returning from a successful completion
   // For timeout, we show the failure screen directly here to avoid duplicate popups
   
   // Get timeout phrase
   const motivationPhrase = getRandomPhrase(ZEIT_TIMEOUT_PHRASES);
   
-  // Show timeout popup
-  const resultContent = `
+  // Calculate progress
+  const totalTasks = zeitState.tasks.length;
+  const completedTasks = currentTaskIndex;
+  const totalTime = CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
+  const totalTimeFormatted = formatTime(totalTime);
+  
+  // Build debrief content for timeout
+  const debriefContent = `
     <div class="task-results" style="background: linear-gradient(135deg, #FFF0F0 0%, #FFCCCC 100%); border: 3px solid #CD5C5C;">
       <h2 style="color: #8B0000;">Zeit abgelaufen! 😞</h2>
       <div class="results-summary">
         <p class="motivation">${motivationPhrase}</p>
-        <p style="font-size: 14px; color: #666; margin-top: 8px;">Der Diamant ist weg, aber die Challenge wartet noch auf dich!</p>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+          <p style="font-size: 14px; color: #8B0000;">📊 ${completedTasks} von ${totalTasks} Aufgaben geschafft</p>
+          <p style="font-size: 14px; color: #8B0000;">❌ ${errors} Fehler</p>
+          <p style="font-size: 14px; color: #8B0000;">⏰ Zeit: ${totalTimeFormatted}</p>
+        </div>
+        <p style="font-size: 14px; color: #666; margin-top: 12px;">Der Diamant ist weg, aber die Challenge wartet noch auf dich!</p>
       </div>
       <button id="back-to-challenges">Neuer Versuch</button>
     </div>
@@ -209,7 +219,7 @@ function handleTimeout() {
   // Display results
   const container = document.getElementById('task-screen-content');
   if (container) {
-    container.innerHTML = resultContent;
+    container.innerHTML = debriefContent;
     
     // Add event listener for back button
     const backButton = document.getElementById('back-to-challenges');
@@ -366,8 +376,8 @@ function handleZeitChallengeCompletion() {
     };
   }
   
-  // Don't notify main.js - we show the success screen directly here with confetti
-  // This prevents duplicate popup when returning to challenges screen
+  // Notify main.js about the result so popup shows when returning to challenges
+  notifyZeitChallengeResult(true, rewardInfo);
   
   // Get success phrase
   const motivationPhrase = getRandomPhrase(ZEIT_SUCCESS_PHRASES);
@@ -377,22 +387,54 @@ function handleZeitChallengeCompletion() {
     ? `+${rewardInfo.amount} 💎`
     : `+${rewardInfo.amount} ${rewardInfo.emoticon}`;
   
-  // Build results content
-  const resultContent = `
-    <div class="task-results" style="background: linear-gradient(135deg, #E0F7FA 0%, #4DD0E1 100%); border: 3px solid #00ACC1;">
-      <h2 style="color: #006064;">Zeit-Challenge geschafft! ⭐</h2>
-      <div class="results-summary">
-        <p class="perfect">⏱️ ${motivationPhrase}</p>
-        <p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>
+  // Calculate time used
+  const totalTime = CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
+  const timeUsed = totalTime - timeRemaining;
+  const timeUsedFormatted = formatTime(timeUsed);
+  const timeRemainingFormatted = formatTime(timeRemaining);
+  
+  // Build debrief content similar to standard challenge
+  const isPerfect = errors === 0;
+  let debriefContent;
+  
+  if (isPerfect) {
+    debriefContent = `
+      <div class="task-results" style="background: linear-gradient(135deg, #E0F7FA 0%, #4DD0E1 100%); border: 3px solid #00ACC1;">
+        <h2 style="color: #006064;">Zeit-Challenge geschafft! ⭐</h2>
+        <div class="results-summary">
+          <p class="perfect">🌟 Perfekt - keine Fehler!</p>
+          <p style="margin-top: 8px;">⏱️ ${motivationPhrase}</p>
+          <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+            <p style="font-size: 14px; color: #006064;">📊 ${zeitState.tasks.length} Aufgaben in ${timeUsedFormatted}</p>
+            <p style="font-size: 14px; color: #006064;">⏰ Restzeit: ${timeRemainingFormatted}</p>
+          </div>
+          <p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>
+        </div>
+        <button id="back-to-challenges">Zurück zu Herausforderungen</button>
       </div>
-      <button id="back-to-challenges">Zurück zu Herausforderungen</button>
-    </div>
-  `;
+    `;
+  } else {
+    debriefContent = `
+      <div class="task-results" style="background: linear-gradient(135deg, #E0F7FA 0%, #4DD0E1 100%); border: 3px solid #00ACC1;">
+        <h2 style="color: #006064;">Zeit-Challenge geschafft! ⭐</h2>
+        <div class="results-summary">
+          <p>Fehler: ${errors}</p>
+          <p class="motivation" style="margin-top: 8px;">⏱️ ${motivationPhrase}</p>
+          <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+            <p style="font-size: 14px; color: #006064;">📊 ${zeitState.tasks.length} Aufgaben in ${timeUsedFormatted}</p>
+            <p style="font-size: 14px; color: #006064;">⏰ Restzeit: ${timeRemainingFormatted}</p>
+          </div>
+          <p style="font-size: 24px; margin-top: 16px;">${rewardText}</p>
+        </div>
+        <button id="back-to-challenges">Zurück zu Herausforderungen</button>
+      </div>
+    `;
+  }
   
   // Display results
   const container = document.getElementById('task-screen-content');
   if (container) {
-    container.innerHTML = resultContent;
+    container.innerHTML = debriefContent;
     
     // Add confetti effect for celebration
     createConfettiEffect();
