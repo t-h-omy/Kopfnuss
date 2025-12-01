@@ -3144,6 +3144,387 @@ button,
 
 
 /* ===========================
+   17B. ZEIT-CHALLENGE STYLES
+   =========================== */
+
+/* Zeit-Challenge Container - positioned above first challenge */
+.zeit-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+/* Zeit-Challenge Row */
+.zeit-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Zeit-Challenge Node Container */
+.zeit-node-container {
+  position: relative;
+  z-index: 3;
+  cursor: pointer;
+}
+
+/* Zeit-Challenge Glow Effect - Cyan/Teal theme */
+.zeit-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 172, 193, 0.4) 0%, rgba(0, 188, 212, 0.2) 40%, transparent 70%);
+  animation: zeitGlow 2s ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Zeit-Challenge Node Wrapper - Cyan/Teal gradient border */
+.zeit-node-wrapper {
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, #00ACC1 0%, #00BCD4 25%, #0097A7 50%, #00BCD4 75%, #00ACC1 100%);
+  animation: zeitPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(0, 188, 212, 0.5), 0 0 40px rgba(0, 172, 193, 0.3);
+}
+
+/* Zeit-Challenge Node */
+.zeit-node {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 50%, #E0F7FA 100%);
+  border: 4px solid #00ACC1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  position: relative;
+  transition: all var(--transition);
+  box-shadow: 0 var(--shadow-offset-y-large) var(--shadow-blur-large) var(--shadow-spread-large) var(--shadow-color),
+              inset 0 0 15px rgba(0, 172, 193, 0.2);
+  cursor: pointer;
+}
+
+.zeit-node:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px rgba(0, 188, 212, 0.6), inset 0 0 15px rgba(0, 172, 193, 0.3);
+}
+
+.zeit-node:active {
+  transform: scale(1.04);
+}
+
+/* Zeit-Challenge Info Card */
+.zeit-info-card {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%);
+  border: 3px solid #00ACC1;
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 0 15px rgba(0, 188, 212, 0.3),
+              0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
+  text-align: center;
+  margin-top: -20px;
+  padding-top: 24px;
+  max-width: 200px;
+  animation: zeitCardGlow 2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+.zeit-info-card h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #006064;
+  margin-bottom: 2px;
+}
+
+.zeit-info-card .zeit-cost {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #00838F;
+  margin: 0;
+}
+
+.zeit-info-card .zeit-hint {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #0097A7;
+  margin: 2px 0 0 0;
+  font-style: italic;
+}
+
+/* Zeit-Challenge Completed State */
+.zeit-row.zeit-completed .zeit-node-wrapper {
+  background: linear-gradient(135deg, #4DD0E1 0%, #26C6DA 50%, #4DD0E1 100%);
+  animation: none;
+}
+
+.zeit-row.zeit-completed .zeit-node {
+  cursor: default;
+}
+
+.zeit-row.zeit-completed .zeit-glow {
+  animation: none;
+  opacity: 0.5;
+}
+
+.zeit-row.zeit-completed .zeit-info-card {
+  animation: none;
+  background: linear-gradient(135deg, #B2EBF2 0%, #4DD0E1 100%);
+}
+
+/* Zeit-Challenge Status Icon */
+.zeit-status-icon {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 24px;
+  z-index: 4;
+  filter: drop-shadow(0 0 4px rgba(0, 188, 212, 0.8));
+}
+
+/* Zeit-Challenge Popup Styles */
+.zeit-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%);
+  border: 3px solid #00ACC1;
+}
+
+.zeit-popup-card h2 {
+  color: #006064;
+}
+
+.zeit-popup-card .zeit-icon {
+  font-size: 72px;
+  margin-bottom: var(--spacing-md);
+  animation: bounceIn 0.8s ease;
+}
+
+.zeit-popup-card .zeit-description {
+  font-size: 15px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-sm);
+}
+
+.zeit-popup-card .zeit-time-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #8B4513;
+}
+
+.zeit-popup-card .zeit-cost-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #E8F4FD 0%, #B8E6FF 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-blue);
+}
+
+.zeit-popup-card .zeit-reward-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #E0F7FA 0%, #4DD0E1 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #006064;
+}
+
+.btn-zeit {
+  background: linear-gradient(135deg, #00ACC1 0%, #00BCD4 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 172, 193, 0.4);
+  border: none;
+}
+
+.btn-zeit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 172, 193, 0.5);
+}
+
+.btn-zeit:disabled {
+  background: var(--color-gray);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Zeit-Challenge Success Popup */
+.zeit-success-popup-card {
+  background: linear-gradient(135deg, #E0F7FA 0%, #4DD0E1 100%);
+  border: 3px solid #00ACC1;
+}
+
+.zeit-success-popup-card h2 {
+  color: #006064;
+}
+
+.zeit-success-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #E8F4FD 0%, #B8E6FF 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.zeit-success-icon {
+  font-size: 32px;
+  animation: starBurst 1s ease 3;
+}
+
+.zeit-success-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-blue);
+}
+
+/* Zeit-Challenge Failure Popup */
+.zeit-failure-popup-card {
+  background: linear-gradient(135deg, #FFF0F0 0%, #FFCCCC 100%);
+  border: 3px solid #CD5C5C;
+}
+
+.zeit-failure-popup-card h2 {
+  color: #8B0000;
+}
+
+/* Zeit-Challenge Timer Styles */
+.zeit-challenge-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.zeit-timer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zeit-timer {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #006064;
+  background: linear-gradient(135deg, #B2EBF2 0%, #E0F7FA 100%);
+  padding: 4px 16px;
+  border-radius: var(--radius-md);
+  border: 2px solid #00ACC1;
+  box-shadow: 0 2px 8px rgba(0, 172, 193, 0.3);
+  min-width: 80px;
+  text-align: center;
+}
+
+.zeit-timer.timer-warning {
+  color: #FF8F00;
+  border-color: #FF8F00;
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+  animation: timerWarningPulse 0.5s ease-in-out infinite;
+}
+
+.zeit-timer.timer-critical {
+  color: #D32F2F;
+  border-color: #D32F2F;
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+  animation: timerCriticalPulse 0.3s ease-in-out infinite;
+}
+
+/* Zeit-Challenge Animations */
+@keyframes zeitGlow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes zeitPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 188, 212, 0.5), 0 0 40px rgba(0, 172, 193, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 188, 212, 0.7), 0 0 60px rgba(0, 172, 193, 0.4);
+  }
+}
+
+@keyframes zeitCardGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.3),
+                0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 188, 212, 0.5),
+                0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
+  }
+}
+
+@keyframes timerWarningPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes timerCriticalPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.9;
+  }
+}
+
+
+/* ===========================
    18. PRINT
    =========================== */
 

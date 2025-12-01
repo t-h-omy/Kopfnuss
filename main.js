@@ -1,7 +1,7 @@
 // Kopfnuss - Main Application Entry Point
 // Routing und App-Initialisierung
 
-import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE, isSuperChallengeState, getOrCreateKopfnussChallenge, getTodaysKopfnussChallenge, KOPFNUSS_STATE, startKopfnussChallenge, regenerateKopfnussChallenge, resetKopfnussChallengeAfterFailure } from './logic/challengeGenerator.js';
+import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE, isSuperChallengeState, getOrCreateKopfnussChallenge, getTodaysKopfnussChallenge, KOPFNUSS_STATE, startKopfnussChallenge, regenerateKopfnussChallenge, resetKopfnussChallengeAfterFailure, getOrCreateZeitChallenge, getTodaysZeitChallenge, ZEIT_CHALLENGE_STATE, startZeitChallenge, regenerateZeitChallenge, resetZeitChallengeAfterFailure } from './logic/challengeGenerator.js';
 import { completeChallenge as completeChallengeState } from './logic/challengeStateManager.js';
 import { 
   getStreakInfo, 
@@ -190,12 +190,14 @@ let currentScreen = null;
 let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
 let returningFromKopfnussScreen = false; // Track if returning from Kopfnuss Challenge
+let returningFromZeitChallengeScreen = false; // Track if returning from Zeit-Challenge
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean, seasonalCurrencyAwarded: object|null}
 let kopfnussChallengeResult = null; // Track Kopfnuss Challenge result {success: boolean, reward: object|null}
+let zeitChallengeResult = null; // Track Zeit-Challenge result {success: boolean, reward: object|null}
 
 // Preload celebration images for faster display
 const celebrationImageCache = [];
@@ -271,7 +273,7 @@ function findCurrentUnlockedChallengeIndex(challenges) {
 
 /**
  * Show a screen by name
- * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats', 'kopfnussTaskScreen')
+ * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats', 'kopfnussTaskScreen', 'zeitChallengeTaskScreen')
  * @param {*} data - Optional data to pass to screen (e.g., challengeIndex)
  */
 export function showScreen(screenName, data = null) {
@@ -292,6 +294,11 @@ export function showScreen(screenName, data = null) {
     returningFromKopfnussScreen = true;
   }
   
+  // Track if we're returning from Zeit-Challenge task screen to challenges
+  if (currentScreen === 'zeitChallengeTaskScreen' && screenName === 'challenges') {
+    returningFromZeitChallengeScreen = true;
+  }
+  
   // Store current screen
   currentScreen = screenName;
   
@@ -299,7 +306,7 @@ export function showScreen(screenName, data = null) {
   mainContent.innerHTML = '';
   
   // Manage body class for task screen keyboard stability
-  if (screenName === 'taskScreen' || screenName === 'kopfnussTaskScreen') {
+  if (screenName === 'taskScreen' || screenName === 'kopfnussTaskScreen' || screenName === 'zeitChallengeTaskScreen') {
     document.body.classList.add('task-screen-active');
   } else {
     document.body.classList.remove('task-screen-active');
@@ -316,6 +323,9 @@ export function showScreen(screenName, data = null) {
       break;
     case 'kopfnussTaskScreen':
       loadKopfnussTaskScreen(mainContent);
+      break;
+    case 'zeitChallengeTaskScreen':
+      loadZeitChallengeTaskScreen(mainContent);
       break;
     case 'stats':
       loadStatsScreen(mainContent);
@@ -448,6 +458,23 @@ function loadChallengesScreen(container) {
     }
   }
   
+  // Handle popup display when returning from Zeit-Challenge task screen
+  if (returningFromZeitChallengeScreen) {
+    returningFromZeitChallengeScreen = false;
+    
+    // Check for Zeit-Challenge result
+    const showZeitSuccess = zeitChallengeResult && zeitChallengeResult.success;
+    const showZeitFailure = zeitChallengeResult && !zeitChallengeResult.success;
+    const storedZeitResult = zeitChallengeResult;
+    zeitChallengeResult = null; // Reset the flag
+    
+    if (showZeitSuccess && storedZeitResult.reward) {
+      showZeitChallengeSuccessPopup(storedZeitResult.reward);
+    } else if (showZeitFailure) {
+      showZeitChallengeFailurePopup();
+    }
+  }
+  
   // Create main container
   const challengesContainer = document.createElement('div');
   challengesContainer.className = 'challenges-container';
@@ -557,8 +584,52 @@ function loadChallengesScreen(container) {
   const challengesMap = document.createElement('div');
   challengesMap.className = 'challenges-map';
   
-  // Get or create Kopfnuss Challenge
+  // Get or create premium challenges (mutually exclusive)
   const kopfnussChallenge = getOrCreateKopfnussChallenge();
+  const zeitChallenge = getOrCreateZeitChallenge();
+  
+  // Create Zeit-Challenge section (if spawned and not completed)
+  let zeitSectionHtml = '';
+  if (zeitChallenge && zeitChallenge.spawned) {
+    const isZeitCompleted = zeitChallenge.state === ZEIT_CHALLENGE_STATE.COMPLETED;
+    const isZeitFailed = zeitChallenge.state === ZEIT_CHALLENGE_STATE.FAILED;
+    const zeitRowClass = isZeitCompleted ? 'zeit-row zeit-completed' : 'zeit-row';
+    
+    // Build status icon
+    let zeitStatusIcon = '';
+    if (isZeitCompleted) {
+      zeitStatusIcon = '<span class="zeit-status-icon">⭐</span>';
+    }
+    
+    // Build hint text
+    let zeitHintText = 'Schaffst du alle Aufgaben rechtzeitig?';
+    if (isZeitCompleted) {
+      zeitHintText = 'Zeit bezwungen!';
+    } else if (isZeitFailed) {
+      zeitHintText = 'Erneut versuchen?';
+    }
+    
+    zeitSectionHtml = `
+      <div class="zeit-section" id="zeit-section">
+        <div class="${zeitRowClass}">
+          <div class="zeit-node-container" id="zeit-node-container">
+            <div class="zeit-glow"></div>
+            <div class="zeit-node-wrapper">
+              <div class="zeit-node">
+                ⏱️
+                ${zeitStatusIcon}
+              </div>
+            </div>
+          </div>
+          <div class="zeit-info-card">
+            <h3>Zeit-Challenge</h3>
+            <p class="zeit-cost">Kosten: 1 💎</p>
+            <p class="zeit-hint">${zeitHintText}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
   
   // Create Kopfnuss Challenge section (if spawned and not completed)
   let kopfnussSectionHtml = '';
@@ -613,8 +684,12 @@ function loadChallengesScreen(container) {
   const challengesList = document.createElement('div');
   challengesList.className = 'challenges-list';
   
-  // Add Kopfnuss section HTML if available
-  if (kopfnussSectionHtml) {
+  // Add Zeit-Challenge section HTML if available (appears first, before daily challenges)
+  // Only one of Zeit-Challenge or Kopfnuss can spawn due to mutually exclusive logic
+  if (zeitSectionHtml) {
+    challengesList.innerHTML = zeitSectionHtml;
+  } else if (kopfnussSectionHtml) {
+    // Add Kopfnuss section HTML if available
     challengesList.innerHTML = kopfnussSectionHtml;
   }
   
@@ -811,6 +886,18 @@ function loadChallengesScreen(container) {
   
   container.appendChild(challengesContainer);
   
+  // Add click handler for Zeit-Challenge node after DOM is rendered
+  const zeitNodeContainer = document.getElementById('zeit-node-container');
+  if (zeitNodeContainer && zeitChallenge && zeitChallenge.spawned) {
+    const isZeitCompleted = zeitChallenge.state === ZEIT_CHALLENGE_STATE.COMPLETED;
+    
+    if (!isZeitCompleted) {
+      zeitNodeContainer.addEventListener('click', () => {
+        showZeitChallengeStartPopup();
+      });
+    }
+  }
+  
   // Add click handler for Kopfnuss node after DOM is rendered
   const kopfnussNodeContainer = document.getElementById('kopfnuss-node-container');
   if (kopfnussNodeContainer && kopfnussChallenge && kopfnussChallenge.spawned) {
@@ -987,6 +1074,62 @@ async function loadKopfnussTaskScreen(container) {
     initKopfnussTaskScreen();
   } catch (error) {
     console.error('Error loading Kopfnuss task screen controller:', error);
+  }
+}
+
+/**
+ * Load Zeit-Challenge task screen
+ * @param {HTMLElement} container - Container element
+ */
+async function loadZeitChallengeTaskScreen(container) {
+  // Update app height when entering task screen to ensure proper sizing
+  setAppHeight();
+  
+  const timeLimitSeconds = CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
+  const timeLimitMinutes = Math.floor(timeLimitSeconds / 60);
+  const timeLimitRemainingSeconds = timeLimitSeconds % 60;
+  const formattedTime = `${timeLimitMinutes}:${timeLimitRemainingSeconds.toString().padStart(2, '0')}`;
+  
+  container.innerHTML = `
+    <div class="task-screen" id="task-screen-content">
+      <div class="task-screen-main">
+        <div class="task-header zeit-challenge-header" style="background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%); border: 2px solid #00ACC1;">
+          <h2 style="color: #006064;">⏱️ Zeit-Challenge</h2>
+          <div class="zeit-timer-container">
+            <span id="zeit-timer" class="zeit-timer">${formattedTime}</span>
+          </div>
+          <button id="back-button">Zurück</button>
+        </div>
+        <div class="task-progress" id="task-progress"></div>
+        <div class="task-content">
+          <div class="task-question" id="task-question"></div>
+          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
+          <button id="submit-answer">Prüfen</button>
+        </div>
+        <div class="task-feedback" id="task-feedback"></div>
+      </div>
+      <div class="task-screen-footer">v${VERSION.string}</div>
+    </div>
+  `;
+  
+  // Add event listener for back button
+  const backButton = document.getElementById('back-button');
+  backButton.addEventListener('click', () => {
+    // Cleanup timer before leaving
+    import('./logic/zeitChallengeTaskController.js').then(module => {
+      if (module.cleanupZeitChallengeTaskScreen) {
+        module.cleanupZeitChallengeTaskScreen();
+      }
+    });
+    showScreen('challenges');
+  });
+  
+  // Initialize Zeit-Challenge task screen controller
+  try {
+    const { initZeitChallengeTaskScreen } = await import('./logic/zeitChallengeTaskController.js');
+    initZeitChallengeTaskScreen();
+  } catch (error) {
+    console.error('Error loading Zeit-Challenge task screen controller:', error);
   }
 }
 
@@ -1946,6 +2089,220 @@ export function notifyKopfnussChallengeResult(success, reward = null) {
   kopfnussChallengeResult = { success, reward };
 }
 
+// ============================================
+// ZEIT-CHALLENGE POPUP FUNCTIONS
+// ============================================
+
+/**
+ * Show Zeit-Challenge start popup
+ */
+function showZeitChallengeStartPopup() {
+  const diamonds = loadDiamonds();
+  const entryCost = CONFIG.ZEIT_CHALLENGE_ENTRY_COST || 1;
+  const rewardAmount = CONFIG.ZEIT_CHALLENGE_REWARD_AMOUNT || 2;
+  const timeLimitSeconds = CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120;
+  const timeLimitMinutes = Math.floor(timeLimitSeconds / 60);
+  const hasDiamond = diamonds >= entryCost;
+  
+  // Check if a seasonal event is active to show appropriate reward
+  const activeEvent = getActiveEvent();
+  let rewardHtml;
+  if (activeEvent) {
+    rewardHtml = `<span>+${rewardAmount} ${activeEvent.emoticon}</span>`;
+  } else {
+    rewardHtml = `<span>+${rewardAmount} 💎</span>`;
+  }
+  
+  if (!hasDiamond) {
+    // Show "not enough diamonds" popup
+    showZeitChallengeNotEnoughDiamondsPopup();
+    return;
+  }
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'zeit-start-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card zeit-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="zeit-icon">⏱️</div>
+    <h2>Zeit-Challenge</h2>
+    <p class="zeit-description">Du hast nur begrenzt Zeit – schaffst du alle Aufgaben?</p>
+    <div class="zeit-time-info">
+      <span>⏰</span>
+      <span>${timeLimitMinutes} Minuten Zeit</span>
+    </div>
+    <div class="zeit-cost-info">
+      <span>💎</span>
+      <span>Einsatz: ${entryCost} Diamant</span>
+    </div>
+    <div class="zeit-reward-info">
+      <span>🎯 Belohnung:</span>
+      ${rewardHtml}
+    </div>
+    <button id="zeit-start-button" class="btn-primary btn-zeit">Los geht's! (–${entryCost} 💎)</button>
+    <button id="zeit-cancel-button" class="btn-secondary" style="margin-top: 8px;">Abbrechen</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const startButton = document.getElementById('zeit-start-button');
+  startButton.addEventListener('click', () => {
+    // Spend the diamond
+    const spendResult = spendDiamonds(entryCost);
+    if (!spendResult.success) {
+      overlay.remove();
+      showZeitChallengeNotEnoughDiamondsPopup();
+      return;
+    }
+    
+    // Update diamond display in header
+    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+    if (diamondDisplay) {
+      diamondDisplay.textContent = loadDiamonds();
+    }
+    
+    // Start the Zeit-Challenge
+    startZeitChallenge();
+    
+    overlay.remove();
+    showScreen('zeitChallengeTaskScreen');
+  });
+  
+  const cancelButton = document.getElementById('zeit-cancel-button');
+  cancelButton.addEventListener('click', () => {
+    overlay.remove();
+  });
+}
+
+/**
+ * Show popup when player doesn't have enough diamonds for Zeit-Challenge
+ */
+function showZeitChallengeNotEnoughDiamondsPopup() {
+  const entryCost = CONFIG.ZEIT_CHALLENGE_ENTRY_COST || 1;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  overlay.id = 'zeit-no-diamonds-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>💎 Nicht genug Diamanten</h2>
+    <p>Du brauchst ${entryCost} Diamant für die Zeit-Challenge.</p>
+    <button id="zeit-no-diamonds-ok-button" class="btn-primary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const okButton = document.getElementById('zeit-no-diamonds-ok-button');
+  okButton.addEventListener('click', () => {
+    overlay.remove();
+  });
+}
+
+/**
+ * Show Zeit-Challenge success popup
+ * @param {Object} rewardInfo - Reward information {isDiamond, amount, emoticon}
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showZeitChallengeSuccessPopup(rewardInfo, onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'zeit-success-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card zeit-success-popup-card';
+  
+  let rewardDisplayHtml;
+  if (rewardInfo.isDiamond) {
+    rewardDisplayHtml = `
+      <div class="zeit-success-display">
+        <span class="zeit-success-icon">💎</span>
+        <span class="zeit-success-text">+${rewardInfo.amount} Diamanten</span>
+      </div>
+    `;
+  } else {
+    rewardDisplayHtml = `
+      <div class="zeit-success-display">
+        <span class="zeit-success-icon">${rewardInfo.emoticon}</span>
+        <span class="zeit-success-text">+${rewardInfo.amount}</span>
+      </div>
+    `;
+  }
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">⭐</div>
+    <h2>Zeit-Challenge geschafft!</h2>
+    ${rewardDisplayHtml}
+    <p>Du hast der Zeit getrotzt!</p>
+    <button id="zeit-success-close-button" class="btn-primary btn-zeit">${rewardInfo.isDiamond ? '+' + rewardInfo.amount + ' 💎' : '+' + rewardInfo.amount + ' ' + rewardInfo.emoticon}</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  createConfettiEffect();
+  
+  const closeButton = document.getElementById('zeit-success-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    removeConfettiPieces();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show Zeit-Challenge failure popup (timeout)
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showZeitChallengeFailurePopup(onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'zeit-failure-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card zeit-failure-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">😞</div>
+    <h2>Zeit abgelaufen!</h2>
+    <p>Du warst knapp dran – versuch es gleich noch einmal!</p>
+    <button id="zeit-failure-close-button" class="btn-primary">Neuer Versuch</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('zeit-failure-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    // Reset the Zeit-Challenge so it can be replayed
+    resetZeitChallengeAfterFailure();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Notify that Zeit-Challenge was completed
+ * @param {boolean} success - Whether the challenge was completed in time
+ * @param {Object|null} reward - Reward info if successful
+ */
+export function notifyZeitChallengeResult(success, reward = null) {
+  zeitChallengeResult = { success, reward };
+}
+
 /**
  * Show seasonal event start popup
  * Displayed on first app launch during an active event
@@ -2194,6 +2551,12 @@ function showSettingsPopup() {
           <label>🤔 Kopfnuss:</label>
           <div class="dev-setting-controls">
             <button id="dev-force-kopfnuss" class="dev-btn-action">Erzwingen</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>⏱️ Zeit-Challenge:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-force-zeit" class="dev-btn-action">Erzwingen</button>
           </div>
         </div>
         <div class="dev-setting-row">
@@ -2721,6 +3084,43 @@ function setupDevSettingsListeners() {
       });
       
       document.getElementById('dev-kopfnuss-restart-cancel').addEventListener('click', () => {
+        overlay.remove();
+      });
+    });
+  }
+  
+  // Force Zeit-Challenge button
+  const forceZeitBtn = document.getElementById('dev-force-zeit');
+  
+  if (forceZeitBtn) {
+    forceZeitBtn.addEventListener('click', () => {
+      // Force regenerate Zeit-Challenge with guaranteed spawn
+      regenerateZeitChallenge(true);
+      
+      // Show restart popup
+      const overlay = document.createElement('div');
+      overlay.className = 'popup-overlay';
+      overlay.id = 'dev-zeit-popup-overlay';
+      
+      overlay.innerHTML = `
+        <div class="popup-card">
+          <h2>⏱️ Zeit-Challenge erzwungen</h2>
+          <p>Zeit-Challenge wurde erzwungen!</p>
+          <p>App neu starten, um die Änderungen zu sehen?</p>
+          <div class="popup-buttons">
+            <button id="dev-zeit-restart-confirm" class="btn-primary">Neu starten</button>
+            <button id="dev-zeit-restart-cancel" class="btn-secondary">Abbrechen</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(overlay);
+      
+      document.getElementById('dev-zeit-restart-confirm').addEventListener('click', () => {
+        window.location.reload();
+      });
+      
+      document.getElementById('dev-zeit-restart-cancel').addEventListener('click', () => {
         overlay.remove();
       });
     });

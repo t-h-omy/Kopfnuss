@@ -3,7 +3,7 @@
 
 import { generateTask, generateKopfnussTask } from './taskGenerators.js';
 import { CONFIG, CHALLENGE_TYPES } from '../data/balancingLoader.js';
-import { saveChallenges, loadChallenges, getTodayDate, saveKopfnussChallenge, loadKopfnussChallenge } from './storageManager.js';
+import { saveChallenges, loadChallenges, getTodayDate, saveKopfnussChallenge, loadKopfnussChallenge, saveZeitChallenge, loadZeitChallenge } from './storageManager.js';
 
 /**
  * Challenge states
@@ -26,6 +26,17 @@ export const CHALLENGE_STATE = {
  * Kopfnuss Challenge states
  */
 export const KOPFNUSS_STATE = {
+  NOT_SPAWNED: 'not_spawned',
+  AVAILABLE: 'available',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+  FAILED: 'failed'
+};
+
+/**
+ * Zeit-Challenge states (same structure as Kopfnuss)
+ */
+export const ZEIT_CHALLENGE_STATE = {
   NOT_SPAWNED: 'not_spawned',
   AVAILABLE: 'available',
   IN_PROGRESS: 'in_progress',
@@ -186,21 +197,46 @@ export function getChallenge(challengeIndex) {
 
 /**
  * Reset all challenges (generate new ones for today)
- * Also regenerates the Kopfnuss Challenge with a new spawn roll
+ * Also regenerates premium challenges (Zeit-Challenge or Kopfnuss-Challenge) with mutually exclusive spawn
  * @returns {Array} New array of challenges
  */
 export function resetChallenges() {
   const challenges = generateDailyChallenges();
   saveChallenges(challenges);
   
-  // Also regenerate Kopfnuss Challenge with new spawn roll
+  // Regenerate premium challenges with mutually exclusive spawn logic
   const today = getTodayDate();
-  const spawnProbability = CONFIG.KOPFNUSS_SPAWN_PROBABILITY || 0.3;
-  const spawned = Math.random() < spawnProbability;
-  const kopfnuss = createKopfnussChallenge(spawned);
-  saveKopfnussChallenge(kopfnuss, today);
+  regeneratePremiumChallenges(today);
   
   return challenges;
+}
+
+/**
+ * Regenerate premium challenges (Zeit-Challenge and Kopfnuss-Challenge) with mutually exclusive spawn
+ * Zeit-Challenge is rolled first; if it doesn't spawn, Kopfnuss-Challenge is rolled
+ * @param {string} date - Date string
+ */
+function regeneratePremiumChallenges(date) {
+  const zeitSpawnProbability = CONFIG.ZEIT_CHALLENGE_SPAWN_PROBABILITY || 0.15;
+  const kopfnussSpawnProbability = CONFIG.KOPFNUSS_SPAWN_PROBABILITY || 0.3;
+  
+  // First, roll for Zeit-Challenge
+  const zeitSpawned = Math.random() < zeitSpawnProbability;
+  
+  if (zeitSpawned) {
+    // Zeit-Challenge spawns, Kopfnuss does not
+    const zeitChallenge = createZeitChallenge(true);
+    saveZeitChallenge(zeitChallenge, date);
+    const kopfnuss = createKopfnussChallenge(false);
+    saveKopfnussChallenge(kopfnuss, date);
+  } else {
+    // Zeit-Challenge doesn't spawn, roll for Kopfnuss
+    const kopfnussSpawned = Math.random() < kopfnussSpawnProbability;
+    const kopfnuss = createKopfnussChallenge(kopfnussSpawned);
+    saveKopfnussChallenge(kopfnuss, date);
+    const zeitChallenge = createZeitChallenge(false);
+    saveZeitChallenge(zeitChallenge, date);
+  }
 }
 
 /**
@@ -324,6 +360,7 @@ function createKopfnussChallenge(spawned) {
 /**
  * Generate or load today's Kopfnuss Challenge
  * Rolls for spawn probability if not yet generated for today
+ * Uses mutually exclusive spawn with Zeit-Challenge
  * @param {boolean} forceSpawn - Force spawn the challenge (dev mode)
  * @returns {Object} Kopfnuss Challenge object
  */
@@ -333,14 +370,23 @@ export function getOrCreateKopfnussChallenge(forceSpawn = false) {
   // Try to load existing Kopfnuss Challenge
   let kopfnuss = loadKopfnussChallenge(today);
   
-  // If no Kopfnuss Challenge exists for today, generate one
+  // If no Kopfnuss Challenge exists for today, generate both premium challenges
   if (!kopfnuss) {
-    // Roll for spawn probability
-    const spawnProbability = CONFIG.KOPFNUSS_SPAWN_PROBABILITY || 0.3;
-    const spawned = forceSpawn || (Math.random() < spawnProbability);
-    
-    kopfnuss = createKopfnussChallenge(spawned);
-    saveKopfnussChallenge(kopfnuss, today);
+    if (forceSpawn) {
+      // Force spawn - only create Kopfnuss, don't affect Zeit-Challenge
+      kopfnuss = createKopfnussChallenge(true);
+      saveKopfnussChallenge(kopfnuss, today);
+      // If Zeit-Challenge doesn't exist, mark it as not spawned
+      let zeit = loadZeitChallenge(today);
+      if (!zeit) {
+        zeit = createZeitChallenge(false);
+        saveZeitChallenge(zeit, today);
+      }
+    } else {
+      // Use mutually exclusive spawn logic
+      regeneratePremiumChallenges(today);
+      kopfnuss = loadKopfnussChallenge(today);
+    }
   }
   
   return kopfnuss;
@@ -460,5 +506,242 @@ export function regenerateKopfnussChallenge(forceSpawn = true) {
   const today = getTodayDate();
   const kopfnuss = createKopfnussChallenge(forceSpawn);
   saveKopfnussChallenge(kopfnuss, today);
+  // When forcing Kopfnuss, ensure Zeit-Challenge is marked as not spawned
+  if (forceSpawn) {
+    const zeit = createZeitChallenge(false);
+    saveZeitChallenge(zeit, today);
+  }
   return kopfnuss;
+}
+
+// ============================================
+// ZEIT-CHALLENGE FUNCTIONS
+// ============================================
+
+/**
+ * Generate tasks for the Zeit-Challenge using normal difficulty (mixed tasks)
+ * @param {number} count - Number of tasks to generate
+ * @returns {Array} Array of normal-difficulty mixed task objects
+ */
+function generateZeitChallengeTasksForChallenge(count = CONFIG.ZEIT_CHALLENGE_TASK_COUNT) {
+  // Validate task count with fallback
+  const taskCount = Number(count) || 8;
+  const tasks = [];
+  for (let i = 0; i < taskCount; i++) {
+    // Use normal difficulty mixed tasks (not Kopfnuss difficulty)
+    tasks.push(generateTask('mixed'));
+  }
+  return tasks;
+}
+
+/**
+ * Create a new Zeit-Challenge object
+ * @param {boolean} spawned - Whether the challenge spawned
+ * @returns {Object} Zeit-Challenge object
+ */
+function createZeitChallenge(spawned) {
+  if (!spawned) {
+    return {
+      state: ZEIT_CHALLENGE_STATE.NOT_SPAWNED,
+      spawned: false,
+      tasks: [],
+      errors: 0,
+      currentTaskIndex: 0,
+      completedAt: null,
+      startedAt: null,
+      result: null, // 'success', 'timeout', or null
+      timeRemaining: null
+    };
+  }
+  
+  return {
+    state: ZEIT_CHALLENGE_STATE.AVAILABLE,
+    spawned: true,
+    tasks: generateZeitChallengeTasksForChallenge(),
+    errors: 0,
+    currentTaskIndex: 0,
+    completedAt: null,
+    startedAt: null,
+    result: null,
+    timeRemaining: CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120
+  };
+}
+
+/**
+ * Generate or load today's Zeit-Challenge
+ * Uses mutually exclusive spawn with Kopfnuss-Challenge
+ * @param {boolean} forceSpawn - Force spawn the challenge (dev mode)
+ * @returns {Object} Zeit-Challenge object
+ */
+export function getOrCreateZeitChallenge(forceSpawn = false) {
+  const today = getTodayDate();
+  
+  // Try to load existing Zeit-Challenge
+  let zeit = loadZeitChallenge(today);
+  
+  // If no Zeit-Challenge exists for today, generate both premium challenges
+  if (!zeit) {
+    if (forceSpawn) {
+      // Force spawn - only create Zeit-Challenge, don't affect Kopfnuss
+      zeit = createZeitChallenge(true);
+      saveZeitChallenge(zeit, today);
+      // If Kopfnuss doesn't exist, mark it as not spawned
+      let kopfnuss = loadKopfnussChallenge(today);
+      if (!kopfnuss) {
+        kopfnuss = createKopfnussChallenge(false);
+        saveKopfnussChallenge(kopfnuss, today);
+      }
+    } else {
+      // Use mutually exclusive spawn logic
+      regeneratePremiumChallenges(today);
+      zeit = loadZeitChallenge(today);
+    }
+  }
+  
+  return zeit;
+}
+
+/**
+ * Get today's Zeit-Challenge (if exists)
+ * @returns {Object|null} Zeit-Challenge object or null
+ */
+export function getTodaysZeitChallenge() {
+  const today = getTodayDate();
+  return loadZeitChallenge(today);
+}
+
+/**
+ * Update the Zeit-Challenge
+ * @param {Object} updates - Object with properties to update
+ * @returns {boolean} Success status
+ */
+export function updateZeitChallenge(updates) {
+  const today = getTodayDate();
+  let zeit = loadZeitChallenge(today);
+  
+  if (!zeit) {
+    console.error('No Zeit-Challenge found for today');
+    return false;
+  }
+  
+  // Apply updates
+  Object.assign(zeit, updates);
+  
+  // Save updated challenge
+  return saveZeitChallenge(zeit, today);
+}
+
+/**
+ * Start the Zeit-Challenge
+ * @returns {boolean} Success status
+ */
+export function startZeitChallenge() {
+  const zeit = getTodaysZeitChallenge();
+  
+  if (!zeit || !zeit.spawned) {
+    console.error('No Zeit-Challenge available');
+    return false;
+  }
+  
+  if (zeit.state !== ZEIT_CHALLENGE_STATE.AVAILABLE) {
+    console.error('Zeit-Challenge not in available state:', zeit.state);
+    return false;
+  }
+  
+  return updateZeitChallenge({
+    state: ZEIT_CHALLENGE_STATE.IN_PROGRESS,
+    startedAt: new Date().toISOString(),
+    currentTaskIndex: 0,
+    errors: 0,
+    timeRemaining: CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120
+  });
+}
+
+/**
+ * Complete the Zeit-Challenge (all tasks solved in time)
+ * @param {number} errors - Number of errors made
+ * @returns {Object} Result with success status
+ */
+export function completeZeitChallenge(errors) {
+  // Zeit-Challenge always succeeds if completed in time (errors don't matter)
+  updateZeitChallenge({
+    state: ZEIT_CHALLENGE_STATE.COMPLETED,
+    completedAt: new Date().toISOString(),
+    errors: errors,
+    result: 'success'
+  });
+  
+  return {
+    success: true,
+    result: 'success',
+    errors: errors
+  };
+}
+
+/**
+ * Fail the Zeit-Challenge (time ran out)
+ * @param {number} errors - Number of errors made
+ * @param {number} currentTaskIndex - Current task index when time ran out
+ * @returns {Object} Result with failure status
+ */
+export function failZeitChallenge(errors, currentTaskIndex) {
+  updateZeitChallenge({
+    state: ZEIT_CHALLENGE_STATE.FAILED,
+    completedAt: new Date().toISOString(),
+    errors: errors,
+    currentTaskIndex: currentTaskIndex,
+    result: 'timeout',
+    timeRemaining: 0
+  });
+  
+  return {
+    success: false,
+    result: 'timeout',
+    errors: errors
+  };
+}
+
+/**
+ * Reset the Zeit-Challenge after failure (regenerate tasks)
+ * @returns {boolean} Success status
+ */
+export function resetZeitChallengeAfterFailure() {
+  const zeit = getTodaysZeitChallenge();
+  
+  if (!zeit || !zeit.spawned) {
+    return false;
+  }
+  
+  // Only reset if failed
+  if (zeit.state !== ZEIT_CHALLENGE_STATE.FAILED) {
+    return false;
+  }
+  
+  return updateZeitChallenge({
+    state: ZEIT_CHALLENGE_STATE.AVAILABLE,
+    tasks: generateZeitChallengeTasksForChallenge(),
+    errors: 0,
+    currentTaskIndex: 0,
+    completedAt: null,
+    startedAt: null,
+    result: null,
+    timeRemaining: CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120
+  });
+}
+
+/**
+ * Force regenerate Zeit-Challenge (dev mode only)
+ * @param {boolean} forceSpawn - Whether to force spawn
+ * @returns {Object} New Zeit-Challenge
+ */
+export function regenerateZeitChallenge(forceSpawn = true) {
+  const today = getTodayDate();
+  const zeit = createZeitChallenge(forceSpawn);
+  saveZeitChallenge(zeit, today);
+  // When forcing Zeit-Challenge, ensure Kopfnuss is marked as not spawned
+  if (forceSpawn) {
+    const kopfnuss = createKopfnussChallenge(false);
+    saveKopfnussChallenge(kopfnuss, today);
+  }
+  return zeit;
 }
