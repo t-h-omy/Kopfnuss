@@ -2840,6 +2840,307 @@ button,
 
 
 /* ===========================
+   17.5. KOPFNUSS CHALLENGE
+   Premium difficulty challenge with unique styling
+   =========================== */
+
+/* Kopfnuss Challenge Container - positioned above first challenge */
+.kopfnuss-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+/* Kopfnuss Challenge Row */
+.kopfnuss-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Kopfnuss Node Container */
+.kopfnuss-node-container {
+  position: relative;
+  z-index: 3;
+  cursor: pointer;
+}
+
+/* Kopfnuss Glow Effect */
+.kopfnuss-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(205, 127, 50, 0.4) 0%, rgba(218, 165, 32, 0.2) 40%, transparent 70%);
+  animation: kopfnussGlow 2s ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Kopfnuss Node Wrapper - Copper/Gold gradient border */
+.kopfnuss-node-wrapper {
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, #CD7F32 0%, #DAA520 25%, #B8860B 50%, #DAA520 75%, #CD7F32 100%);
+  animation: kopfnussPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.5), 0 0 40px rgba(205, 127, 50, 0.3);
+}
+
+/* Kopfnuss Node */
+.kopfnuss-node {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 50%, #FFF8DC 100%);
+  border: 4px solid #DAA520;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  position: relative;
+  transition: all var(--transition);
+  box-shadow: 0 var(--shadow-offset-y-large) var(--shadow-blur-large) var(--shadow-spread-large) var(--shadow-color),
+              inset 0 0 15px rgba(218, 165, 32, 0.2);
+  cursor: pointer;
+}
+
+.kopfnuss-node:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px rgba(218, 165, 32, 0.6), inset 0 0 15px rgba(218, 165, 32, 0.3);
+}
+
+.kopfnuss-node:active {
+  transform: scale(1.04);
+}
+
+/* Kopfnuss Info Card - Smaller, centered below node */
+.kopfnuss-info-card {
+  background: linear-gradient(135deg, #FFF8DC 0%, #FAFAD2 100%);
+  border: 3px solid #DAA520;
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 0 15px rgba(218, 165, 32, 0.3),
+              0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  max-width: 200px;
+  animation: kopfnussCardGlow 2s ease-in-out infinite;
+}
+
+.kopfnuss-info-card h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #8B4513;
+  margin-bottom: 2px;
+}
+
+.kopfnuss-info-card .kopfnuss-cost {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #A0522D;
+  margin: 0;
+}
+
+.kopfnuss-info-card .kopfnuss-hint {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #CD853F;
+  margin: 2px 0 0 0;
+  font-style: italic;
+}
+
+/* Kopfnuss Completed State */
+.kopfnuss-row.kopfnuss-completed .kopfnuss-node-wrapper {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+  animation: none;
+}
+
+.kopfnuss-row.kopfnuss-completed .kopfnuss-node {
+  cursor: default;
+}
+
+.kopfnuss-row.kopfnuss-completed .kopfnuss-glow {
+  animation: none;
+  opacity: 0.5;
+}
+
+.kopfnuss-row.kopfnuss-completed .kopfnuss-info-card {
+  animation: none;
+  background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);
+}
+
+/* Kopfnuss Status Icon */
+.kopfnuss-status-icon {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 24px;
+  z-index: 4;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
+}
+
+/* Kopfnuss Popup Styles */
+.kopfnuss-popup-card {
+  animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
+  background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 100%);
+  border: 3px solid #DAA520;
+}
+
+.kopfnuss-popup-card h2 {
+  color: #8B4513;
+}
+
+.kopfnuss-popup-card .kopfnuss-icon {
+  font-size: 72px;
+  margin-bottom: var(--spacing-md);
+  animation: bounceIn 0.8s ease;
+}
+
+.kopfnuss-popup-card .kopfnuss-description {
+  font-size: 15px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-sm);
+}
+
+.kopfnuss-popup-card .kopfnuss-cost-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #E8F4FD 0%, #B8E6FF 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-blue);
+}
+
+.kopfnuss-popup-card .kopfnuss-reward-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #8B4513;
+}
+
+.btn-kopfnuss {
+  background: linear-gradient(135deg, #CD7F32 0%, #DAA520 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
+  border: none;
+}
+
+.btn-kopfnuss:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(205, 127, 50, 0.5);
+}
+
+.btn-kopfnuss:disabled {
+  background: var(--color-gray);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Kopfnuss Success Popup */
+.kopfnuss-success-popup-card {
+  background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);
+  border: 3px solid #DAA520;
+}
+
+.kopfnuss-success-popup-card h2 {
+  color: #8B4513;
+}
+
+.kopfnuss-success-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #E8F4FD 0%, #B8E6FF 100%);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.kopfnuss-success-icon {
+  font-size: 32px;
+  animation: starBurst 1s ease 3;
+}
+
+.kopfnuss-success-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-blue);
+}
+
+/* Kopfnuss Failure Popup */
+.kopfnuss-failure-popup-card {
+  background: linear-gradient(135deg, #FFF0F0 0%, #FFCCCC 100%);
+  border: 3px solid #CD5C5C;
+}
+
+.kopfnuss-failure-popup-card h2 {
+  color: #8B0000;
+}
+
+/* Kopfnuss Animations */
+@keyframes kopfnussGlow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes kopfnussPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(218, 165, 32, 0.5), 0 0 40px rgba(205, 127, 50, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(218, 165, 32, 0.7), 0 0 60px rgba(205, 127, 50, 0.4);
+  }
+}
+
+@keyframes kopfnussCardGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(218, 165, 32, 0.3),
+                0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(218, 165, 32, 0.5),
+                0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
+  }
+}
+
+
+/* ===========================
    18. PRINT
    =========================== */
 

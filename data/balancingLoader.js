@@ -55,6 +55,12 @@ export const CONFIG = balancingData.CONFIG;
 export const CHALLENGE_TYPES = balancingData.CHALLENGE_TYPES;
 
 /**
+ * Kopfnuss Challenge difficulty settings (high-difficulty variants)
+ * Applied in: logic/taskGenerators.js for Kopfnuss-specific task generation
+ */
+export const KOPFNUSS_DIFFICULTY = balancingData.KOPFNUSS_DIFFICULTY;
+
+/**
  * Background customization configuration
  * Applied in: logic/backgroundManager.js, main.js
  */

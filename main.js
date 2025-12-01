@@ -1,7 +1,7 @@
 // Kopfnuss - Main Application Entry Point
 // Routing und App-Initialisierung
 
-import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE, isSuperChallengeState } from './logic/challengeGenerator.js';
+import { getTodaysChallenges, areAllChallengesCompleted, resetChallenges, CHALLENGE_STATE, isSuperChallengeState, getOrCreateKopfnussChallenge, getTodaysKopfnussChallenge, KOPFNUSS_STATE, startKopfnussChallenge, regenerateKopfnussChallenge, resetKopfnussChallengeAfterFailure } from './logic/challengeGenerator.js';
 import { completeChallenge as completeChallengeState } from './logic/challengeStateManager.js';
 import { 
   getStreakInfo, 
@@ -14,7 +14,7 @@ import {
   incrementStreakByChallenge,
   STREAK_LOSS_REASON
 } from './logic/streakManager.js';
-import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds, saveDiamonds } from './logic/diamondManager.js';
+import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds, saveDiamonds, spendDiamonds } from './logic/diamondManager.js';
 import { 
   clearAllData, 
   loadDevModeSetting, 
@@ -189,11 +189,13 @@ if ('serviceWorker' in navigator) {
 let currentScreen = null;
 let currentChallengeIndex = null;
 let returningFromTaskScreen = false;
+let returningFromKopfnussScreen = false; // Track if returning from Kopfnuss Challenge
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean, seasonalCurrencyAwarded: object|null}
+let kopfnussChallengeResult = null; // Track Kopfnuss Challenge result {success: boolean, reward: object|null}
 
 // Preload celebration images for faster display
 const celebrationImageCache = [];
@@ -269,7 +271,7 @@ function findCurrentUnlockedChallengeIndex(challenges) {
 
 /**
  * Show a screen by name
- * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats')
+ * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats', 'kopfnussTaskScreen')
  * @param {*} data - Optional data to pass to screen (e.g., challengeIndex)
  */
 export function showScreen(screenName, data = null) {
@@ -285,6 +287,11 @@ export function showScreen(screenName, data = null) {
     returningFromTaskScreen = true;
   }
   
+  // Track if we're returning from Kopfnuss task screen to challenges
+  if (currentScreen === 'kopfnussTaskScreen' && screenName === 'challenges') {
+    returningFromKopfnussScreen = true;
+  }
+  
   // Store current screen
   currentScreen = screenName;
   
@@ -292,7 +299,7 @@ export function showScreen(screenName, data = null) {
   mainContent.innerHTML = '';
   
   // Manage body class for task screen keyboard stability
-  if (screenName === 'taskScreen') {
+  if (screenName === 'taskScreen' || screenName === 'kopfnussTaskScreen') {
     document.body.classList.add('task-screen-active');
   } else {
     document.body.classList.remove('task-screen-active');
@@ -306,6 +313,9 @@ export function showScreen(screenName, data = null) {
     case 'taskScreen':
       currentChallengeIndex = data;
       loadTaskScreen(mainContent, data);
+      break;
+    case 'kopfnussTaskScreen':
+      loadKopfnussTaskScreen(mainContent);
       break;
     case 'stats':
       loadStatsScreen(mainContent);
@@ -421,6 +431,23 @@ function loadChallengesScreen(container) {
     }
   }
   
+  // Handle popup display when returning from Kopfnuss task screen
+  if (returningFromKopfnussScreen) {
+    returningFromKopfnussScreen = false;
+    
+    // Check for Kopfnuss Challenge result
+    const showKopfnussSuccess = kopfnussChallengeResult && kopfnussChallengeResult.success;
+    const showKopfnussFailure = kopfnussChallengeResult && !kopfnussChallengeResult.success;
+    const storedKopfnussResult = kopfnussChallengeResult;
+    kopfnussChallengeResult = null; // Reset the flag
+    
+    if (showKopfnussSuccess && storedKopfnussResult.reward) {
+      showKopfnussSuccessPopup(storedKopfnussResult.reward);
+    } else if (showKopfnussFailure) {
+      showKopfnussFailurePopup();
+    }
+  }
+  
   // Create main container
   const challengesContainer = document.createElement('div');
   challengesContainer.className = 'challenges-container';
@@ -530,6 +557,56 @@ function loadChallengesScreen(container) {
   const challengesMap = document.createElement('div');
   challengesMap.className = 'challenges-map';
   
+  // Get or create Kopfnuss Challenge
+  const kopfnussChallenge = getOrCreateKopfnussChallenge();
+  
+  // Create Kopfnuss Challenge section (if spawned and not completed)
+  let kopfnussSectionHtml = '';
+  if (kopfnussChallenge && kopfnussChallenge.spawned) {
+    const isKopfnussCompleted = kopfnussChallenge.state === KOPFNUSS_STATE.COMPLETED;
+    const isKopfnussFailed = kopfnussChallenge.state === KOPFNUSS_STATE.FAILED;
+    const kopfnussRowClass = isKopfnussCompleted ? 'kopfnuss-row kopfnuss-completed' : 'kopfnuss-row';
+    
+    // Get reward info for display
+    const rewardAmount = CONFIG.KOPFNUSS_REWARD_AMOUNT || 2;
+    const rewardIcon = activeEvent ? activeEvent.emoticon : '💎';
+    
+    // Build status icon
+    let kopfnussStatusIcon = '';
+    if (isKopfnussCompleted) {
+      kopfnussStatusIcon = '<span class="kopfnuss-status-icon">⭐</span>';
+    }
+    
+    // Build hint text
+    let hintText = 'Schwierige Bonus-Challenge';
+    if (isKopfnussCompleted) {
+      hintText = 'Erfolgreich geknackt!';
+    } else if (isKopfnussFailed) {
+      hintText = 'Erneut versuchen?';
+    }
+    
+    kopfnussSectionHtml = `
+      <div class="kopfnuss-section" id="kopfnuss-section">
+        <div class="${kopfnussRowClass}">
+          <div class="kopfnuss-node-container" id="kopfnuss-node-container">
+            <div class="kopfnuss-glow"></div>
+            <div class="kopfnuss-node-wrapper">
+              <div class="kopfnuss-node">
+                🤔
+                ${kopfnussStatusIcon}
+              </div>
+            </div>
+          </div>
+          <div class="kopfnuss-info-card">
+            <h3>Kopfnuss-Challenge</h3>
+            <p class="kopfnuss-cost">Kosten: 1 💎</p>
+            <p class="kopfnuss-hint">${hintText}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
   // Create SVG for connection lines
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
@@ -539,6 +616,11 @@ function loadChallengesScreen(container) {
   // Create challenges list
   const challengesList = document.createElement('div');
   challengesList.className = 'challenges-list';
+  
+  // Add Kopfnuss section HTML if available
+  if (kopfnussSectionHtml) {
+    challengesList.innerHTML = kopfnussSectionHtml;
+  }
   
   // Store node positions for SVG path calculation
   const nodePositions = [];
@@ -733,6 +815,18 @@ function loadChallengesScreen(container) {
   
   container.appendChild(challengesContainer);
   
+  // Add click handler for Kopfnuss node after DOM is rendered
+  const kopfnussNodeContainer = document.getElementById('kopfnuss-node-container');
+  if (kopfnussNodeContainer && kopfnussChallenge && kopfnussChallenge.spawned) {
+    const isKopfnussCompleted = kopfnussChallenge.state === KOPFNUSS_STATE.COMPLETED;
+    
+    if (!isKopfnussCompleted) {
+      kopfnussNodeContainer.addEventListener('click', () => {
+        showKopfnussChallengeStartPopup();
+      });
+    }
+  }
+  
   // Draw SVG paths after DOM is rendered
   requestAnimationFrame(() => {
     // Check if elements still exist in the DOM before drawing
@@ -855,6 +949,48 @@ async function loadTaskScreen(container, challengeIndex) {
     initTaskScreen(challengeIndex);
   } catch (error) {
     console.error('Error loading task screen controller:', error);
+  }
+}
+
+/**
+ * Load Kopfnuss Challenge task screen
+ * @param {HTMLElement} container - Container element
+ */
+async function loadKopfnussTaskScreen(container) {
+  // Update app height when entering task screen to ensure proper sizing
+  setAppHeight();
+  
+  container.innerHTML = `
+    <div class="task-screen" id="task-screen-content">
+      <div class="task-screen-main">
+        <div class="task-header" style="background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 100%); border: 2px solid #DAA520;">
+          <h2 style="color: #8B4513;">🤔 Kopfnuss-Challenge</h2>
+          <button id="back-button">Zurück</button>
+        </div>
+        <div class="task-progress" id="task-progress"></div>
+        <div class="task-content">
+          <div class="task-question" id="task-question"></div>
+          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
+          <button id="submit-answer">Prüfen</button>
+        </div>
+        <div class="task-feedback" id="task-feedback"></div>
+      </div>
+      <div class="task-screen-footer">v${VERSION.string}</div>
+    </div>
+  `;
+  
+  // Add event listener for back button
+  const backButton = document.getElementById('back-button');
+  backButton.addEventListener('click', () => {
+    showScreen('challenges');
+  });
+  
+  // Initialize Kopfnuss task screen controller
+  try {
+    const { initKopfnussTaskScreen } = await import('./logic/kopfnussTaskController.js');
+    initKopfnussTaskScreen();
+  } catch (error) {
+    console.error('Error loading Kopfnuss task screen controller:', error);
   }
 }
 
@@ -1605,6 +1741,215 @@ function showSuperChallengeFailurePopup(onClose = null) {
   });
 }
 
+// ============================================
+// KOPFNUSS CHALLENGE POPUPS
+// ============================================
+
+/**
+ * Show Kopfnuss Challenge start confirmation popup
+ * Displayed when player taps the Kopfnuss node
+ */
+function showKopfnussChallengeStartPopup() {
+  const diamonds = loadDiamonds();
+  const entryCost = CONFIG.KOPFNUSS_ENTRY_COST || 1;
+  const rewardAmount = CONFIG.KOPFNUSS_REWARD_AMOUNT || 2;
+  const hasDiamond = diamonds >= entryCost;
+  
+  // Check if a seasonal event is active to show appropriate reward
+  const activeEvent = getActiveEvent();
+  let rewardHtml;
+  if (activeEvent) {
+    rewardHtml = `<span>+${rewardAmount} ${activeEvent.emoticon}</span>`;
+  } else {
+    rewardHtml = `<span>+${rewardAmount} 💎</span>`;
+  }
+  
+  if (!hasDiamond) {
+    // Show "not enough diamonds" popup
+    showKopfnussNotEnoughDiamondsPopup();
+    return;
+  }
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'kopfnuss-start-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card kopfnuss-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="kopfnuss-icon">🤔</div>
+    <h2>Kopfnuss-Challenge</h2>
+    <p class="kopfnuss-description">Kosten: ${entryCost} Diamant. Kannst du sie fehlerfrei knacken?</p>
+    <div class="kopfnuss-cost-info">
+      <span>💎</span>
+      <span>Einsatz: ${entryCost} Diamant</span>
+    </div>
+    <div class="kopfnuss-reward-info">
+      <span>🎯 Belohnung:</span>
+      ${rewardHtml}
+    </div>
+    <button id="kopfnuss-start-button" class="btn-primary btn-kopfnuss">Los geht's! (–${entryCost} 💎)</button>
+    <button id="kopfnuss-cancel-button" class="btn-secondary" style="margin-top: 8px;">Abbrechen</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const startButton = document.getElementById('kopfnuss-start-button');
+  startButton.addEventListener('click', () => {
+    // Spend the diamond
+    const spendResult = spendDiamonds(entryCost);
+    if (!spendResult.success) {
+      overlay.remove();
+      showKopfnussNotEnoughDiamondsPopup();
+      return;
+    }
+    
+    // Update diamond display in header
+    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+    if (diamondDisplay) {
+      diamondDisplay.textContent = loadDiamonds();
+    }
+    
+    // Start the Kopfnuss Challenge
+    startKopfnussChallenge();
+    
+    overlay.remove();
+    showScreen('kopfnussTaskScreen');
+  });
+  
+  const cancelButton = document.getElementById('kopfnuss-cancel-button');
+  cancelButton.addEventListener('click', () => {
+    overlay.remove();
+  });
+}
+
+/**
+ * Show popup when player doesn't have enough diamonds for Kopfnuss Challenge
+ */
+function showKopfnussNotEnoughDiamondsPopup() {
+  const entryCost = CONFIG.KOPFNUSS_ENTRY_COST || 1;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  overlay.id = 'kopfnuss-no-diamonds-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>💎 Nicht genug Diamanten</h2>
+    <p>Du brauchst ${entryCost} Diamant für die Kopfnuss-Challenge.</p>
+    <button id="kopfnuss-no-diamonds-ok-button" class="btn-primary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const okButton = document.getElementById('kopfnuss-no-diamonds-ok-button');
+  okButton.addEventListener('click', () => {
+    overlay.remove();
+  });
+}
+
+/**
+ * Show Kopfnuss Challenge success popup
+ * @param {Object} rewardInfo - Reward information {isDiamond, amount, emoticon}
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showKopfnussSuccessPopup(rewardInfo, onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'kopfnuss-success-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card kopfnuss-success-popup-card';
+  
+  let rewardDisplayHtml;
+  if (rewardInfo.isDiamond) {
+    rewardDisplayHtml = `
+      <div class="kopfnuss-success-display">
+        <span class="kopfnuss-success-icon">💎</span>
+        <span class="kopfnuss-success-text">+${rewardInfo.amount} Diamanten</span>
+      </div>
+    `;
+  } else {
+    rewardDisplayHtml = `
+      <div class="kopfnuss-success-display">
+        <span class="kopfnuss-success-icon">${rewardInfo.emoticon}</span>
+        <span class="kopfnuss-success-text">+${rewardInfo.amount}</span>
+      </div>
+    `;
+  }
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">💥</div>
+    <h2>Kopfnuss geknackt!</h2>
+    ${rewardDisplayHtml}
+    <p>Unglaublich! Du hast die Kopfnuss geknackt!</p>
+    <button id="kopfnuss-success-close-button" class="btn-primary btn-kopfnuss">${rewardInfo.isDiamond ? '+' + rewardInfo.amount + ' 💎' : '+' + rewardInfo.amount + ' ' + rewardInfo.emoticon}</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  createConfettiEffect();
+  
+  const closeButton = document.getElementById('kopfnuss-success-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    removeConfettiPieces();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Show Kopfnuss Challenge failure popup
+ * @param {Function} onClose - Callback when popup closes
+ */
+function showKopfnussFailurePopup(onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'kopfnuss-failure-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card kopfnuss-failure-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">😞</div>
+    <h2>Diese Nuss war zu hart!</h2>
+    <p>Der Diamant ist weg, aber bald wartet eine neue Chance!</p>
+    <button id="kopfnuss-failure-close-button" class="btn-primary">Nächstes Mal</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeButton = document.getElementById('kopfnuss-failure-close-button');
+  closeButton.addEventListener('click', () => {
+    overlay.remove();
+    // Reset the Kopfnuss Challenge so it can be replayed
+    resetKopfnussChallengeAfterFailure();
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+    processPopupQueue();
+  });
+}
+
+/**
+ * Notify that Kopfnuss Challenge was completed
+ * @param {boolean} success - Whether the challenge was completed without errors
+ * @param {Object|null} reward - Reward info if successful
+ */
+export function notifyKopfnussChallengeResult(success, reward = null) {
+  kopfnussChallengeResult = { success, reward };
+}
+
 /**
  * Show seasonal event start popup
  * Displayed on first app launch during an active event
@@ -1847,6 +2192,12 @@ function showSettingsPopup() {
           <label>✅ Challenge:</label>
           <div class="dev-setting-controls">
             <button id="dev-complete-challenge" class="dev-btn-action">Abschließen</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
+          <label>🤔 Kopfnuss:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-force-kopfnuss" class="dev-btn-action">Erzwingen</button>
           </div>
         </div>
         <div class="dev-setting-row">
@@ -2337,6 +2688,43 @@ function setupDevSettingsListeners() {
       });
       
       document.getElementById('dev-restart-cancel').addEventListener('click', () => {
+        overlay.remove();
+      });
+    });
+  }
+  
+  // Force Kopfnuss button
+  const forceKopfnussBtn = document.getElementById('dev-force-kopfnuss');
+  
+  if (forceKopfnussBtn) {
+    forceKopfnussBtn.addEventListener('click', () => {
+      // Force regenerate Kopfnuss Challenge with guaranteed spawn
+      regenerateKopfnussChallenge(true);
+      
+      // Show restart popup
+      const overlay = document.createElement('div');
+      overlay.className = 'popup-overlay';
+      overlay.id = 'dev-kopfnuss-popup-overlay';
+      
+      overlay.innerHTML = `
+        <div class="popup-card">
+          <h2>🤔 Kopfnuss erzwungen</h2>
+          <p>Kopfnuss-Challenge wurde erzwungen!</p>
+          <p>App neu starten, um die Änderungen zu sehen?</p>
+          <div class="popup-buttons">
+            <button id="dev-kopfnuss-restart-confirm" class="btn-primary">Neu starten</button>
+            <button id="dev-kopfnuss-restart-cancel" class="btn-secondary">Abbrechen</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(overlay);
+      
+      document.getElementById('dev-kopfnuss-restart-confirm').addEventListener('click', () => {
+        window.location.reload();
+      });
+      
+      document.getElementById('dev-kopfnuss-restart-cancel').addEventListener('click', () => {
         overlay.remove();
       });
     });
