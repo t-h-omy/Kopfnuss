@@ -2933,9 +2933,12 @@ button,
   box-shadow: 0 0 15px rgba(218, 165, 32, 0.3),
               0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
   text-align: center;
-  margin-top: var(--spacing-sm);
+  margin-top: -20px;
+  padding-top: 24px;
   max-width: 200px;
   animation: kopfnussCardGlow 2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
 .kopfnuss-info-card h3 {
