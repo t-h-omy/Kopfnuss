@@ -595,11 +595,24 @@ function loadChallengesScreen(container) {
     const isZeitFailed = zeitChallenge.state === ZEIT_CHALLENGE_STATE.FAILED;
     const zeitRowClass = isZeitCompleted ? 'zeit-row zeit-completed' : 'zeit-row';
     const zeitEntryCost = CONFIG.ZEIT_CHALLENGE_ENTRY_COST || 1;
+    const zeitRewardAmount = CONFIG.ZEIT_CHALLENGE_REWARD_AMOUNT || 2;
     
     // Build status icon
     let zeitStatusIcon = '';
     if (isZeitCompleted) {
       zeitStatusIcon = '<span class="zeit-status-icon">⭐</span>';
+    }
+    
+    // Build cost/reward text - show reward if completed, cost otherwise
+    let zeitCostOrRewardText = `Kosten: ${zeitEntryCost} 💎`;
+    if (isZeitCompleted) {
+      // Check if event is active - show seasonal currency or diamonds
+      const activeEvent = getActiveEvent();
+      if (activeEvent) {
+        zeitCostOrRewardText = `Belohnung: +${zeitRewardAmount} ${activeEvent.emoticon}`;
+      } else {
+        zeitCostOrRewardText = `Belohnung: +${zeitRewardAmount} 💎`;
+      }
     }
     
     // Build hint text
@@ -610,10 +623,30 @@ function loadChallengesScreen(container) {
       zeitHintText = 'Erneut versuchen?';
     }
     
+    // Build celebration background for completed state
+    let zeitCelebrationBg = '';
+    if (isZeitCompleted) {
+      // Select a random celebration graphic
+      const zeitCelebrationGraphics = [
+        'celebration/challenge-node-bg-1.webp', 
+        'celebration/challenge-node-bg-2.webp', 
+        'celebration/challenge-node-bg-3.webp', 
+        'celebration/challenge-node-bg-4.webp', 
+        'celebration/challenge-node-bg-5.webp'
+      ];
+      const graphicIndex = Math.floor(Math.random() * zeitCelebrationGraphics.length);
+      zeitCelebrationBg = `
+        <div class="zeit-bg-graphic challenge-bg-graphic challenge-bg-animate">
+          <img src="./assets/${zeitCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
+        </div>
+      `;
+    }
+    
     zeitSectionHtml = `
       <div class="zeit-section" id="zeit-section">
         <div class="${zeitRowClass}">
           <div class="zeit-node-container" id="zeit-node-container">
+            ${zeitCelebrationBg}
             <div class="zeit-glow"></div>
             <div class="zeit-node-wrapper">
               <div class="zeit-node">
@@ -624,7 +657,7 @@ function loadChallengesScreen(container) {
           </div>
           <div class="zeit-info-card">
             <h3>Zeit-Challenge</h3>
-            <p class="zeit-cost">Kosten: ${zeitEntryCost} 💎</p>
+            <p class="zeit-cost">${zeitCostOrRewardText}</p>
             <p class="zeit-hint">${zeitHintText}</p>
           </div>
         </div>

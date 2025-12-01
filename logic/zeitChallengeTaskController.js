@@ -9,13 +9,14 @@ import {
   ZEIT_CHALLENGE_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
-import { showScreen, notifyZeitChallengeResult } from '../main.js';
+import { showScreen } from '../main.js';
 import { 
   isEventActive, 
   getActiveEvent, 
   addSeasonalCurrency 
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
+import { createConfettiEffect } from './popupManager.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -365,8 +366,8 @@ function handleZeitChallengeCompletion() {
     };
   }
   
-  // Notify main.js about the result
-  notifyZeitChallengeResult(true, rewardInfo);
+  // Don't notify main.js - we show the success screen directly here with confetti
+  // This prevents duplicate popup when returning to challenges screen
   
   // Get success phrase
   const motivationPhrase = getRandomPhrase(ZEIT_SUCCESS_PHRASES);
@@ -392,6 +393,9 @@ function handleZeitChallengeCompletion() {
   const container = document.getElementById('task-screen-content');
   if (container) {
     container.innerHTML = resultContent;
+    
+    // Add confetti effect for celebration
+    createConfettiEffect();
     
     // Add event listener for back button
     const backButton = document.getElementById('back-to-challenges');
