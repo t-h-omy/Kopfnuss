@@ -77,15 +77,22 @@ export function getTasksRemaining(background) {
  */
 export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
+  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
   
-  return Object.values(BACKGROUNDS)
-    .map(bg => ({
-      ...bg,
-      isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
-      state: getBackgroundState(bg),
-      tasksRemaining: getTasksRemaining(bg)
-    }))
+  const backgrounds = Object.values(BACKGROUNDS)
+    .map(bg => {
+      const state = getBackgroundState(bg);
+      return {
+        ...bg,
+        isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
+        state: state,
+        tasksRemaining: getTasksRemaining(bg),
+        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !lastKnownPurchasable.includes(bg.id)
+      };
+    })
     .sort((a, b) => (a.tasksRequired || 0) - (b.tasksRequired || 0));
+  
+  return backgrounds;
 }
 
 /**

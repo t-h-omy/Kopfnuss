@@ -97,10 +97,17 @@ function displayCurrentTask() {
     questionElement.textContent = `${currentTask.task.question} = ?`;
   }
   
-  // Update progress display (no error count shown during task)
+  // Update progress bar (visual segments instead of text)
   const progressElement = document.getElementById('task-progress');
   if (progressElement) {
-    progressElement.textContent = `Aufgabe ${currentTask.taskNumber} von ${currentTask.totalTasks}`;
+    // Create segmented progress bar
+    let progressBarHtml = '<div class="task-progress-bar">';
+    for (let i = 1; i <= currentTask.totalTasks; i++) {
+      const segmentClass = i < currentTask.taskNumber ? 'progress-segment filled' : 'progress-segment';
+      progressBarHtml += `<div class="${segmentClass}"></div>`;
+    }
+    progressBarHtml += '</div>';
+    progressElement.innerHTML = progressBarHtml;
   }
   
   // Clear input

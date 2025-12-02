@@ -1545,6 +1545,22 @@ button,
   font-size: 18px;
   font-weight: 600;
   color: var(--color-blue);
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.task-header-spacer {
+  width: 44px; /* Same width as back button for symmetry */
+}
+
+.task-header #back-button {
+  font-size: 24px;
+  padding: var(--spacing-xs);
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Progress */
@@ -1553,11 +1569,44 @@ button,
   background: white;
   border-radius: var(--radius-md);
   box-shadow: 0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-color);
   flex-shrink: 0;
+}
+
+/* Task Progress Bar */
+.task-progress-bar {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 8px;
+  background: var(--color-gray);
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  max-width: 50px;
+}
+
+.progress-segment.filled {
+  background: linear-gradient(90deg, var(--color-orange) 0%, #ff9f4a 100%);
+  animation: progressSegmentFill 0.3s ease-out;
+}
+
+@keyframes progressSegmentFill {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scaleX(1.1);
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
 }
 
 .progress-bar-container {

@@ -1103,8 +1103,9 @@ async function loadTaskScreen(container, challengeIndex) {
     <div class="task-screen" id="task-screen-content">
       <div class="task-screen-main">
         <div class="task-header">
+          <button id="back-button" aria-label="Zurück">←</button>
           <h2>Challenge ${challengeIndex + 1}</h2>
-          <button id="back-button">Zurück</button>
+          <div class="task-header-spacer"></div>
         </div>
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
@@ -1149,8 +1150,9 @@ async function loadKopfnussTaskScreen(container) {
     <div class="task-screen" id="task-screen-content">
       <div class="task-screen-main">
         <div class="task-header" style="background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 100%); border: 2px solid #DAA520;">
+          <button id="back-button" aria-label="Zurück">←</button>
           <h2 style="color: #8B4513;">🤔 Kopfnuss-Challenge</h2>
-          <button id="back-button">Zurück</button>
+          <div class="task-header-spacer"></div>
         </div>
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
@@ -1198,11 +1200,11 @@ async function loadZeitChallengeTaskScreen(container) {
     <div class="task-screen" id="task-screen-content">
       <div class="task-screen-main">
         <div class="task-header zeit-challenge-header" style="background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%); border: 2px solid #00ACC1;">
+          <button id="back-button" aria-label="Zurück">←</button>
           <h2 style="color: #006064;">⏱️ Zeit-Challenge</h2>
           <div class="zeit-timer-container">
             <span id="zeit-timer" class="zeit-timer">${formattedTime}</span>
           </div>
-          <button id="back-button">Zurück</button>
         </div>
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
@@ -3750,12 +3752,14 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     // Build badges and icons
     let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
     let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
+    let newBadge = (state === BACKGROUND_STATE.PURCHASABLE && bg.isNewlyPurchasable) ? '<div class="background-new-badge">NEU</div>' : '';
     
     tilesHtml += `
       <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="false">
         <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
         ${lockIcon}
         ${activeBadge}
+        ${newBadge}
         <div class="background-info">
           <div class="background-name">${bg.name}</div>
           ${costHtml}
