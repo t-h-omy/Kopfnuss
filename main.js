@@ -23,7 +23,9 @@ import {
   saveProgress,
   loadStreak,
   saveStreak,
-  saveSelectedBackground as saveSelectedBackgroundToStorage
+  saveSelectedBackground as saveSelectedBackgroundToStorage,
+  loadAudioMutedSetting,
+  saveAudioMutedSetting
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancingLoader.js';
@@ -70,6 +72,7 @@ import {
   clearEventData,
   checkForNewlyPurchasableSeasonalBackgrounds
 } from './logic/eventManager.js';
+import { audioManager } from './logic/audioManager.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -98,6 +101,9 @@ document.documentElement.style.setProperty('--shadow-offset-y-large', CONFIG.SHA
 
 // Apply selected background on load
 applySelectedBackground();
+
+// Initialize audio mute state from storage
+audioManager.setMuted(loadAudioMutedSetting());
 
 // Update app height on resize (but NOT on focus/blur to prevent keyboard-related jumps)
 // Use a debounced resize handler to avoid excessive updates
@@ -2713,6 +2719,7 @@ function showEventEndPopup(event, backgroundWasReset = false, onClose = null) {
  */
 function showSettingsPopup() {
   const isDevMode = loadDevModeSetting();
+  const isAudioMuted = loadAudioMutedSetting();
   
   // Create popup overlay
   const overlay = document.createElement('div');
@@ -2808,9 +2815,20 @@ function showSettingsPopup() {
     </div>
   ` : '';
   
+  // Audio toggle state
+  const audioToggleClass = isAudioMuted ? 'audio-toggle-switch' : 'audio-toggle-switch active';
+  
   popupCard.innerHTML = `
     <h2>⚙️ Einstellungen</h2>
     <div class="settings-actions">
+      <div class="audio-settings-section">
+        <div class="audio-settings-row">
+          <span class="audio-settings-label">🔊 Sound:</span>
+          <div id="audio-toggle" class="${audioToggleClass}">
+            <div class="audio-toggle-knob"></div>
+          </div>
+        </div>
+      </div>
       <div class="dev-mode-section">
         <div class="dev-mode-row">
           <span class="dev-mode-label">🔧 Dev-Mode:</span>
@@ -2840,15 +2858,42 @@ function showSettingsPopup() {
   const regenerateBtn = document.getElementById('regenerate-challenges-button');
   const resetBtn = document.getElementById('reset-all-data-button');
   const devModeToggle = document.getElementById('dev-mode-toggle');
+  const audioToggle = document.getElementById('audio-toggle');
   
   if (closeBtn) closeBtn.addEventListener('click', closeSettingsPopup);
   if (regenerateBtn) regenerateBtn.addEventListener('click', handleRegenerateChallenges);
   if (resetBtn) resetBtn.addEventListener('click', handleResetAllData);
   if (devModeToggle) devModeToggle.addEventListener('click', handleDevModeToggle);
+  if (audioToggle) audioToggle.addEventListener('click', handleAudioToggle);
   
   // Add dev settings event listeners if in dev mode
   if (isDevMode) {
     setupDevSettingsListeners();
+  }
+}
+
+/**
+ * Handle audio toggle click
+ * Toggles audio mute state and updates UI
+ */
+function handleAudioToggle() {
+  const currentMuted = loadAudioMutedSetting();
+  const newMuted = !currentMuted;
+  
+  // Save to storage
+  saveAudioMutedSetting(newMuted);
+  
+  // Update audioManager
+  audioManager.setMuted(newMuted);
+  
+  // Update toggle UI
+  const audioToggle = document.getElementById('audio-toggle');
+  if (audioToggle) {
+    if (newMuted) {
+      audioToggle.classList.remove('active');
+    } else {
+      audioToggle.classList.add('active');
+    }
   }
 }
 
