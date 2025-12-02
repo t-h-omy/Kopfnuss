@@ -332,6 +332,54 @@ button,
   font-size: 24px;
 }
 
+/* Shop NEW Badge */
+.shop-button {
+  position: relative;
+}
+
+.shop-new-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--color-orange);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(242, 140, 40, 0.4);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.shop-button.has-new-badge {
+  animation: shopButtonShake 0.6s ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: 3s;
+}
+
+@keyframes shopButtonShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+/* Background tile NEW Badge */
+.background-new-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-orange);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(242, 140, 40, 0.5);
+  pointer-events: none;
+  z-index: 10;
+}
+
 /* Reward Button */
 .reward-section {
   display: flex;

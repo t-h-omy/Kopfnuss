@@ -11,7 +11,9 @@ import {
   saveDiamonds,
   loadProgress,
   loadLastKnownPurchasableBackgrounds,
-  saveLastKnownPurchasableBackgrounds
+  saveLastKnownPurchasableBackgrounds,
+  wasShopOpenedWithNewBackgrounds,
+  clearShopOpenedFlag
 } from './storageManager.js';
 
 /**
@@ -116,6 +118,11 @@ export function checkForNewlyPurchasableBackgrounds() {
   const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
     .filter(id => !unlockedIds.includes(id)); // Remove purchased backgrounds
   saveLastKnownPurchasableBackgrounds(allKnownPurchasable);
+  
+  // If new backgrounds became available, clear the shop opened flag so badge shows
+  if (newlyPurchasable.length > 0) {
+    clearShopOpenedFlag();
+  }
   
   // Get the first newly purchasable background object for display
   const firstNewBackground = newlyPurchasable.length > 0 
@@ -291,4 +298,19 @@ export function applySelectedBackground() {
  */
 export function getBackgroundInfo(backgroundId) {
   return BACKGROUNDS[backgroundId] || null;
+}
+
+/**
+ * Check if NEW badge should be shown (backgrounds are purchasable and shop hasn't been opened yet)
+ * @returns {boolean} True if NEW badge should be shown
+ */
+export function shouldShowNewBadge() {
+  // Check if any backgrounds are currently purchasable
+  const purchasableIds = getPurchasableBackgroundIds();
+  if (purchasableIds.length === 0) {
+    return false;
+  }
+  
+  // Check if shop was already opened with these backgrounds
+  return !wasShopOpenedWithNewBackgrounds();
 }

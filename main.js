@@ -25,7 +25,8 @@ import {
   saveStreak,
   saveSelectedBackground as saveSelectedBackgroundToStorage,
   loadAudioMutedSetting,
-  saveAudioMutedSetting
+  saveAudioMutedSetting,
+  markShopOpenedWithNewBackgrounds
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancingLoader.js';
@@ -51,7 +52,8 @@ import {
   selectBackground,
   isBackgroundUnlocked,
   BACKGROUND_STATE,
-  checkForNewlyPurchasableBackgrounds
+  checkForNewlyPurchasableBackgrounds,
+  shouldShowNewBadge
 } from './logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -523,6 +525,10 @@ function loadChallengesScreen(container) {
     `;
   }
   
+  // Check if NEW badge should be shown on shop button
+  const showNewBadge = shouldShowNewBadge();
+  const newBadgeHtml = showNewBadge ? '<span class="shop-new-badge">NEU</span>' : '';
+  
   // Create fixed header with two-row layout
   // Row 1: Left (streak, diamonds, seasonal currency) | Right (shop, burger menu)
   // Row 2: Left (diamond progress) | Right (event countdown)
@@ -545,8 +551,9 @@ function loadChallengesScreen(container) {
         </div>
       </div>
       <div class="header-row-right">
-        <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
+        <button class="shop-button ${showNewBadge ? 'has-new-badge' : ''}" id="shop-button" aria-label="Hintergründe anpassen">
           <span class="shop-icon">🛒</span>
+          ${newBadgeHtml}
         </button>
         <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
           <span class="burger-icon">☰</span>
@@ -569,6 +576,8 @@ function loadChallengesScreen(container) {
   
   const shopButton = header.querySelector('#shop-button');
   shopButton.addEventListener('click', () => {
+    // Mark shop as opened to hide NEW badge
+    markShopOpenedWithNewBackgrounds();
     // Open shop without auto-scrolling - shop will show event backgrounds at top by default
     showBackgroundShopPopup(null);
   });
