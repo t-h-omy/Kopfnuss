@@ -127,7 +127,7 @@
     "elephant": {
       "id": "elephant",
       "name": "Elefant",
-      "file": "backgrounds/elephant_background_less_saturated.webp",
+      "file": "backgrounds/elefant_pattern_mobile (1).webp",
       "cost": 4,
       "tasksRequired": 530
     },
@@ -378,12 +378,21 @@
     }
   },
   "EASTER_BACKGROUNDS": {
-    "easterBunny": {
-      "id": "easterBunny",
-      "name": "Osterhase",
-      "file": "backgrounds/background_compressed.webp",
+    "easterBunnies": {
+      "id": "easterBunnies",
+      "name": "Osterhasen",
+      "file": "backgrounds/bunnies_q92.webp",
+      "cost": 1,
+      "tasksRequired": 40,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterEggs": {
+      "id": "easterEggs",
+      "name": "Ostereier",
+      "file": "backgrounds/eggs_q88.webp",
       "cost": 2,
-      "tasksRequired": 70,
+      "tasksRequired": 100,
       "eventId": "easter",
       "isSeasonal": true
     }
