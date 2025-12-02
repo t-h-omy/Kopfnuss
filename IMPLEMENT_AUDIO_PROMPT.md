@@ -28,23 +28,43 @@ The audio system hooks into the UI non-invasively using:
 Place audio files in `assets/sfx/` using these names.
 Supported formats: `.wav` (preferred) or `.ogg` (fallback)
 
-### Priority SFX List
+### Complete SFX List
 
 | Name | Description | Trigger |
 |------|-------------|---------|
-| `ui_click` | Button click sound | Any button or interactive element click |
-| `node_select` | Challenge node selection | Clicking on challenge/kopfnuss/zeit nodes |
-| `answer_correct` | Correct answer feedback | Submitting correct answer in task |
-| `answer_incorrect` | Wrong answer feedback | Submitting wrong answer in task |
-| `success_fanfare` | Celebration sound | Completing challenges, reward popup |
-| `confetti_pop` | Confetti effect sound | When confetti appears |
-| `diamond_gain` | Earning diamonds | Diamond celebration popup |
-| `streak_gain` | Streak milestone | Streak celebration popup |
-| `modal_open` | Popup opening | Any popup/modal opening |
-| `modal_close` | Popup closing | Any popup/modal closing |
-| `not_enough_diamonds_hint` | Insufficient funds | Trying to buy without enough diamonds |
-| `countdown_tick` | Timer tick | Zeit-Challenge countdown |
-| `low_time_warning` | Low time alert | Zeit-Challenge when time is low |
+| `answer_correct` | Correct answer feedback | Confirming a correct answer |
+| `answer_incorrect` | Wrong answer feedback | Confirming a wrong answer |
+| `new_task` | New task appears | When the next task is shown |
+| `challenge_start` | Challenge begins | When a challenge starts |
+| `challenge_complete` | Challenge success | When a challenge is successfully completed |
+| `challenge_failed` | Challenge failed | When a challenge is not completed |
+| `countdown_tick` | Timer tick | Repeated ticks during final seconds |
+| `times_up` | Time's up | When the timer reaches zero |
+| `low_time_warning` | Low time warning | When time is running low |
+| `diamond_earn` | Earning diamonds | When receiving a diamond |
+| `diamond_spend` | Spending diamonds | When spending a diamond |
+| `background_unlocked` | Background unlock | When a background is unlocked |
+| `popup_reward_open` | Reward popup | When opening a reward popup |
+| `modal_open` | Modal/popup open | When any modal opens |
+| `modal_close` | Modal/popup close | When any modal closes |
+| `ui_click` | Button tap | Generic UI button interactions |
+| `node_select` | Challenge node tap | When tapping a challenge node |
+| `reward_claim` | Reward claim | When claiming a reward |
+| `back_close` | Back/close action | When closing or navigating back |
+| `screen_change` | Screen change | When switching tabs/screens |
+| `sparkle_effect` | Sparkle trigger | When sparkle effect bursts |
+| `node_highlight` | Node highlight | When a node highlight is triggered |
+| `action_not_allowed` | Invalid action | When a blocked action is attempted |
+
+### Legacy/Alias SFX (backwards compatible)
+
+| Name | Alias For | Description |
+|------|-----------|-------------|
+| `success_fanfare` | `challenge_complete` | Celebration sound |
+| `confetti_pop` | `sparkle_effect` | Confetti/sparkle effect |
+| `diamond_gain` | `diamond_earn` | Diamond earned |
+| `streak_gain` | Similar to `challenge_complete` | Streak milestone |
+| `not_enough_diamonds_hint` | `action_not_allowed` | Insufficient funds |
 
 ### File Naming
 
@@ -52,7 +72,7 @@ Files should be named: `<name>.wav` or `<name>.ogg`
 
 Examples:
 - `assets/sfx/ui_click.wav`
-- `assets/sfx/success_fanfare.ogg`
+- `assets/sfx/challenge_complete.ogg`
 
 The system tries `.wav` first, then `.ogg` if not found.
 
@@ -63,7 +83,7 @@ Each sound has preset parameters (frequency, duration, waveform type) defined in
 
 Fallback sounds are:
 - Pleasant and non-intrusive
-- Short duration (typically < 200ms)
+- Short duration (typically < 400ms)
 - Using sine/triangle waveforms for clean tones
 
 ## Usage
@@ -81,13 +101,31 @@ The audio bootstrap module automatically:
 You can import functions from `audioBootstrap.js` for explicit sound triggers:
 
 ```javascript
-import { playAnswerFeedback, playConfettiPop } from './logic/audioBootstrap.js';
+import { 
+  playAnswerFeedback,
+  playNewTask,
+  playChallengeStart,
+  playChallengeComplete,
+  playChallengeFailed,
+  playCountdownTick,
+  playTimesUp,
+  playDiamondEarn,
+  playDiamondSpend,
+  playBackgroundUnlocked,
+  playRewardClaim,
+  playBackClose,
+  playScreenChange,
+  playSparkleEffect,
+  playNodeHighlight,
+  playActionNotAllowed
+} from './logic/audioBootstrap.js';
 
-// In answer submission handler
-playAnswerFeedback(isCorrect); // true = correct sound, false = incorrect
-
-// When showing confetti
-playConfettiPop();
+// Examples:
+playAnswerFeedback(true);  // Correct answer
+playAnswerFeedback(false); // Wrong answer
+playChallengeStart();      // Challenge begins
+playChallengeComplete();   // Challenge success
+playDiamondEarn();         // Earned a diamond
 ```
 
 Or access the audioManager directly:
@@ -95,7 +133,7 @@ Or access the audioManager directly:
 ```javascript
 import { audioManager } from './logic/audioManager.js';
 
-audioManager.play('success_fanfare');
+audioManager.play('challenge_complete');
 audioManager.play('ui_click', { volume: 0.5 }); // With options
 audioManager.setMuted(true); // Mute all sounds
 ```
@@ -113,7 +151,7 @@ on the first click event.
 3. Click a challenge node → should hear `node_select`
 4. Open settings or shop → should hear `modal_open`
 5. Close popup → should hear `modal_close`
-6. Complete a challenge → should hear `success_fanfare`
+6. Complete a challenge → should hear `challenge_complete`
 
 To test with real audio:
 1. Place `.wav` or `.ogg` files in `assets/sfx/`

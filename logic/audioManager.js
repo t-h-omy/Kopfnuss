@@ -4,21 +4,56 @@
 
 /**
  * Sound effect definitions with their synthesized fallback parameters
+ * Each SFX has: freq (Hz or array for chords), duration (seconds), type (oscillator), gain (0-1)
  */
 const SFX_DEFINITIONS = {
-  ui_click: { freq: 600, duration: 0.05, type: 'sine', gain: 0.3 },
-  node_select: { freq: 800, duration: 0.08, type: 'sine', gain: 0.3 },
+  // Answer feedback
   answer_correct: { freq: [523, 659, 784], duration: 0.15, type: 'sine', gain: 0.25 },
   answer_incorrect: { freq: 200, duration: 0.2, type: 'triangle', gain: 0.25 },
+  
+  // Task/Challenge flow
+  new_task: { freq: 880, duration: 0.08, type: 'sine', gain: 0.2 },
+  challenge_start: { freq: [440, 554, 659], duration: 0.18, type: 'sine', gain: 0.25 },
+  challenge_complete: { freq: [523, 659, 784, 1047], duration: 0.25, type: 'sine', gain: 0.28 },
+  challenge_failed: { freq: [300, 250, 200], duration: 0.3, type: 'triangle', gain: 0.25 },
+  
+  // Timer sounds
+  countdown_tick: { freq: 1000, duration: 0.03, type: 'sine', gain: 0.15 },
+  times_up: { freq: [400, 300, 200], duration: 0.4, type: 'triangle', gain: 0.3 },
+  low_time_warning: { freq: [600, 500], duration: 0.1, type: 'triangle', gain: 0.3 },
+  
+  // Diamond/Currency sounds
+  diamond_earn: { freq: [880, 1047, 1319], duration: 0.12, type: 'sine', gain: 0.25 },
+  diamond_spend: { freq: [659, 523], duration: 0.1, type: 'sine', gain: 0.2 },
+  
+  // Background/Unlock sounds
+  background_unlocked: { freq: [523, 659, 784, 1047], duration: 0.3, type: 'sine', gain: 0.28 },
+  
+  // Popup sounds
+  popup_reward_open: { freq: [523, 659, 784, 1047], duration: 0.2, type: 'sine', gain: 0.25 },
+  modal_open: { freq: 440, duration: 0.06, type: 'sine', gain: 0.2 },
+  modal_close: { freq: 350, duration: 0.06, type: 'sine', gain: 0.2 },
+  
+  // UI interaction sounds
+  ui_click: { freq: 600, duration: 0.05, type: 'sine', gain: 0.3 },
+  node_select: { freq: 800, duration: 0.08, type: 'sine', gain: 0.3 },
+  reward_claim: { freq: [784, 988, 1175], duration: 0.15, type: 'sine', gain: 0.28 },
+  back_close: { freq: 350, duration: 0.06, type: 'sine', gain: 0.2 },
+  screen_change: { freq: 550, duration: 0.07, type: 'sine', gain: 0.18 },
+  
+  // Effect sounds
+  sparkle_effect: { freq: 1200, duration: 0.03, type: 'sine', gain: 0.2 },
+  node_highlight: { freq: [700, 880], duration: 0.1, type: 'sine', gain: 0.2 },
+  
+  // Feedback sounds
+  action_not_allowed: { freq: [300, 250], duration: 0.15, type: 'triangle', gain: 0.25 },
+  
+  // Legacy aliases (for backwards compatibility)
   success_fanfare: { freq: [523, 659, 784, 1047], duration: 0.2, type: 'sine', gain: 0.25 },
   confetti_pop: { freq: 1200, duration: 0.03, type: 'sine', gain: 0.2 },
   diamond_gain: { freq: [880, 1047, 1319], duration: 0.12, type: 'sine', gain: 0.25 },
   streak_gain: { freq: [659, 784, 988], duration: 0.15, type: 'sine', gain: 0.25 },
-  modal_open: { freq: 440, duration: 0.06, type: 'sine', gain: 0.2 },
-  modal_close: { freq: 350, duration: 0.06, type: 'sine', gain: 0.2 },
-  not_enough_diamonds_hint: { freq: [300, 250], duration: 0.15, type: 'triangle', gain: 0.25 },
-  countdown_tick: { freq: 1000, duration: 0.03, type: 'sine', gain: 0.15 },
-  low_time_warning: { freq: [600, 500], duration: 0.1, type: 'triangle', gain: 0.3 }
+  not_enough_diamonds_hint: { freq: [300, 250], duration: 0.15, type: 'triangle', gain: 0.25 }
 };
 
 /**

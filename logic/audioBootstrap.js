@@ -190,11 +190,31 @@ export function playAnswerFeedback(isCorrect) {
 }
 
 /**
- * Play confetti pop sound
- * Can be called when confetti effect is triggered
+ * Play sound when a new task appears
  */
-export function playConfettiPop() {
-  audioManager.play('confetti_pop');
+export function playNewTask() {
+  audioManager.play('new_task');
+}
+
+/**
+ * Play sound when a challenge starts
+ */
+export function playChallengeStart() {
+  audioManager.play('challenge_start');
+}
+
+/**
+ * Play sound when a challenge is successfully completed
+ */
+export function playChallengeComplete() {
+  audioManager.play('challenge_complete');
+}
+
+/**
+ * Play sound when a challenge is failed
+ */
+export function playChallengeFailed() {
+  audioManager.play('challenge_failed');
 }
 
 /**
@@ -206,6 +226,13 @@ export function playCountdownTick() {
 }
 
 /**
+ * Play sound when time runs out
+ */
+export function playTimesUp() {
+  audioManager.play('times_up');
+}
+
+/**
  * Play low time warning sound
  * For Zeit-Challenge when time is running out
  */
@@ -214,7 +241,99 @@ export function playLowTimeWarning() {
 }
 
 /**
- * Play not enough diamonds hint sound
+ * Play sound when earning diamonds
+ */
+export function playDiamondEarn() {
+  audioManager.play('diamond_earn');
+}
+
+/**
+ * Play sound when spending diamonds
+ */
+export function playDiamondSpend() {
+  audioManager.play('diamond_spend');
+}
+
+/**
+ * Play sound when a background is unlocked
+ */
+export function playBackgroundUnlocked() {
+  audioManager.play('background_unlocked');
+}
+
+/**
+ * Play sound when reward popup opens
+ */
+export function playPopupRewardOpen() {
+  audioManager.play('popup_reward_open');
+}
+
+/**
+ * Play generic UI button tap sound
+ */
+export function playButtonTap() {
+  audioManager.play('ui_click');
+}
+
+/**
+ * Play sound when tapping a challenge node
+ */
+export function playChallengeNodeTap() {
+  audioManager.play('node_select');
+}
+
+/**
+ * Play sound when claiming a reward
+ */
+export function playRewardClaim() {
+  audioManager.play('reward_claim');
+}
+
+/**
+ * Play sound when navigating back or closing
+ */
+export function playBackClose() {
+  audioManager.play('back_close');
+}
+
+/**
+ * Play sound when changing tabs or screens
+ */
+export function playScreenChange() {
+  audioManager.play('screen_change');
+}
+
+/**
+ * Play sparkle effect sound
+ */
+export function playSparkleEffect() {
+  audioManager.play('sparkle_effect');
+}
+
+/**
+ * Play sound when a challenge node is highlighted
+ */
+export function playNodeHighlight() {
+  audioManager.play('node_highlight');
+}
+
+/**
+ * Play sound when an action is not allowed
+ */
+export function playActionNotAllowed() {
+  audioManager.play('action_not_allowed');
+}
+
+/**
+ * Play confetti pop sound (legacy/alias)
+ * Can be called when confetti effect is triggered
+ */
+export function playConfettiPop() {
+  audioManager.play('confetti_pop');
+}
+
+/**
+ * Play not enough diamonds hint sound (legacy/alias)
  */
 export function playNotEnoughDiamondsHint() {
   audioManager.play('not_enough_diamonds_hint');
