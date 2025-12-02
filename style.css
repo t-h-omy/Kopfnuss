@@ -398,6 +398,27 @@ button,
   cursor: pointer;
   transition: all var(--transition);
   min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.reward-diamond-icon {
+  font-size: 20px;
+  display: inline-block;
+}
+
+.reward-diamond-icon.shake-periodic {
+  animation: rewardDiamondShake 0.5s ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: 2.5s;
+}
+
+@keyframes rewardDiamondShake {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+  20%, 40%, 60%, 80% { transform: rotate(10deg); }
 }
 
 .reward-button.active {
@@ -417,11 +438,11 @@ button,
 }
 
 .reward-button.disabled {
-  background: var(--color-gray);
-  color: #999;
+  background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
+  color: #666;
   cursor: not-allowed;
-  opacity: 0.6;
-  box-shadow: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #9E9E9E;
 }
 
 .reward-button-focus-highlight {
@@ -1436,6 +1457,20 @@ button,
 .btn-super-challenge:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(153, 50, 204, 0.5);
+}
+
+/* Button Group for Popups */
+.button-group {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.button-group button {
+  flex: 1;
+  max-width: 180px;
 }
 
 /* Super Challenge Success Popup */

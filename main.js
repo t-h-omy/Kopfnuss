@@ -604,12 +604,13 @@ function loadChallengesScreen(container) {
   const zeitChallenge = getOrCreateZeitChallenge();
   
   // Helper function to generate splash rays HTML (same as standard challenges)
-  function generateSplashRaysHtml(className = 'challenge-splash') {
+  function generateSplashRaysHtml(className = 'challenge-splash', splashSize = CONFIG.SPLASH_SIZE_STANDARD) {
     const numRays = 12;
     let raysHtml = '';
     for (let i = 0; i < numRays; i++) {
       const angle = (i * 360 / numRays);
-      const length = 25 + ((i % 3) * 6);
+      const baseLength = splashSize || 30; // Fallback to 30 if not defined
+      const length = baseLength + ((i % 3) * 6);
       raysHtml += `<div class="splash-ray" style="transform: translate(-50%, 0) rotate(${angle}deg); height: ${length}px;"></div>`;
     }
     return `<div class="${className}">${raysHtml}</div>`;
@@ -650,8 +651,8 @@ function loadChallengesScreen(container) {
       zeitHintText = 'Erneut versuchen?';
     }
     
-    // Build splash rays (same as standard challenges)
-    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash');
+    // Build splash rays with premium size
+    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash', CONFIG.SPLASH_SIZE_PREMIUM);
     
     // Build celebration background for completed state
     let zeitCelebrationBg = '';
@@ -729,8 +730,8 @@ function loadChallengesScreen(container) {
       hintText = 'Erneut versuchen?';
     }
     
-    // Build splash rays (same as standard challenges)
-    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash');
+    // Build splash rays with premium size
+    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash', CONFIG.SPLASH_SIZE_PREMIUM);
     
     // Build celebration background for completed state
     let kopfnussCelebrationBg = '';
@@ -835,12 +836,17 @@ function loadChallengesScreen(container) {
     const splash = document.createElement('div');
     splash.className = 'challenge-splash';
     const numRays = 12;
+    // Use super challenge size if it's a super challenge, otherwise standard
+    const isSuperChallenge = challenge.isSuperChallenge;
+    const splashSize = isSuperChallenge ? (CONFIG.SPLASH_SIZE_SUPER || 45) : (CONFIG.SPLASH_SIZE_STANDARD || 30);
+    const baseLength = splashSize;
+    
     for (let i = 0; i < numRays; i++) {
       const ray = document.createElement('div');
       ray.className = 'splash-ray';
       const angle = (i * 360 / numRays);
       // Use deterministic length based on ray index for consistent appearance
-      const length = 25 + ((i % 3) * 6);
+      const length = baseLength + ((i % 3) * 6);
       ray.style.transform = `translate(-50%, 0) rotate(${angle}deg)`;
       ray.style.height = `${length}px`;
       splash.appendChild(ray);
@@ -962,7 +968,7 @@ function loadChallengesScreen(container) {
   const rewardButton = document.createElement('button');
   rewardButton.id = 'reward-button';
   rewardButton.className = allCompleted ? 'reward-button active' : 'reward-button disabled';
-  rewardButton.textContent = 'Belohnung abholen';
+  rewardButton.innerHTML = `<span class="reward-diamond-icon ${allCompleted ? '' : 'shake-periodic'}">💎</span> Belohnung abholen`;
   rewardButton.disabled = !allCompleted;
   
   if (allCompleted) {
@@ -1881,7 +1887,10 @@ function showSuperChallengeStartPopup(challengeIndex) {
       <span>🎯 Belohnung:</span>
       ${rewardHtml}
     </div>
-    <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
+    <div class="button-group">
+      <button id="super-challenge-cancel-button" class="btn-secondary">Gerade nicht</button>
+      <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
+    </div>
   `;
   
   overlay.appendChild(popupCard);
@@ -1891,6 +1900,11 @@ function showSuperChallengeStartPopup(challengeIndex) {
   startButton.addEventListener('click', () => {
     overlay.remove();
     showScreen('taskScreen', challengeIndex);
+  });
+  
+  const cancelButton = document.getElementById('super-challenge-cancel-button');
+  cancelButton.addEventListener('click', () => {
+    overlay.remove();
   });
 }
 
