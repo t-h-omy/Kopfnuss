@@ -127,13 +127,13 @@
     "elephant": {
       "id": "elephant",
       "name": "Elefant",
-      "file": "backgrounds/elefant_pattern_mobile (1).webp",
+      "file": "backgrounds/elefant_pattern_mobile.webp",
       "cost": 2,
       "tasksRequired": 2
     },
     "pomeranian": {
       "id": "pomeranian",
-      "name": "Pomeranian",
+      "name": "Zwergspitz",
       "file": "backgrounds/pomeranian_background_soft_optimized.webp",
       "cost": 2,
       "tasksRequired": 2
@@ -255,8 +255,8 @@
     }
   },
   "CHRISTMAS_BACKGROUNDS": {
-    "gingerbread": {
-      "id": "gingerbread",
+    "gingerbreadman": {
+      "id": "gingerbreadman",
       "name": "Lebkuchen",
       "file": "backgrounds/christmas/gingerbread_optimized.webp",
       "cost": 2,
@@ -399,7 +399,7 @@
     "easterCutout": {
       "id": "easterCutout",
       "name": "Ausschnitt",
-      "file": "backgrounds/easter/cutout_q81 (1).webp",
+      "file": "backgrounds/easter/easter_cutout.webp",
       "cost": 2,
       "tasksRequired": 12,
       "eventId": "easter",
@@ -426,7 +426,7 @@
     "easterSoftClay": {
       "id": "easterSoftClay",
       "name": "Weiche Knete",
-      "file": "backgrounds/easter/soft_clay_optimized (1).webp",
+      "file": "backgrounds/easter/easter_soft_clay.webp",
       "cost": 2,
       "tasksRequired": 24,
       "eventId": "easter",
@@ -444,7 +444,7 @@
     "easterWatercolor": {
       "id": "easterWatercolor",
       "name": "Aquarell",
-      "file": "backgrounds/easter/watercolor_q89 (1).webp",
+      "file": "backgrounds/easter/easter_watercolor.webp",
       "cost": 2,
       "tasksRequired": 32,
       "eventId": "easter",
