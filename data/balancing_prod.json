@@ -381,7 +381,7 @@
     "easterBunnies": {
       "id": "easterBunnies",
       "name": "Osterhasen",
-      "file": "backgrounds/bunnies_q92.webp",
+      "file": "backgrounds/easter/bunnies_q92.webp",
       "cost": 1,
       "tasksRequired": 40,
       "eventId": "easter",
@@ -390,9 +390,63 @@
     "easterEggs": {
       "id": "easterEggs",
       "name": "Ostereier",
-      "file": "backgrounds/eggs_q88.webp",
+      "file": "backgrounds/easter/eggs_q88.webp",
       "cost": 2,
-      "tasksRequired": 100,
+      "tasksRequired": 80,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterCutout": {
+      "id": "easterCutout",
+      "name": "Ausschnitt",
+      "file": "backgrounds/easter/cutout_q81 (1).webp",
+      "cost": 2,
+      "tasksRequired": 120,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterForest": {
+      "id": "easterForest",
+      "name": "Frühlingswald",
+      "file": "backgrounds/easter/forest_bg_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 160,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterPaperCutout": {
+      "id": "easterPaperCutout",
+      "name": "Papier-Ausschnitt",
+      "file": "backgrounds/easter/paper_cutout_optimized.webp",
+      "cost": 3,
+      "tasksRequired": 200,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterSoftClay": {
+      "id": "easterSoftClay",
+      "name": "Weiche Knete",
+      "file": "backgrounds/easter/soft_clay_optimized (1).webp",
+      "cost": 3,
+      "tasksRequired": 240,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterGradientShapes": {
+      "id": "easterGradientShapes",
+      "name": "Farbverlauf-Formen",
+      "file": "backgrounds/easter/soft_gradient_shapes_optimized.webp",
+      "cost": 4,
+      "tasksRequired": 280,
+      "eventId": "easter",
+      "isSeasonal": true
+    },
+    "easterWatercolor": {
+      "id": "easterWatercolor",
+      "name": "Aquarell",
+      "file": "backgrounds/easter/watercolor_q89 (1).webp",
+      "cost": 4,
+      "tasksRequired": 320,
       "eventId": "easter",
       "isSeasonal": true
     }
