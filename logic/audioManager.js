@@ -1,0 +1,260 @@
+// Kopfnuss - Audio Manager
+// Minimal, safe audio subsystem with WebAudio for SFX playback
+// Falls back to synthesized beeps when audio files are missing
+
+/**
+ * Sound effect definitions with their synthesized fallback parameters
+ * Each SFX has: freq (Hz or array for chords), duration (seconds), type (oscillator), gain (0-1)
+ */
+const SFX_DEFINITIONS = {
+  // Answer feedback
+  answer_correct: { freq: [523, 659, 784], duration: 0.15, type: 'sine', gain: 0.25 },
+  answer_incorrect: { freq: 200, duration: 0.2, type: 'triangle', gain: 0.25 },
+  
+  // Task/Challenge flow
+  new_task: { freq: 880, duration: 0.08, type: 'sine', gain: 0.2 },
+  challenge_start: { freq: [440, 554, 659], duration: 0.18, type: 'sine', gain: 0.25 },
+  challenge_complete: { freq: [523, 659, 784, 1047], duration: 0.25, type: 'sine', gain: 0.28 },
+  challenge_failed: { freq: [300, 250, 200], duration: 0.3, type: 'triangle', gain: 0.25 },
+  
+  // Timer sounds
+  countdown_tick: { freq: 1000, duration: 0.03, type: 'sine', gain: 0.15 },
+  times_up: { freq: [400, 300, 200], duration: 0.4, type: 'triangle', gain: 0.3 },
+  low_time_warning: { freq: [600, 500], duration: 0.1, type: 'triangle', gain: 0.3 },
+  
+  // Diamond/Currency sounds
+  diamond_earn: { freq: [880, 1047, 1319], duration: 0.12, type: 'sine', gain: 0.25 },
+  diamond_spend: { freq: [659, 523], duration: 0.1, type: 'sine', gain: 0.2 },
+  
+  // Background/Unlock sounds
+  background_unlocked: { freq: [523, 659, 784, 1047], duration: 0.3, type: 'sine', gain: 0.28 },
+  
+  // Popup sounds
+  popup_reward_open: { freq: [523, 659, 784, 1047], duration: 0.2, type: 'sine', gain: 0.25 },
+  modal_open: { freq: 440, duration: 0.06, type: 'sine', gain: 0.2 },
+  modal_close: { freq: 350, duration: 0.06, type: 'sine', gain: 0.2 },
+  
+  // UI interaction sounds
+  ui_click: { freq: 600, duration: 0.05, type: 'sine', gain: 0.3 },
+  node_select: { freq: 800, duration: 0.08, type: 'sine', gain: 0.3 },
+  reward_claim: { freq: [784, 988, 1175], duration: 0.15, type: 'sine', gain: 0.28 },
+  back_close: { freq: 350, duration: 0.06, type: 'sine', gain: 0.2 },
+  screen_change: { freq: 550, duration: 0.07, type: 'sine', gain: 0.18 },
+  
+  // Effect sounds
+  sparkle_effect: { freq: 1200, duration: 0.03, type: 'sine', gain: 0.2 },
+  node_highlight: { freq: [700, 880], duration: 0.1, type: 'sine', gain: 0.2 },
+  
+  // Feedback sounds
+  action_not_allowed: { freq: [300, 250], duration: 0.15, type: 'triangle', gain: 0.25 },
+  
+  // Legacy aliases (for backwards compatibility)
+  success_fanfare: { freq: [523, 659, 784, 1047], duration: 0.2, type: 'sine', gain: 0.25 },
+  confetti_pop: { freq: 1200, duration: 0.03, type: 'sine', gain: 0.2 },
+  diamond_gain: { freq: [880, 1047, 1319], duration: 0.12, type: 'sine', gain: 0.25 },
+  streak_gain: { freq: [659, 784, 988], duration: 0.15, type: 'sine', gain: 0.25 },
+  not_enough_diamonds_hint: { freq: [300, 250], duration: 0.15, type: 'triangle', gain: 0.25 }
+};
+
+/**
+ * AudioManager singleton class
+ * Provides preloading and playback of sound effects with WebAudio
+ */
+class AudioManager {
+  constructor() {
+    /** @type {AudioContext|null} */
+    this.audioContext = null;
+    
+    /** @type {Map<string, AudioBuffer>} */
+    this.buffers = new Map();
+    
+    /** @type {boolean} */
+    this.contextResumed = false;
+    
+    /** @type {boolean} */
+    this.muted = false;
+  }
+
+  /**
+   * Get or create the AudioContext
+   * @returns {AudioContext|null}
+   */
+  getContext() {
+    if (!this.audioContext) {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          this.audioContext = new AudioContextClass();
+        }
+      } catch (e) {
+        console.warn('AudioManager: Failed to create AudioContext', e);
+      }
+    }
+    return this.audioContext;
+  }
+
+  /**
+   * Resume AudioContext on first user gesture (required for mobile)
+   * Call this from a click/touch handler
+   */
+  ensureUserGestureResume() {
+    const ctx = this.getContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().then(() => {
+        this.contextResumed = true;
+      }).catch(() => {
+        // Silently ignore resume failures
+      });
+    } else if (ctx) {
+      this.contextResumed = true;
+    }
+  }
+
+  /**
+   * Attempt to load a single SFX file, trying .wav then .ogg
+   * @param {string} name - Sound effect name
+   * @returns {Promise<void>}
+   */
+  async loadSound(name) {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const basePath = './assets/sfx/';
+    const extensions = ['.wav', '.ogg'];
+
+    for (const ext of extensions) {
+      try {
+        const response = await fetch(basePath + name + ext);
+        if (!response.ok) continue;
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+        this.buffers.set(name, audioBuffer);
+        return;
+      } catch (e) {
+        // Try next extension
+      }
+    }
+    // File not found or failed to decode - fallback will be used
+  }
+
+  /**
+   * Preload all defined SFX files
+   * Non-blocking - failures are silently ignored (synth fallback will be used)
+   * @returns {Promise<void>}
+   */
+  async preloadAll() {
+    // Ensure context exists (but may be suspended until user gesture)
+    this.getContext();
+
+    const names = Object.keys(SFX_DEFINITIONS);
+    
+    // Load all sounds in parallel, ignoring individual failures
+    await Promise.allSettled(names.map(name => this.loadSound(name)));
+  }
+
+  /**
+   * Play a synthesized fallback sound
+   * @param {string} name - Sound effect name
+   * @param {Object} options - Playback options
+   * @param {number} [options.volume=1] - Volume multiplier (0-1)
+   */
+  playSynthFallback(name, options = {}) {
+    const ctx = this.getContext();
+    if (!ctx || ctx.state === 'suspended') return;
+
+    const def = SFX_DEFINITIONS[name];
+    if (!def) return;
+
+    const volume = options.volume ?? 1;
+    const masterGain = def.gain * volume;
+    
+    const frequencies = Array.isArray(def.freq) ? def.freq : [def.freq];
+    const duration = def.duration;
+    const now = ctx.currentTime;
+
+    frequencies.forEach((freq, index) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      oscillator.type = def.type || 'sine';
+      oscillator.frequency.setValueAtTime(freq, now);
+
+      // Envelope for smooth sound
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(masterGain, now + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      // Stagger notes slightly for chord effects
+      const startTime = now + (index * 0.05);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
+    });
+  }
+
+  /**
+   * Play a sound effect by name
+   * Uses preloaded audio buffer if available, otherwise synthesized fallback
+   * @param {string} name - Sound effect name (e.g., 'ui_click', 'success_fanfare')
+   * @param {Object} [options] - Playback options
+   * @param {number} [options.volume=1] - Volume multiplier (0-1)
+   */
+  play(name, options = {}) {
+    if (this.muted) return;
+
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // If context is suspended, try to resume (will work if called from user gesture)
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+      return; // Don't play on this call, will work on next user gesture
+    }
+
+    const buffer = this.buffers.get(name);
+    
+    if (buffer) {
+      // Play from preloaded buffer
+      try {
+        const source = ctx.createBufferSource();
+        const gainNode = ctx.createGain();
+        
+        source.buffer = buffer;
+        gainNode.gain.value = options.volume ?? 1;
+        
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        source.start(0);
+      } catch (e) {
+        // Fallback to synth if buffer playback fails
+        this.playSynthFallback(name, options);
+      }
+    } else {
+      // Use synthesized fallback
+      this.playSynthFallback(name, options);
+    }
+  }
+
+  /**
+   * Set muted state
+   * @param {boolean} muted
+   */
+  setMuted(muted) {
+    this.muted = muted;
+  }
+
+  /**
+   * Check if a sound is available (either as buffer or synth fallback)
+   * @param {string} name
+   * @returns {boolean}
+   */
+  hasSound(name) {
+    return this.buffers.has(name) || Object.hasOwn(SFX_DEFINITIONS, name);
+  }
+}
+
+// Export singleton instance
+export const audioManager = new AudioManager();

@@ -7,6 +7,11 @@
 const DEV_MODE_KEY = 'kopfnuss_use_dev_balancing';
 
 /**
+ * Audio mute setting key (stored globally, never has dev prefix)
+ */
+const AUDIO_MUTED_KEY = 'kopfnuss_audio_muted';
+
+/**
  * Cached dev mode state (initialized on first call, persists until page reload)
  * Using null to indicate not yet cached
  */
@@ -53,6 +58,38 @@ export function saveDevModeSetting(useDevBalancing) {
     return true;
   } catch (error) {
     console.error('Error saving dev mode setting:', error);
+    return false;
+  }
+}
+
+/**
+ * Load audio muted setting (stored globally, not affected by dev mode prefix)
+ * @returns {boolean} True if audio is muted
+ */
+export function loadAudioMutedSetting() {
+  try {
+    const item = localStorage.getItem(AUDIO_MUTED_KEY);
+    if (item === null) {
+      return false; // Audio enabled by default
+    }
+    return JSON.parse(item) === true;
+  } catch (error) {
+    console.error('Error loading audio muted setting:', error);
+    return false;
+  }
+}
+
+/**
+ * Save audio muted setting
+ * @param {boolean} muted - Whether audio is muted
+ * @returns {boolean} Success status
+ */
+export function saveAudioMutedSetting(muted) {
+  try {
+    localStorage.setItem(AUDIO_MUTED_KEY, JSON.stringify(muted));
+    return true;
+  } catch (error) {
+    console.error('Error saving audio muted setting:', error);
     return false;
   }
 }
