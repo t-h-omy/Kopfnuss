@@ -211,24 +211,24 @@ export function completeCurrentChallenge() {
   let superChallengeSuccess = null;
   let superChallengeAwardedDiamond = false;
   let seasonalCurrencyAwarded = null;
+  let superChallengePendingChoice = false;
   
   if (challenge && challenge.isSuperChallenge) {
     // Super challenge success requires zero errors
     superChallengeSuccess = errors === 0;
     
-    // If event is active, award seasonal currency instead of diamond
+    // If event is active, mark as pending choice (don't award yet)
     if (superChallengeSuccess) {
       if (eventActive && activeEvent) {
-        // Award seasonal currency instead of diamond during events
-        const currencyResult = addSeasonalCurrency(1);
-        if (currencyResult.success) {
-          seasonalCurrencyAwarded = {
-            amount: 1,
-            emoticon: activeEvent.emoticon,
-            currencyName: activeEvent.currencyName,
-            currencyNameSingular: activeEvent.currencyNameSingular
-          };
-        }
+        // Mark as pending choice - player will choose in success popup
+        superChallengePendingChoice = true;
+        seasonalCurrencyAwarded = {
+          amount: 1,
+          emoticon: activeEvent.emoticon,
+          currencyName: activeEvent.currencyName,
+          currencyNameSingular: activeEvent.currencyNameSingular,
+          pendingChoice: true
+        };
         superChallengeAwardedDiamond = false;
       } else {
         // No event - award diamond as normal
@@ -283,7 +283,8 @@ export function completeCurrentChallenge() {
     isSuperChallenge: challenge?.isSuperChallenge || false,
     superChallengeSuccess: superChallengeSuccess,
     superChallengeAwardedDiamond: superChallengeAwardedDiamond,
-    seasonalCurrencyAwarded: seasonalCurrencyAwarded
+    seasonalCurrencyAwarded: seasonalCurrencyAwarded,
+    superChallengePendingChoice: superChallengePendingChoice
   };
   
   // Reset task flow state

@@ -119,7 +119,9 @@ const STORAGE_KEYS = {
   get EVENT_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_popup_shown_'); },
   get EVENT_END_POPUP_SHOWN() { return getStorageKey('kopfnuss_event_end_popup_shown_'); },
   // Kopfnuss Challenge storage keys (appended with date)
-  get KOPFNUSS_CHALLENGE() { return getStorageKey('kopfnuss_kopfnuss_challenge_'); }
+  get KOPFNUSS_CHALLENGE() { return getStorageKey('kopfnuss_kopfnuss_challenge_'); },
+  // Zeit-Challenge storage keys (appended with date)
+  get ZEIT_CHALLENGE() { return getStorageKey('kopfnuss_zeit_challenge_'); }
 };
 
 /**
@@ -551,6 +553,31 @@ export function saveKopfnussChallenge(kopfnussState, date = getTodayDate()) {
  */
 export function loadKopfnussChallenge(date = getTodayDate()) {
   const key = STORAGE_KEYS.KOPFNUSS_CHALLENGE + date;
+  return loadFromStorage(key, null);
+}
+
+// ============================================
+// ZEIT-CHALLENGE STORAGE FUNCTIONS
+// ============================================
+
+/**
+ * Save Zeit-Challenge state for a specific date
+ * @param {Object} zeitState - Zeit-Challenge state object
+ * @param {string} date - Date string (YYYY-MM-DD), defaults to today
+ * @returns {boolean} Success status
+ */
+export function saveZeitChallenge(zeitState, date = getTodayDate()) {
+  const key = STORAGE_KEYS.ZEIT_CHALLENGE + date;
+  return saveToStorage(key, zeitState);
+}
+
+/**
+ * Load Zeit-Challenge state for a specific date
+ * @param {string} date - Date string (YYYY-MM-DD), defaults to today
+ * @returns {Object|null} Zeit-Challenge state or null if not found
+ */
+export function loadZeitChallenge(date = getTodayDate()) {
+  const key = STORAGE_KEYS.ZEIT_CHALLENGE + date;
   return loadFromStorage(key, null);
 }
 
