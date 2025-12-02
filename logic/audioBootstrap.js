@@ -25,6 +25,12 @@ const POPUP_SFX_MAP = {
 };
 
 /**
+ * Selector for challenge node containers that trigger node_select sound
+ * Add new node container classes here as needed
+ */
+const NODE_CONTAINER_SELECTOR = '.challenge-node-container, .kopfnuss-node-container, .zeit-node-container';
+
+/**
  * Track which popups have been seen to handle open/close properly
  * @type {Set<string>}
  */
@@ -81,7 +87,7 @@ function attachNodeSelectionHandlers() {
     const target = e.target;
     
     // Check for challenge node container clicks
-    const nodeContainer = target.closest('.challenge-node-container, .kopfnuss-node-container, .zeit-node-container');
+    const nodeContainer = target.closest(NODE_CONTAINER_SELECTOR);
     
     if (nodeContainer) {
       // Check if the node is clickable (has cursor: pointer or is in an interactive state)
@@ -135,8 +141,9 @@ function handleAddedElement(element) {
   const elementId = element.id;
   
   // Find matching SFX for this popup type
-  for (const [className, sfxName] of Object.entries(POPUP_SFX_MAP)) {
-    if (classList.contains(className) || elementId === className) {
+  // POPUP_SFX_MAP keys can match either as class names or element IDs
+  for (const [identifier, sfxName] of Object.entries(POPUP_SFX_MAP)) {
+    if (classList.contains(identifier) || elementId === identifier) {
       // Track this popup as active
       if (elementId) {
         activePopupIds.add(elementId);

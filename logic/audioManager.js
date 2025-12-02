@@ -217,7 +217,7 @@ class AudioManager {
    * @returns {boolean}
    */
   hasSound(name) {
-    return this.buffers.has(name) || SFX_DEFINITIONS.hasOwnProperty(name);
+    return this.buffers.has(name) || Object.hasOwn(SFX_DEFINITIONS, name);
   }
 }
 
