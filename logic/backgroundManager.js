@@ -77,7 +77,7 @@ export function getTasksRemaining(background) {
  */
 export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
-  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  const shopOpened = wasShopOpenedWithNewBackgrounds();
   
   const backgrounds = Object.values(BACKGROUNDS)
     .map(bg => {
@@ -87,7 +87,8 @@ export function getAllBackgrounds() {
         isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
         state: state,
         tasksRemaining: getTasksRemaining(bg),
-        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !lastKnownPurchasable.includes(bg.id)
+        // Show NEW badge if background is purchasable and shop hasn't been opened since it became available
+        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !shopOpened
       };
     })
     .sort((a, b) => (a.tasksRequired || 0) - (b.tasksRequired || 0));
@@ -119,12 +120,16 @@ export function checkForNewlyPurchasableBackgrounds() {
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Do NOT update lastKnownPurchasable here - it will be updated when shop closes
-  // This ensures NEW badge shows on tiles when user opens shop
-  
-  // If new backgrounds became available, clear the shop opened flag so badge shows
+  // If new backgrounds became available, update lastKnownPurchasable to prevent showing the popup again
+  // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
     clearShopOpenedFlag();
+    // Mark these backgrounds as "seen" in terms of the unlock popup
+    // This prevents the popup from showing again on subsequent challenge completions
+    const unlockedIds = loadUnlockedBackgrounds();
+    const updatedKnownPurchasable = [...new Set([...lastKnownPurchasable, ...newlyPurchasable])]
+      .filter(id => !unlockedIds.includes(id));
+    saveLastKnownPurchasableBackgrounds(updatedKnownPurchasable);
   }
   
   // Get the first newly purchasable background object for display
