@@ -11,7 +11,9 @@ import {
   saveDiamonds,
   loadProgress,
   loadLastKnownPurchasableBackgrounds,
-  saveLastKnownPurchasableBackgrounds
+  saveLastKnownPurchasableBackgrounds,
+  wasShopOpenedWithNewBackgrounds,
+  clearShopOpenedFlag
 } from './storageManager.js';
 
 /**
@@ -75,15 +77,22 @@ export function getTasksRemaining(background) {
  */
 export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
+  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
   
-  return Object.values(BACKGROUNDS)
-    .map(bg => ({
-      ...bg,
-      isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
-      state: getBackgroundState(bg),
-      tasksRemaining: getTasksRemaining(bg)
-    }))
+  const backgrounds = Object.values(BACKGROUNDS)
+    .map(bg => {
+      const state = getBackgroundState(bg);
+      return {
+        ...bg,
+        isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
+        state: state,
+        tasksRemaining: getTasksRemaining(bg),
+        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !lastKnownPurchasable.includes(bg.id)
+      };
+    })
     .sort((a, b) => (a.tasksRequired || 0) - (b.tasksRequired || 0));
+  
+  return backgrounds;
 }
 
 /**
@@ -104,18 +113,19 @@ export function getPurchasableBackgroundIds() {
 export function checkForNewlyPurchasableBackgrounds() {
   const currentPurchasable = getPurchasableBackgroundIds();
   const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
-  const unlockedIds = loadUnlockedBackgrounds();
   
   // Find backgrounds that are now purchasable but weren't before
   const newlyPurchasable = currentPurchasable.filter(
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Update the stored list: combine with current purchasable, but remove any that have been purchased
-  // This ensures we don't show celebration popup for backgrounds that were already handled
-  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
-    .filter(id => !unlockedIds.includes(id)); // Remove purchased backgrounds
-  saveLastKnownPurchasableBackgrounds(allKnownPurchasable);
+  // Do NOT update lastKnownPurchasable here - it will be updated when shop closes
+  // This ensures NEW badge shows on tiles when user opens shop
+  
+  // If new backgrounds became available, clear the shop opened flag so badge shows
+  if (newlyPurchasable.length > 0) {
+    clearShopOpenedFlag();
+  }
   
   // Get the first newly purchasable background object for display
   const firstNewBackground = newlyPurchasable.length > 0 
@@ -127,6 +137,22 @@ export function checkForNewlyPurchasableBackgrounds() {
     firstNewBackground,
     hasNew: newlyPurchasable.length > 0
   };
+}
+
+/**
+ * Update the list of known purchasable backgrounds
+ * Should be called when shop is closed to mark backgrounds as "seen"
+ */
+export function updateKnownPurchasableBackgrounds() {
+  const currentPurchasable = getPurchasableBackgroundIds();
+  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  const unlockedIds = loadUnlockedBackgrounds();
+  
+  // Combine current and last known, but remove any that have been purchased
+  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
+    .filter(id => !unlockedIds.includes(id));
+  
+  saveLastKnownPurchasableBackgrounds(allKnownPurchasable);
 }
 
 /**
@@ -291,4 +317,19 @@ export function applySelectedBackground() {
  */
 export function getBackgroundInfo(backgroundId) {
   return BACKGROUNDS[backgroundId] || null;
+}
+
+/**
+ * Check if NEW badge should be shown (backgrounds are purchasable and shop hasn't been opened yet)
+ * @returns {boolean} True if NEW badge should be shown
+ */
+export function shouldShowNewBadge() {
+  // Check if any backgrounds are currently purchasable
+  const purchasableIds = getPurchasableBackgroundIds();
+  if (purchasableIds.length === 0) {
+    return false;
+  }
+  
+  // Check if shop was already opened with these backgrounds
+  return !wasShopOpenedWithNewBackgrounds();
 }

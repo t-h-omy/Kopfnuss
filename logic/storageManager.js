@@ -106,6 +106,7 @@ const BASE_STORAGE_KEYS = {
   UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
   SELECTED_BACKGROUND: 'kopfnuss_selected_background',
   LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds',
+  SHOP_OPENED_WITH_NEW_BACKGROUNDS: 'kopfnuss_shop_opened_with_new',
   // Seasonal event storage keys (appended with event ID)
   SEASONAL_CURRENCY: 'kopfnuss_seasonal_currency_',
   SEASONAL_TASK_COUNT: 'kopfnuss_seasonal_tasks_',
@@ -148,6 +149,7 @@ const STORAGE_KEYS = {
   get UNLOCKED_BACKGROUNDS() { return getStorageKey('kopfnuss_unlocked_backgrounds'); },
   get SELECTED_BACKGROUND() { return getStorageKey('kopfnuss_selected_background'); },
   get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); },
+  get SHOP_OPENED_WITH_NEW_BACKGROUNDS() { return getStorageKey('kopfnuss_shop_opened_with_new'); },
   // Seasonal event storage keys (appended with event ID)
   get SEASONAL_CURRENCY() { return getStorageKey('kopfnuss_seasonal_currency_'); },
   get SEASONAL_TASK_COUNT() { return getStorageKey('kopfnuss_seasonal_tasks_'); },
@@ -616,6 +618,30 @@ export function saveZeitChallenge(zeitState, date = getTodayDate()) {
 export function loadZeitChallenge(date = getTodayDate()) {
   const key = STORAGE_KEYS.ZEIT_CHALLENGE + date;
   return loadFromStorage(key, null);
+}
+
+/**
+ * Mark that shop has been opened with new backgrounds available
+ * This is used to hide the "NEW" badge after shop is viewed once
+ */
+export function markShopOpenedWithNewBackgrounds() {
+  return saveToStorage(STORAGE_KEYS.SHOP_OPENED_WITH_NEW_BACKGROUNDS, true);
+}
+
+/**
+ * Check if shop was opened with new backgrounds
+ * Returns false initially so badge shows on first new background
+ * @returns {boolean}
+ */
+export function wasShopOpenedWithNewBackgrounds() {
+  return loadFromStorage(STORAGE_KEYS.SHOP_OPENED_WITH_NEW_BACKGROUNDS, false);
+}
+
+/**
+ * Clear the shop opened flag (called when new backgrounds become available)
+ */
+export function clearShopOpenedFlag() {
+  return saveToStorage(STORAGE_KEYS.SHOP_OPENED_WITH_NEW_BACKGROUNDS, false);
 }
 
 export { STORAGE_KEYS };

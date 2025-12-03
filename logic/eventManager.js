@@ -537,6 +537,11 @@ export function getSeasonalBackgroundInfo(backgroundId) {
   const currency = getSeasonalCurrency();
   const unlockedBackgrounds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
   const isUnlocked = unlockedBackgrounds.includes(backgroundId);
+  const lastKnownPurchasable = loadSeasonalLastKnownPurchasable(activeEvent.id);
+  
+  // Check if this background is newly purchasable
+  const isPurchasable = !isUnlocked && taskCount >= background.tasksRequired;
+  const isNewlyPurchasable = isPurchasable && !lastKnownPurchasable.includes(backgroundId);
   
   return {
     ...background,
@@ -546,7 +551,8 @@ export function getSeasonalBackgroundInfo(backgroundId) {
     tasksRemaining: Math.max(0, background.tasksRequired - taskCount),
     currencyRemaining: Math.max(0, background.cost - currency),
     eventEmoticon: activeEvent.emoticon,
-    eventName: activeEvent.name
+    eventName: activeEvent.name,
+    isNewlyPurchasable: isNewlyPurchasable
   };
 }
 
@@ -610,17 +616,14 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
   
   const currentPurchasable = getPurchasableSeasonalBackgroundIds();
   const lastKnownPurchasable = loadSeasonalLastKnownPurchasable(activeEvent.id);
-  const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
   
   // Find backgrounds that are now purchasable but weren't before
   const newlyPurchasable = currentPurchasable.filter(
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Update the stored list
-  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
-    .filter(id => !unlockedIds.includes(id));
-  saveSeasonalLastKnownPurchasable(activeEvent.id, allKnownPurchasable);
+  // Do NOT update lastKnownPurchasable here - it will be updated when shop closes
+  // This ensures NEW badge shows on tiles when user opens shop
   
   // Get the first newly purchasable background object for display
   let firstNewBackground = null;
@@ -639,4 +642,25 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
     firstNewBackground,
     hasNew: newlyPurchasable.length > 0
   };
+}
+
+/**
+ * Update the list of known purchasable seasonal backgrounds
+ * Should be called when shop is closed to mark backgrounds as "seen"
+ */
+export function updateKnownSeasonalPurchasableBackgrounds() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    return;
+  }
+  
+  const currentPurchasable = getPurchasableSeasonalBackgroundIds();
+  const lastKnownPurchasable = loadSeasonalLastKnownPurchasable(activeEvent.id);
+  const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
+  
+  // Combine current and last known, but remove any that have been purchased
+  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
+    .filter(id => !unlockedIds.includes(id));
+  
+  saveSeasonalLastKnownPurchasable(activeEvent.id, allKnownPurchasable);
 }

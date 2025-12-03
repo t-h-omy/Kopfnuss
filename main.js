@@ -25,7 +25,8 @@ import {
   saveStreak,
   saveSelectedBackground as saveSelectedBackgroundToStorage,
   loadAudioMutedSetting,
-  saveAudioMutedSetting
+  saveAudioMutedSetting,
+  markShopOpenedWithNewBackgrounds
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancingLoader.js';
@@ -51,7 +52,9 @@ import {
   selectBackground,
   isBackgroundUnlocked,
   BACKGROUND_STATE,
-  checkForNewlyPurchasableBackgrounds
+  checkForNewlyPurchasableBackgrounds,
+  shouldShowNewBadge,
+  updateKnownPurchasableBackgrounds
 } from './logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -70,7 +73,8 @@ import {
   checkAndResetSeasonalBackground,
   isSeasonalBackgroundUsable,
   clearEventData,
-  checkForNewlyPurchasableSeasonalBackgrounds
+  checkForNewlyPurchasableSeasonalBackgrounds,
+  updateKnownSeasonalPurchasableBackgrounds
 } from './logic/eventManager.js';
 import { audioManager } from './logic/audioManager.js';
 
@@ -98,6 +102,12 @@ document.documentElement.style.setProperty('--shadow-spread-small', CONFIG.SHADO
 document.documentElement.style.setProperty('--shadow-spread-large', CONFIG.SHADOW_SPREAD_LARGE);
 document.documentElement.style.setProperty('--shadow-offset-y-small', CONFIG.SHADOW_OFFSET_Y_SMALL);
 document.documentElement.style.setProperty('--shadow-offset-y-large', CONFIG.SHADOW_OFFSET_Y_LARGE);
+
+// Set animation timing CSS variables from constants
+document.documentElement.style.setProperty('--shop-badge-shake-interval', `${ANIMATION_TIMING.NEW_BADGE_SHAKE_INTERVAL_MS}ms`);
+document.documentElement.style.setProperty('--shop-badge-shake-duration', `${ANIMATION_TIMING.NEW_BADGE_SHAKE_DURATION_MS}ms`);
+document.documentElement.style.setProperty('--reward-diamond-shake-interval', `${ANIMATION_TIMING.REWARD_BUTTON_SHAKE_INTERVAL_MS}ms`);
+document.documentElement.style.setProperty('--reward-diamond-shake-duration', `${ANIMATION_TIMING.REWARD_BUTTON_SHAKE_DURATION_MS}ms`);
 
 // Apply selected background on load
 applySelectedBackground();
@@ -523,6 +533,10 @@ function loadChallengesScreen(container) {
     `;
   }
   
+  // Check if NEW badge should be shown on shop button
+  const showNewBadge = shouldShowNewBadge();
+  const newBadgeHtml = showNewBadge ? '<span class="shop-new-badge">NEU</span>' : '';
+  
   // Create fixed header with two-row layout
   // Row 1: Left (streak, diamonds, seasonal currency) | Right (shop, burger menu)
   // Row 2: Left (diamond progress) | Right (event countdown)
@@ -545,8 +559,9 @@ function loadChallengesScreen(container) {
         </div>
       </div>
       <div class="header-row-right">
-        <button class="shop-button" id="shop-button" aria-label="Hintergründe anpassen">
+        <button class="shop-button ${showNewBadge ? 'has-new-badge' : ''}" id="shop-button" aria-label="Hintergründe anpassen">
           <span class="shop-icon">🛒</span>
+          ${newBadgeHtml}
         </button>
         <button class="burger-menu-button" id="burger-menu-button" aria-label="Einstellungen öffnen">
           <span class="burger-icon">☰</span>
@@ -595,15 +610,20 @@ function loadChallengesScreen(container) {
   const zeitChallenge = getOrCreateZeitChallenge();
   
   // Helper function to generate splash rays HTML (same as standard challenges)
-  function generateSplashRaysHtml(className = 'challenge-splash') {
+  function generateSplashRaysHtml(className = 'challenge-splash', splashSize = VISUAL_CONFIG.SPLASH_SIZE_STANDARD) {
     const numRays = 12;
+    const baseLength = splashSize || 30; // Fallback to 30 if not defined
+    
+    // Calculate container size based on ray length (container should be ~4.5x the ray length)
+    const containerSize = Math.round(baseLength * 4.5);
+    
     let raysHtml = '';
     for (let i = 0; i < numRays; i++) {
       const angle = (i * 360 / numRays);
-      const length = 25 + ((i % 3) * 6);
+      const length = baseLength + ((i % 3) * 6);
       raysHtml += `<div class="splash-ray" style="transform: translate(-50%, 0) rotate(${angle}deg); height: ${length}px;"></div>`;
     }
-    return `<div class="${className}">${raysHtml}</div>`;
+    return `<div class="${className}" style="width: ${containerSize}px; height: ${containerSize}px;">${raysHtml}</div>`;
   }
   
   // Create Zeit-Challenge section (if spawned and not completed)
@@ -641,8 +661,8 @@ function loadChallengesScreen(container) {
       zeitHintText = 'Erneut versuchen?';
     }
     
-    // Build splash rays (same as standard challenges)
-    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash');
+    // Build splash rays with premium size
+    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash', VISUAL_CONFIG.SPLASH_SIZE_PREMIUM);
     
     // Build celebration background for completed state
     let zeitCelebrationBg = '';
@@ -656,8 +676,9 @@ function loadChallengesScreen(container) {
         'celebration/challenge-node-bg-5.webp'
       ];
       const graphicIndex = Math.floor(Math.random() * zeitCelebrationGraphics.length);
+      const bgSize = Math.round(VISUAL_CONFIG.SPLASH_SIZE_PREMIUM * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
       zeitCelebrationBg = `
-        <div class="zeit-bg-graphic challenge-bg-graphic challenge-bg-animate">
+        <div class="zeit-bg-graphic challenge-bg-graphic challenge-bg-animate" style="width: ${bgSize}px; height: ${bgSize}px;">
           <img src="./assets/${zeitCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
         </div>
       `;
@@ -720,8 +741,8 @@ function loadChallengesScreen(container) {
       hintText = 'Erneut versuchen?';
     }
     
-    // Build splash rays (same as standard challenges)
-    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash');
+    // Build splash rays with premium size
+    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash', VISUAL_CONFIG.SPLASH_SIZE_PREMIUM);
     
     // Build celebration background for completed state
     let kopfnussCelebrationBg = '';
@@ -734,8 +755,9 @@ function loadChallengesScreen(container) {
         'celebration/challenge-node-bg-5.webp'
       ];
       const graphicIndex = Math.floor(Math.random() * kopfnussCelebrationGraphics.length);
+      const bgSize = Math.round(VISUAL_CONFIG.SPLASH_SIZE_PREMIUM * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
       kopfnussCelebrationBg = `
-        <div class="kopfnuss-bg-graphic challenge-bg-graphic challenge-bg-animate">
+        <div class="kopfnuss-bg-graphic challenge-bg-graphic challenge-bg-animate" style="width: ${bgSize}px; height: ${bgSize}px;">
           <img src="./assets/${kopfnussCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
         </div>
       `;
@@ -826,12 +848,22 @@ function loadChallengesScreen(container) {
     const splash = document.createElement('div');
     splash.className = 'challenge-splash';
     const numRays = 12;
+    // Use super challenge size if it's a super challenge, otherwise standard
+    const isSuperChallenge = challenge.isSuperChallenge;
+    const splashSize = isSuperChallenge ? (VISUAL_CONFIG.SPLASH_SIZE_SUPER || 45) : (VISUAL_CONFIG.SPLASH_SIZE_STANDARD || 30);
+    const baseLength = splashSize;
+    
+    // Set splash container size based on ray length (container should be ~4.5x the ray length)
+    const containerSize = Math.round(baseLength * 4.5);
+    splash.style.width = `${containerSize}px`;
+    splash.style.height = `${containerSize}px`;
+    
     for (let i = 0; i < numRays; i++) {
       const ray = document.createElement('div');
       ray.className = 'splash-ray';
       const angle = (i * 360 / numRays);
       // Use deterministic length based on ray index for consistent appearance
-      const length = 25 + ((i % 3) * 6);
+      const length = baseLength + ((i % 3) * 6);
       ray.style.transform = `translate(-50%, 0) rotate(${angle}deg)`;
       ray.style.height = `${length}px`;
       splash.appendChild(ray);
@@ -843,8 +875,12 @@ function loadChallengesScreen(container) {
       const bgGraphic = document.createElement('div');
       bgGraphic.className = 'challenge-bg-graphic';
       
-      // Apply size from balancing constant
-      const size = VISUAL_CONFIG.CELEBRATION_GRAPHIC_SIZE;
+      // Calculate size based on challenge type and VISUAL_CONFIG
+      const isSuperChallenge = challenge.isSuperChallenge;
+      const splashSize = isSuperChallenge 
+        ? VISUAL_CONFIG.SPLASH_SIZE_SUPER 
+        : VISUAL_CONFIG.SPLASH_SIZE_STANDARD;
+      const size = Math.round(splashSize * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
       bgGraphic.style.width = `${size}px`;
       bgGraphic.style.height = `${size}px`;
       
@@ -953,7 +989,7 @@ function loadChallengesScreen(container) {
   const rewardButton = document.createElement('button');
   rewardButton.id = 'reward-button';
   rewardButton.className = allCompleted ? 'reward-button active' : 'reward-button disabled';
-  rewardButton.textContent = 'Belohnung abholen';
+  rewardButton.innerHTML = `<span class="reward-diamond-icon ${allCompleted ? '' : 'shake-periodic'}">💎</span> Belohnung abholen`;
   rewardButton.disabled = !allCompleted;
   
   if (allCompleted) {
@@ -1094,8 +1130,9 @@ async function loadTaskScreen(container, challengeIndex) {
     <div class="task-screen" id="task-screen-content">
       <div class="task-screen-main">
         <div class="task-header">
+          <button id="back-button" aria-label="Zurück">←</button>
           <h2>Challenge ${challengeIndex + 1}</h2>
-          <button id="back-button">Zurück</button>
+          <div class="task-header-spacer"></div>
         </div>
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
@@ -1140,8 +1177,9 @@ async function loadKopfnussTaskScreen(container) {
     <div class="task-screen" id="task-screen-content">
       <div class="task-screen-main">
         <div class="task-header" style="background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 100%); border: 2px solid #DAA520;">
+          <button id="back-button" aria-label="Zurück">←</button>
           <h2 style="color: #8B4513;">🤔 Kopfnuss-Challenge</h2>
-          <button id="back-button">Zurück</button>
+          <div class="task-header-spacer"></div>
         </div>
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
@@ -1189,11 +1227,11 @@ async function loadZeitChallengeTaskScreen(container) {
     <div class="task-screen" id="task-screen-content">
       <div class="task-screen-main">
         <div class="task-header zeit-challenge-header" style="background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%); border: 2px solid #00ACC1;">
+          <button id="back-button" aria-label="Zurück">←</button>
           <h2 style="color: #006064;">⏱️ Zeit-Challenge</h2>
           <div class="zeit-timer-container">
             <span id="zeit-timer" class="zeit-timer">${formattedTime}</span>
           </div>
-          <button id="back-button">Zurück</button>
         </div>
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
@@ -1870,7 +1908,10 @@ function showSuperChallengeStartPopup(challengeIndex) {
       <span>🎯 Belohnung:</span>
       ${rewardHtml}
     </div>
-    <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
+    <div class="button-group">
+      <button id="super-challenge-cancel-button" class="btn-secondary">Gerade nicht</button>
+      <button id="super-challenge-start-button" class="btn-primary btn-super-challenge">Das schaff ich!</button>
+    </div>
   `;
   
   overlay.appendChild(popupCard);
@@ -1880,6 +1921,11 @@ function showSuperChallengeStartPopup(challengeIndex) {
   startButton.addEventListener('click', () => {
     overlay.remove();
     showScreen('taskScreen', challengeIndex);
+  });
+  
+  const cancelButton = document.getElementById('super-challenge-cancel-button');
+  cancelButton.addEventListener('click', () => {
+    overlay.remove();
   });
 }
 
@@ -3659,6 +3705,7 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
       let costHtml = '';
       let statusHtml = '';
       let lockIcon = '';
+      let newBadge = '';
       
       if (isActive) {
         tileClass += ' state-active selected';
@@ -3675,6 +3722,10 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
       } else {
         tileClass += ' state-purchasable purchasable seasonal-purchasable';
         costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
+        // Add NEW badge for newly purchasable seasonal backgrounds
+        if (bg.isNewlyPurchasable) {
+          newBadge = '<div class="background-new-badge">NEU</div>';
+        }
       }
       
       seasonalSectionHtml += `
@@ -3682,6 +3733,7 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
           <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
           ${lockIcon}
           ${statusHtml}
+          ${newBadge}
           <div class="background-info">
             <div class="background-name">${bg.name}</div>
             ${costHtml}
@@ -3741,12 +3793,14 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     // Build badges and icons
     let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
     let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
+    let newBadge = (state === BACKGROUND_STATE.PURCHASABLE && bg.isNewlyPurchasable) ? '<div class="background-new-badge">NEU</div>' : '';
     
     tilesHtml += `
       <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="false">
         <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
         ${lockIcon}
         ${activeBadge}
+        ${newBadge}
         <div class="background-info">
           <div class="background-name">${bg.name}</div>
           ${costHtml}
@@ -3837,6 +3891,22 @@ function closeBackgroundShopPopup() {
   const overlay = document.getElementById('background-shop-overlay');
   if (overlay) {
     overlay.remove();
+  }
+  // Mark shop as opened to hide NEW badge after closing
+  markShopOpenedWithNewBackgrounds();
+  // Update the list of known purchasable backgrounds (marks them as "seen")
+  updateKnownPurchasableBackgrounds();
+  updateKnownSeasonalPurchasableBackgrounds();
+  
+  // Update shop button to remove NEW badge class
+  const shopButton = document.getElementById('shop-button');
+  if (shopButton) {
+    shopButton.classList.remove('has-new-badge');
+    // Also remove the badge HTML
+    const badgeElement = shopButton.querySelector('.shop-new-badge');
+    if (badgeElement) {
+      badgeElement.remove();
+    }
   }
 }
 

@@ -249,10 +249,19 @@ function displayCurrentTask() {
     questionElement.textContent = `${currentTask.question} = ?`;
   }
   
-  // Update progress display
+  // Update progress bar (visual segments instead of text)
   const progressElement = document.getElementById('task-progress');
   if (progressElement) {
-    progressElement.textContent = `Aufgabe ${currentTaskIndex + 1} von ${zeitState.tasks.length}`;
+    const currentTaskNumber = currentTaskIndex + 1;
+    const totalTasks = zeitState.tasks.length;
+    // Create segmented progress bar
+    let progressBarHtml = '<div class="task-progress-bar">';
+    for (let i = 1; i <= totalTasks; i++) {
+      const segmentClass = i < currentTaskNumber ? 'progress-segment filled' : 'progress-segment';
+      progressBarHtml += `<div class="${segmentClass}"></div>`;
+    }
+    progressBarHtml += '</div>';
+    progressElement.innerHTML = progressBarHtml;
   }
   
   // Clear input

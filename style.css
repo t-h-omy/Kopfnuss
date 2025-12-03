@@ -332,6 +332,58 @@ button,
   font-size: 24px;
 }
 
+/* Shop NEW Badge */
+.shop-button {
+  position: relative;
+}
+
+.shop-new-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--color-orange);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(242, 140, 40, 0.4);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.shop-button.has-new-badge {
+  /* Total duration = shake duration + interval. Shake happens in first 600ms, rest is pause */
+  animation-name: shopButtonShake;
+  animation-duration: calc(var(--shop-badge-shake-duration, 0.6s) + var(--shop-badge-shake-interval, 3s));
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes shopButtonShake {
+  /* Shake happens in first ~17% (600ms of 3600ms), rest is idle */
+  0% { transform: translateX(0); }
+  2%, 6%, 10%, 14% { transform: translateX(-3px); }
+  4%, 8%, 12%, 16% { transform: translateX(3px); }
+  17%, 100% { transform: translateX(0); }
+}
+
+/* Background tile NEW Badge */
+.background-new-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-orange);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(242, 140, 40, 0.5);
+  pointer-events: none;
+  z-index: 10;
+}
+
 /* Reward Button */
 .reward-section {
   display: flex;
@@ -350,6 +402,31 @@ button,
   cursor: pointer;
   transition: all var(--transition);
   min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.reward-diamond-icon {
+  font-size: 20px;
+  display: inline-block;
+}
+
+.reward-diamond-icon.shake-periodic {
+  /* Total duration = shake duration + interval. Shake happens in first 500ms, rest is pause */
+  animation-name: rewardDiamondShake;
+  animation-duration: calc(var(--reward-diamond-shake-duration, 0.5s) + var(--reward-diamond-shake-interval, 2.5s));
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rewardDiamondShake {
+  /* Shake happens in first ~17% (500ms of 3000ms), rest is idle */
+  0% { transform: rotate(0deg); }
+  2%, 6%, 10%, 14% { transform: rotate(-10deg); }
+  4%, 8%, 12%, 16% { transform: rotate(10deg); }
+  17%, 100% { transform: rotate(0deg); }
 }
 
 .reward-button.active {
@@ -369,11 +446,11 @@ button,
 }
 
 .reward-button.disabled {
-  background: var(--color-gray);
-  color: #999;
+  background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
+  color: #666;
   cursor: not-allowed;
-  opacity: 0.6;
-  box-shadow: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #9E9E9E;
 }
 
 .reward-button-focus-highlight {
@@ -982,8 +1059,7 @@ button,
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 140px;
-  height: 140px;
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG */
   z-index: -1;
   pointer-events: none;
 }
@@ -993,7 +1069,7 @@ button,
   top: 50%;
   left: 50%;
   width: 6px;
-  height: 30px;
+  /* height set dynamically via JavaScript based on VISUAL_CONFIG */
   opacity: 0.75;
   transform-origin: center top;
   border-radius: 3px;
@@ -1022,13 +1098,12 @@ button,
 }
 
 /* Celebration Background Graphic */
+/* Size set dynamically via JavaScript based on VISUAL_CONFIG */
 .challenge-bg-graphic {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 168px;
-  height: 168px;
   z-index: 1;
   pointer-events: none;
   opacity: 0.9;
@@ -1390,6 +1465,20 @@ button,
   box-shadow: 0 6px 16px rgba(153, 50, 204, 0.5);
 }
 
+/* Button Group for Popups */
+.button-group {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.button-group button {
+  flex: 1;
+  max-width: 180px;
+}
+
 /* Super Challenge Success Popup */
 .super-success-popup-card {
   animation: scaleIn 0.4s ease, bounceIn 0.6s ease;
@@ -1497,6 +1586,22 @@ button,
   font-size: 18px;
   font-weight: 600;
   color: var(--color-blue);
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.task-header-spacer {
+  width: 44px; /* Same width as back button for symmetry */
+}
+
+.task-header #back-button {
+  font-size: 24px;
+  padding: var(--spacing-xs);
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Progress */
@@ -1505,11 +1610,44 @@ button,
   background: white;
   border-radius: var(--radius-md);
   box-shadow: 0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-color);
   flex-shrink: 0;
+}
+
+/* Task Progress Bar */
+.task-progress-bar {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 8px;
+  background: var(--color-gray);
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  max-width: 50px;
+}
+
+.progress-segment.filled {
+  background: linear-gradient(90deg, var(--color-orange) 0%, #ff9f4a 100%);
+  animation: progressSegmentFill 0.3s ease-out;
+}
+
+@keyframes progressSegmentFill {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scaleX(1.1);
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
 }
 
 .progress-bar-container {
@@ -2580,10 +2718,7 @@ button,
     font-size: 40px;
   }
 
-  .challenge-bg-graphic {
-    width: 180px;
-    height: 180px;
-  }
+  /* challenge-bg-graphic size set dynamically via JavaScript based on VISUAL_CONFIG */
 
   .challenge-info-card {
     max-width: 310px;
@@ -2612,17 +2747,11 @@ button,
     font-size: 44px;
   }
 
-  .challenge-splash {
-    width: 150px;
-    height: 150px;
-  }
+  /* challenge-splash width and height set dynamically via JavaScript based on VISUAL_CONFIG */
 
-  .challenge-bg-graphic {
-    width: 192px;
-    height: 192px;
-  }
+  /* challenge-bg-graphic size set dynamically via JavaScript based on VISUAL_CONFIG */
 
-  .splash-ray { height: 32px; }
+  /* splash-ray height set dynamically via JavaScript based on VISUAL_CONFIG */
 }
 
 
@@ -3047,14 +3176,13 @@ button,
 
 /* Kopfnuss Splash Ray Styles - Available state animation */
 .kopfnuss-splash.challenge-splash {
-  width: 180px;
-  height: 180px;
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
 }
 
 .kopfnuss-splash .splash-ray {
   color: #DAA520;
   background: linear-gradient(to bottom, #DAA520, transparent);
-  height: 40px;
+  /* height set dynamically via JavaScript using VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
   width: 7px;
 }
 
@@ -3372,14 +3500,13 @@ button,
 
 /* Zeit-Challenge Splash Ray Styles - Available state animation */
 .zeit-splash.challenge-splash {
-  width: 180px;
-  height: 180px;
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
 }
 
 .zeit-splash .splash-ray {
   color: #00ACC1;
   background: linear-gradient(to bottom, #00ACC1, transparent);
-  height: 40px;
+  /* height set dynamically via JavaScript using VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
   width: 7px;
 }
 
