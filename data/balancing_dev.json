@@ -568,6 +568,105 @@
       "tasksRequired": 52,
       "eventId": "summer",
       "isSeasonal": true
+    },
+    "summerCandy": {
+      "id": "summerCandy",
+      "name": "Süßigkeiten",
+      "file": "backgrounds/summer/candy.webp",
+      "cost": 5,
+      "tasksRequired": 56,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerCapybara": {
+      "id": "summerCapybara",
+      "name": "Capybara",
+      "file": "backgrounds/summer/capybara.webp",
+      "cost": 6,
+      "tasksRequired": 60,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerCartoon": {
+      "id": "summerCartoon",
+      "name": "Cartoon-Umriss",
+      "file": "backgrounds/summer/cartoon_outline.webp",
+      "cost": 6,
+      "tasksRequired": 64,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerCat": {
+      "id": "summerCat",
+      "name": "Katze",
+      "file": "backgrounds/summer/cat.webp",
+      "cost": 6,
+      "tasksRequired": 68,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerDino": {
+      "id": "summerDino",
+      "name": "Dinosaurier",
+      "file": "backgrounds/summer/dino.webp",
+      "cost": 7,
+      "tasksRequired": 72,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerElephant": {
+      "id": "summerElephant",
+      "name": "Elefantenmuster",
+      "file": "backgrounds/summer/elephant_pattern.webp",
+      "cost": 7,
+      "tasksRequired": 76,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerMaineCoon": {
+      "id": "summerMaineCoon",
+      "name": "Maine Coon",
+      "file": "backgrounds/summer/maine_coon.webp",
+      "cost": 7,
+      "tasksRequired": 80,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerPomeranian": {
+      "id": "summerPomeranian",
+      "name": "Pomeranian",
+      "file": "backgrounds/summer/pomeranian.webp",
+      "cost": 8,
+      "tasksRequired": 84,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerSnakeJungle": {
+      "id": "summerSnakeJungle",
+      "name": "Dschungelschlange",
+      "file": "backgrounds/summer/snake_jungle.webp",
+      "cost": 8,
+      "tasksRequired": 88,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerGradient": {
+      "id": "summerGradient",
+      "name": "Weicher Farbverlauf",
+      "file": "backgrounds/summer/soft_gradient.webp",
+      "cost": 8,
+      "tasksRequired": 92,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerUnicorn": {
+      "id": "summerUnicorn",
+      "name": "Einhorn",
+      "file": "backgrounds/summer/unicorn.webp",
+      "cost": 9,
+      "tasksRequired": 96,
+      "eventId": "summer",
+      "isSeasonal": true
     }
   },
   "HALLOWEEN_BACKGROUNDS": {
