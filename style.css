@@ -1070,7 +1070,7 @@ button,
   top: 50%;
   left: 50%;
   width: 6px;
-  height: 30px;
+  /* height set dynamically via JavaScript based on VISUAL_CONFIG */
   opacity: 0.75;
   transform-origin: center top;
   border-radius: 3px;
@@ -2762,7 +2762,7 @@ button,
     height: 192px;
   }
 
-  .splash-ray { height: 32px; }
+  /* splash-ray height set dynamically via JavaScript based on VISUAL_CONFIG */
 }
 
 
@@ -3194,7 +3194,7 @@ button,
 .kopfnuss-splash .splash-ray {
   color: #DAA520;
   background: linear-gradient(to bottom, #DAA520, transparent);
-  height: 40px;
+  /* height set dynamically via JavaScript using VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
   width: 7px;
 }
 
@@ -3519,7 +3519,7 @@ button,
 .zeit-splash .splash-ray {
   color: #00ACC1;
   background: linear-gradient(to bottom, #00ACC1, transparent);
-  height: 40px;
+  /* height set dynamically via JavaScript using VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
   width: 7px;
 }
 
