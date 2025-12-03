@@ -113,18 +113,14 @@ export function getPurchasableBackgroundIds() {
 export function checkForNewlyPurchasableBackgrounds() {
   const currentPurchasable = getPurchasableBackgroundIds();
   const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
-  const unlockedIds = loadUnlockedBackgrounds();
   
   // Find backgrounds that are now purchasable but weren't before
   const newlyPurchasable = currentPurchasable.filter(
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Update the stored list: combine with current purchasable, but remove any that have been purchased
-  // This ensures we don't show celebration popup for backgrounds that were already handled
-  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
-    .filter(id => !unlockedIds.includes(id)); // Remove purchased backgrounds
-  saveLastKnownPurchasableBackgrounds(allKnownPurchasable);
+  // Do NOT update lastKnownPurchasable here - it will be updated when shop closes
+  // This ensures NEW badge shows on tiles when user opens shop
   
   // If new backgrounds became available, clear the shop opened flag so badge shows
   if (newlyPurchasable.length > 0) {
@@ -141,6 +137,22 @@ export function checkForNewlyPurchasableBackgrounds() {
     firstNewBackground,
     hasNew: newlyPurchasable.length > 0
   };
+}
+
+/**
+ * Update the list of known purchasable backgrounds
+ * Should be called when shop is closed to mark backgrounds as "seen"
+ */
+export function updateKnownPurchasableBackgrounds() {
+  const currentPurchasable = getPurchasableBackgroundIds();
+  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  const unlockedIds = loadUnlockedBackgrounds();
+  
+  // Combine current and last known, but remove any that have been purchased
+  const allKnownPurchasable = [...new Set([...lastKnownPurchasable, ...currentPurchasable])]
+    .filter(id => !unlockedIds.includes(id));
+  
+  saveLastKnownPurchasableBackgrounds(allKnownPurchasable);
 }
 
 /**

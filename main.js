@@ -53,7 +53,8 @@ import {
   isBackgroundUnlocked,
   BACKGROUND_STATE,
   checkForNewlyPurchasableBackgrounds,
-  shouldShowNewBadge
+  shouldShowNewBadge,
+  updateKnownPurchasableBackgrounds
 } from './logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -3871,6 +3872,8 @@ function closeBackgroundShopPopup() {
   }
   // Mark shop as opened to hide NEW badge after closing
   markShopOpenedWithNewBackgrounds();
+  // Update the list of known purchasable backgrounds (marks them as "seen")
+  updateKnownPurchasableBackgrounds();
 }
 
 /**
