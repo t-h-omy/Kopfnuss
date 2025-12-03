@@ -147,7 +147,7 @@ export const VISUAL_CONFIG = {
   
   // Size in pixels of splash graphic for premium challenges (Kopfnuss, Zeit-Challenge)
   // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_PREMIUM: 50,
+  SPLASH_SIZE_PREMIUM: 40,
   
   // Size in pixels of splash graphic for Super Challenges
   // Applied in: main.js - generateSplashRaysHtml()
