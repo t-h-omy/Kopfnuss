@@ -101,6 +101,12 @@ document.documentElement.style.setProperty('--shadow-spread-large', CONFIG.SHADO
 document.documentElement.style.setProperty('--shadow-offset-y-small', CONFIG.SHADOW_OFFSET_Y_SMALL);
 document.documentElement.style.setProperty('--shadow-offset-y-large', CONFIG.SHADOW_OFFSET_Y_LARGE);
 
+// Set animation timing CSS variables from balancing config
+document.documentElement.style.setProperty('--shop-badge-shake-interval', `${CONFIG.NEW_BADGE_SHAKE_INTERVAL_MS}ms`);
+document.documentElement.style.setProperty('--shop-badge-shake-duration', `${CONFIG.NEW_BADGE_SHAKE_DURATION_MS}ms`);
+document.documentElement.style.setProperty('--reward-diamond-shake-interval', `${CONFIG.REWARD_BUTTON_SHAKE_INTERVAL_MS}ms`);
+document.documentElement.style.setProperty('--reward-diamond-shake-duration', `${CONFIG.REWARD_BUTTON_SHAKE_DURATION_MS}ms`);
+
 // Apply selected background on load
 applySelectedBackground();
 
@@ -576,8 +582,6 @@ function loadChallengesScreen(container) {
   
   const shopButton = header.querySelector('#shop-button');
   shopButton.addEventListener('click', () => {
-    // Mark shop as opened to hide NEW badge
-    markShopOpenedWithNewBackgrounds();
     // Open shop without auto-scrolling - shop will show event backgrounds at top by default
     showBackgroundShopPopup(null);
   });
@@ -3865,6 +3869,8 @@ function closeBackgroundShopPopup() {
   if (overlay) {
     overlay.remove();
   }
+  // Mark shop as opened to hide NEW badge after closing
+  markShopOpenedWithNewBackgrounds();
 }
 
 /**
