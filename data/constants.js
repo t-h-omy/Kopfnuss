@@ -43,7 +43,27 @@ export const ANIMATION_TIMING = {
   
   // Delay before showing streak popup after initial app load
   // Applied in: main.js - loadInitialRoute()
-  INITIAL_POPUP_DELAY: 100
+  INITIAL_POPUP_DELAY: 100,
+  
+  // Interval between NEW badge shake animations on shop button
+  // Applied in: main.js - sets CSS variable --shop-badge-shake-interval
+  // CSS match: style.css - .shop-new-badge animation
+  NEW_BADGE_SHAKE_INTERVAL_MS: 3000,
+  
+  // Duration of NEW badge shake animation on shop button
+  // Applied in: main.js - sets CSS variable --shop-badge-shake-duration
+  // CSS match: style.css - .shop-new-badge animation
+  NEW_BADGE_SHAKE_DURATION_MS: 600,
+  
+  // Interval between reward button diamond shake animations
+  // Applied in: main.js - sets CSS variable --reward-diamond-shake-interval
+  // CSS match: style.css - .reward-diamond-icon animation
+  REWARD_BUTTON_SHAKE_INTERVAL_MS: 2500,
+  
+  // Duration of reward button diamond shake animation
+  // Applied in: main.js - sets CSS variable --reward-diamond-shake-duration
+  // CSS match: style.css - .reward-diamond-icon animation
+  REWARD_BUTTON_SHAKE_DURATION_MS: 500
 };
 
 /**
@@ -131,7 +151,19 @@ export const VISUAL_CONFIG = {
   // Opacity of the fullscreen background image (0.0 = invisible, 1.0 = fully visible)
   // Applied in: main.js → sets CSS variable --background-opacity
   // Affects: style.css - .challenges-container::before, .task-screen::before
-  BACKGROUND_OPACITY: 1.00
+  BACKGROUND_OPACITY: 1.00,
+  
+  // Size in pixels of splash graphic for standard challenges
+  // Applied in: main.js - generateSplashRaysHtml()
+  SPLASH_SIZE_STANDARD: 30,
+  
+  // Size in pixels of splash graphic for premium challenges (Kopfnuss, Zeit-Challenge)
+  // Applied in: main.js - generateSplashRaysHtml()
+  SPLASH_SIZE_PREMIUM: 50,
+  
+  // Size in pixels of splash graphic for Super Challenges
+  // Applied in: main.js - generateSplashRaysHtml()
+  SPLASH_SIZE_SUPER: 45
 };
 
 /**

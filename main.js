@@ -103,11 +103,11 @@ document.documentElement.style.setProperty('--shadow-spread-large', CONFIG.SHADO
 document.documentElement.style.setProperty('--shadow-offset-y-small', CONFIG.SHADOW_OFFSET_Y_SMALL);
 document.documentElement.style.setProperty('--shadow-offset-y-large', CONFIG.SHADOW_OFFSET_Y_LARGE);
 
-// Set animation timing CSS variables from balancing config
-document.documentElement.style.setProperty('--shop-badge-shake-interval', `${CONFIG.NEW_BADGE_SHAKE_INTERVAL_MS}ms`);
-document.documentElement.style.setProperty('--shop-badge-shake-duration', `${CONFIG.NEW_BADGE_SHAKE_DURATION_MS}ms`);
-document.documentElement.style.setProperty('--reward-diamond-shake-interval', `${CONFIG.REWARD_BUTTON_SHAKE_INTERVAL_MS}ms`);
-document.documentElement.style.setProperty('--reward-diamond-shake-duration', `${CONFIG.REWARD_BUTTON_SHAKE_DURATION_MS}ms`);
+// Set animation timing CSS variables from constants
+document.documentElement.style.setProperty('--shop-badge-shake-interval', `${ANIMATION_TIMING.NEW_BADGE_SHAKE_INTERVAL_MS}ms`);
+document.documentElement.style.setProperty('--shop-badge-shake-duration', `${ANIMATION_TIMING.NEW_BADGE_SHAKE_DURATION_MS}ms`);
+document.documentElement.style.setProperty('--reward-diamond-shake-interval', `${ANIMATION_TIMING.REWARD_BUTTON_SHAKE_INTERVAL_MS}ms`);
+document.documentElement.style.setProperty('--reward-diamond-shake-duration', `${ANIMATION_TIMING.REWARD_BUTTON_SHAKE_DURATION_MS}ms`);
 
 // Apply selected background on load
 applySelectedBackground();
@@ -610,7 +610,7 @@ function loadChallengesScreen(container) {
   const zeitChallenge = getOrCreateZeitChallenge();
   
   // Helper function to generate splash rays HTML (same as standard challenges)
-  function generateSplashRaysHtml(className = 'challenge-splash', splashSize = CONFIG.SPLASH_SIZE_STANDARD) {
+  function generateSplashRaysHtml(className = 'challenge-splash', splashSize = VISUAL_CONFIG.SPLASH_SIZE_STANDARD) {
     const numRays = 12;
     let raysHtml = '';
     for (let i = 0; i < numRays; i++) {
@@ -658,7 +658,7 @@ function loadChallengesScreen(container) {
     }
     
     // Build splash rays with premium size
-    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash', CONFIG.SPLASH_SIZE_PREMIUM);
+    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash', VISUAL_CONFIG.SPLASH_SIZE_PREMIUM);
     
     // Build celebration background for completed state
     let zeitCelebrationBg = '';
@@ -737,7 +737,7 @@ function loadChallengesScreen(container) {
     }
     
     // Build splash rays with premium size
-    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash', CONFIG.SPLASH_SIZE_PREMIUM);
+    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash', VISUAL_CONFIG.SPLASH_SIZE_PREMIUM);
     
     // Build celebration background for completed state
     let kopfnussCelebrationBg = '';
@@ -844,7 +844,7 @@ function loadChallengesScreen(container) {
     const numRays = 12;
     // Use super challenge size if it's a super challenge, otherwise standard
     const isSuperChallenge = challenge.isSuperChallenge;
-    const splashSize = isSuperChallenge ? (CONFIG.SPLASH_SIZE_SUPER || 45) : (CONFIG.SPLASH_SIZE_STANDARD || 30);
+    const splashSize = isSuperChallenge ? (VISUAL_CONFIG.SPLASH_SIZE_SUPER || 45) : (VISUAL_CONFIG.SPLASH_SIZE_STANDARD || 30);
     const baseLength = splashSize;
     
     for (let i = 0; i < numRays; i++) {
