@@ -73,7 +73,8 @@ import {
   checkAndResetSeasonalBackground,
   isSeasonalBackgroundUsable,
   clearEventData,
-  checkForNewlyPurchasableSeasonalBackgrounds
+  checkForNewlyPurchasableSeasonalBackgrounds,
+  updateKnownSeasonalPurchasableBackgrounds
 } from './logic/eventManager.js';
 import { audioManager } from './logic/audioManager.js';
 
@@ -3689,6 +3690,7 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
       let costHtml = '';
       let statusHtml = '';
       let lockIcon = '';
+      let newBadge = '';
       
       if (isActive) {
         tileClass += ' state-active selected';
@@ -3705,6 +3707,10 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
       } else {
         tileClass += ' state-purchasable purchasable seasonal-purchasable';
         costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
+        // Add NEW badge for newly purchasable seasonal backgrounds
+        if (bg.isNewlyPurchasable) {
+          newBadge = '<div class="background-new-badge">NEU</div>';
+        }
       }
       
       seasonalSectionHtml += `
@@ -3712,6 +3718,7 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
           <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
           ${lockIcon}
           ${statusHtml}
+          ${newBadge}
           <div class="background-info">
             <div class="background-name">${bg.name}</div>
             ${costHtml}
@@ -3874,6 +3881,18 @@ function closeBackgroundShopPopup() {
   markShopOpenedWithNewBackgrounds();
   // Update the list of known purchasable backgrounds (marks them as "seen")
   updateKnownPurchasableBackgrounds();
+  updateKnownSeasonalPurchasableBackgrounds();
+  
+  // Update shop button to remove NEW badge class
+  const shopButton = document.getElementById('shop-button');
+  if (shopButton) {
+    shopButton.classList.remove('has-new-badge');
+    // Also remove the badge HTML
+    const badgeElement = shopButton.querySelector('.shop-new-badge');
+    if (badgeElement) {
+      badgeElement.remove();
+    }
+  }
 }
 
 /**
