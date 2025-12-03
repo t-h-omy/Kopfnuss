@@ -612,14 +612,18 @@ function loadChallengesScreen(container) {
   // Helper function to generate splash rays HTML (same as standard challenges)
   function generateSplashRaysHtml(className = 'challenge-splash', splashSize = VISUAL_CONFIG.SPLASH_SIZE_STANDARD) {
     const numRays = 12;
+    const baseLength = splashSize || 30; // Fallback to 30 if not defined
+    
+    // Calculate container size based on ray length (container should be ~4.5x the ray length)
+    const containerSize = Math.round(baseLength * 4.5);
+    
     let raysHtml = '';
     for (let i = 0; i < numRays; i++) {
       const angle = (i * 360 / numRays);
-      const baseLength = splashSize || 30; // Fallback to 30 if not defined
       const length = baseLength + ((i % 3) * 6);
       raysHtml += `<div class="splash-ray" style="transform: translate(-50%, 0) rotate(${angle}deg); height: ${length}px;"></div>`;
     }
-    return `<div class="${className}">${raysHtml}</div>`;
+    return `<div class="${className}" style="width: ${containerSize}px; height: ${containerSize}px;">${raysHtml}</div>`;
   }
   
   // Create Zeit-Challenge section (if spawned and not completed)
@@ -846,6 +850,11 @@ function loadChallengesScreen(container) {
     const isSuperChallenge = challenge.isSuperChallenge;
     const splashSize = isSuperChallenge ? (VISUAL_CONFIG.SPLASH_SIZE_SUPER || 45) : (VISUAL_CONFIG.SPLASH_SIZE_STANDARD || 30);
     const baseLength = splashSize;
+    
+    // Set splash container size based on ray length (container should be ~4.5x the ray length)
+    const containerSize = Math.round(baseLength * 4.5);
+    splash.style.width = `${containerSize}px`;
+    splash.style.height = `${containerSize}px`;
     
     for (let i = 0; i < numRays; i++) {
       const ray = document.createElement('div');

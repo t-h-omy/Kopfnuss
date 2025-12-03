@@ -1059,8 +1059,7 @@ button,
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 140px;
-  height: 140px;
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG */
   z-index: -1;
   pointer-events: none;
 }
@@ -2752,10 +2751,7 @@ button,
     font-size: 44px;
   }
 
-  .challenge-splash {
-    width: 150px;
-    height: 150px;
-  }
+  /* challenge-splash width and height set dynamically via JavaScript based on VISUAL_CONFIG */
 
   .challenge-bg-graphic {
     width: 192px;
@@ -3187,8 +3183,7 @@ button,
 
 /* Kopfnuss Splash Ray Styles - Available state animation */
 .kopfnuss-splash.challenge-splash {
-  width: 180px;
-  height: 180px;
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
 }
 
 .kopfnuss-splash .splash-ray {
@@ -3512,8 +3507,7 @@ button,
 
 /* Zeit-Challenge Splash Ray Styles - Available state animation */
 .zeit-splash.challenge-splash {
-  width: 180px;
-  height: 180px;
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
 }
 
 .zeit-splash .splash-ray {
