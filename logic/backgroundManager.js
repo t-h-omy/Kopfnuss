@@ -119,12 +119,16 @@ export function checkForNewlyPurchasableBackgrounds() {
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Do NOT update lastKnownPurchasable here - it will be updated when shop closes
-  // This ensures NEW badge shows on tiles when user opens shop
-  
-  // If new backgrounds became available, clear the shop opened flag so badge shows
+  // If new backgrounds became available, update lastKnownPurchasable to prevent showing the popup again
+  // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
     clearShopOpenedFlag();
+    // Mark these backgrounds as "seen" in terms of the unlock popup
+    // This prevents the popup from showing again on subsequent challenge completions
+    const unlockedIds = loadUnlockedBackgrounds();
+    const updatedKnownPurchasable = [...new Set([...lastKnownPurchasable, ...newlyPurchasable])]
+      .filter(id => !unlockedIds.includes(id));
+    saveLastKnownPurchasableBackgrounds(updatedKnownPurchasable);
   }
   
   // Get the first newly purchasable background object for display

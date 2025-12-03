@@ -622,8 +622,15 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
     id => !lastKnownPurchasable.includes(id)
   );
   
-  // Do NOT update lastKnownPurchasable here - it will be updated when shop closes
-  // This ensures NEW badge shows on tiles when user opens shop
+  // If new backgrounds became available, update lastKnownPurchasable to prevent showing the popup again
+  if (newlyPurchasable.length > 0) {
+    // Mark these backgrounds as "seen" in terms of the unlock popup
+    // This prevents the popup from showing again on subsequent challenge completions
+    const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
+    const updatedKnownPurchasable = [...new Set([...lastKnownPurchasable, ...newlyPurchasable])]
+      .filter(id => !unlockedIds.includes(id));
+    saveSeasonalLastKnownPurchasable(activeEvent.id, updatedKnownPurchasable);
+  }
   
   // Get the first newly purchasable background object for display
   let firstNewBackground = null;
