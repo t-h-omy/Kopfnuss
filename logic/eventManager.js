@@ -17,6 +17,7 @@ import {
   saveSelectedBackground,
   loadSeasonalLastKnownPurchasable,
   saveSeasonalLastKnownPurchasable,
+  clearShopOpenedFlag,
   getTodayDate
 } from './storageManager.js';
 
@@ -623,7 +624,9 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
   );
   
   // If new backgrounds became available, update lastKnownPurchasable to prevent showing the popup again
+  // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
+    clearShopOpenedFlag();
     // Mark these backgrounds as "seen" in terms of the unlock popup
     // This prevents the popup from showing again on subsequent challenge completions
     const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
