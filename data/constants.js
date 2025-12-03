@@ -143,15 +143,15 @@ export const VISUAL_CONFIG = {
   
   // Size in pixels of splash graphic for standard challenges
   // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_STANDARD: 30,
+  SPLASH_SIZE_STANDARD: 35,
   
   // Size in pixels of splash graphic for premium challenges (Kopfnuss, Zeit-Challenge)
   // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_PREMIUM: 60,
+  SPLASH_SIZE_PREMIUM: 50,
   
   // Size in pixels of splash graphic for Super Challenges
   // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_SUPER: 45,
+  SPLASH_SIZE_SUPER: 40,
   
   // Celebration background graphic size multiplier (celebration graphic size = splash size * this)
   // Applied in: main.js - celebration graphic sizing for completed challenges
