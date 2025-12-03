@@ -3176,13 +3176,13 @@ button,
 
 /* Kopfnuss Splash Ray Styles - Available state animation */
 .kopfnuss-splash.challenge-splash {
-  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE */
 }
 
 .kopfnuss-splash .splash-ray {
   color: #DAA520;
   background: linear-gradient(to bottom, #DAA520, transparent);
-  /* height set dynamically via JavaScript using VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
+  /* height set dynamically via JavaScript using VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE */
   width: 7px;
 }
 
@@ -3500,13 +3500,13 @@ button,
 
 /* Zeit-Challenge Splash Ray Styles - Available state animation */
 .zeit-splash.challenge-splash {
-  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
+  /* width and height set dynamically via JavaScript based on VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE */
 }
 
 .zeit-splash .splash-ray {
   color: #00ACC1;
   background: linear-gradient(to bottom, #00ACC1, transparent);
-  /* height set dynamically via JavaScript using VISUAL_CONFIG.SPLASH_SIZE_PREMIUM */
+  /* height set dynamically via JavaScript using VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE */
   width: 7px;
 }
 

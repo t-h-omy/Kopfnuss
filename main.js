@@ -609,13 +609,13 @@ function loadChallengesScreen(container) {
   const kopfnussChallenge = getOrCreateKopfnussChallenge();
   const zeitChallenge = getOrCreateZeitChallenge();
   
-  // Helper function to generate splash rays HTML (same as standard challenges)
-  function generateSplashRaysHtml(className = 'challenge-splash', splashSize = VISUAL_CONFIG.SPLASH_SIZE_STANDARD) {
+  // Helper function to generate splash rays HTML with scale value
+  function generateSplashRaysHtml(className = 'challenge-splash', scale = VISUAL_CONFIG.STANDARD_CHALLENGE_SCALE) {
     const numRays = 12;
-    const baseLength = splashSize || 30; // Fallback to 30 if not defined
+    const baseLength = Math.round(scale / 5); // Ray length is 1/5th of scale for proper proportions
     
-    // Calculate container size based on ray length (container should be ~4.5x the ray length)
-    const containerSize = Math.round(baseLength * 4.5);
+    // Calculate container size to fit the rays
+    const containerSize = scale;
     
     let raysHtml = '';
     for (let i = 0; i < numRays; i++) {
@@ -661,8 +661,8 @@ function loadChallengesScreen(container) {
       zeitHintText = 'Erneut versuchen?';
     }
     
-    // Build splash rays with premium size
-    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash', VISUAL_CONFIG.SPLASH_SIZE_PREMIUM);
+    // Build splash rays with premium scale
+    const zeitSplashRays = generateSplashRaysHtml('zeit-splash challenge-splash', VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE);
     
     // Build celebration background for completed state
     let zeitCelebrationBg = '';
@@ -676,7 +676,7 @@ function loadChallengesScreen(container) {
         'celebration/challenge-node-bg-5.webp'
       ];
       const graphicIndex = Math.floor(Math.random() * zeitCelebrationGraphics.length);
-      const bgSize = Math.round(VISUAL_CONFIG.SPLASH_SIZE_PREMIUM * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
+      const bgSize = VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE;
       zeitCelebrationBg = `
         <div class="zeit-bg-graphic challenge-bg-graphic challenge-bg-animate" style="width: ${bgSize}px; height: ${bgSize}px;">
           <img src="./assets/${zeitCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
@@ -741,8 +741,8 @@ function loadChallengesScreen(container) {
       hintText = 'Erneut versuchen?';
     }
     
-    // Build splash rays with premium size
-    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash', VISUAL_CONFIG.SPLASH_SIZE_PREMIUM);
+    // Build splash rays with premium scale
+    const kopfnussSplashRays = generateSplashRaysHtml('kopfnuss-splash challenge-splash', VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE);
     
     // Build celebration background for completed state
     let kopfnussCelebrationBg = '';
@@ -755,7 +755,7 @@ function loadChallengesScreen(container) {
         'celebration/challenge-node-bg-5.webp'
       ];
       const graphicIndex = Math.floor(Math.random() * kopfnussCelebrationGraphics.length);
-      const bgSize = Math.round(VISUAL_CONFIG.SPLASH_SIZE_PREMIUM * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
+      const bgSize = VISUAL_CONFIG.PREMIUM_CHALLENGE_SCALE;
       kopfnussCelebrationBg = `
         <div class="kopfnuss-bg-graphic challenge-bg-graphic challenge-bg-animate" style="width: ${bgSize}px; height: ${bgSize}px;">
           <img src="./assets/${kopfnussCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
@@ -848,13 +848,13 @@ function loadChallengesScreen(container) {
     const splash = document.createElement('div');
     splash.className = 'challenge-splash';
     const numRays = 12;
-    // Use super challenge size if it's a super challenge, otherwise standard
+    // Use appropriate scale value based on challenge type
     const isSuperChallenge = challenge.isSuperChallenge;
-    const splashSize = isSuperChallenge ? (VISUAL_CONFIG.SPLASH_SIZE_SUPER || 45) : (VISUAL_CONFIG.SPLASH_SIZE_STANDARD || 30);
-    const baseLength = splashSize;
+    const scale = isSuperChallenge ? VISUAL_CONFIG.SUPER_CHALLENGE_SCALE : VISUAL_CONFIG.STANDARD_CHALLENGE_SCALE;
+    const baseLength = Math.round(scale / 5); // Ray length is 1/5th of scale for proper proportions
     
-    // Set splash container size based on ray length (container should be ~4.5x the ray length)
-    const containerSize = Math.round(baseLength * 4.5);
+    // Set splash container size
+    const containerSize = scale;
     splash.style.width = `${containerSize}px`;
     splash.style.height = `${containerSize}px`;
     
@@ -875,12 +875,11 @@ function loadChallengesScreen(container) {
       const bgGraphic = document.createElement('div');
       bgGraphic.className = 'challenge-bg-graphic';
       
-      // Calculate size based on challenge type and VISUAL_CONFIG
+      // Use appropriate scale value based on challenge type
       const isSuperChallenge = challenge.isSuperChallenge;
-      const splashSize = isSuperChallenge 
-        ? VISUAL_CONFIG.SPLASH_SIZE_SUPER 
-        : VISUAL_CONFIG.SPLASH_SIZE_STANDARD;
-      const size = Math.round(splashSize * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
+      const size = isSuperChallenge 
+        ? VISUAL_CONFIG.SUPER_CHALLENGE_SCALE 
+        : VISUAL_CONFIG.STANDARD_CHALLENGE_SCALE;
       bgGraphic.style.width = `${size}px`;
       bgGraphic.style.height = `${size}px`;
       
