@@ -676,8 +676,9 @@ function loadChallengesScreen(container) {
         'celebration/challenge-node-bg-5.webp'
       ];
       const graphicIndex = Math.floor(Math.random() * zeitCelebrationGraphics.length);
+      const bgSize = Math.round(VISUAL_CONFIG.SPLASH_SIZE_PREMIUM * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
       zeitCelebrationBg = `
-        <div class="zeit-bg-graphic challenge-bg-graphic challenge-bg-animate">
+        <div class="zeit-bg-graphic challenge-bg-graphic challenge-bg-animate" style="width: ${bgSize}px; height: ${bgSize}px;">
           <img src="./assets/${zeitCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
         </div>
       `;
@@ -754,8 +755,9 @@ function loadChallengesScreen(container) {
         'celebration/challenge-node-bg-5.webp'
       ];
       const graphicIndex = Math.floor(Math.random() * kopfnussCelebrationGraphics.length);
+      const bgSize = Math.round(VISUAL_CONFIG.SPLASH_SIZE_PREMIUM * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
       kopfnussCelebrationBg = `
-        <div class="kopfnuss-bg-graphic challenge-bg-graphic challenge-bg-animate">
+        <div class="kopfnuss-bg-graphic challenge-bg-graphic challenge-bg-animate" style="width: ${bgSize}px; height: ${bgSize}px;">
           <img src="./assets/${kopfnussCelebrationGraphics[graphicIndex]}" alt="" aria-hidden="true">
         </div>
       `;
@@ -873,8 +875,12 @@ function loadChallengesScreen(container) {
       const bgGraphic = document.createElement('div');
       bgGraphic.className = 'challenge-bg-graphic';
       
-      // Apply size from balancing constant
-      const size = VISUAL_CONFIG.CELEBRATION_GRAPHIC_SIZE;
+      // Calculate size based on challenge type and VISUAL_CONFIG
+      const isSuperChallenge = challenge.isSuperChallenge;
+      const splashSize = isSuperChallenge 
+        ? VISUAL_CONFIG.SPLASH_SIZE_SUPER 
+        : VISUAL_CONFIG.SPLASH_SIZE_STANDARD;
+      const size = Math.round(splashSize * VISUAL_CONFIG.CELEBRATION_GRAPHIC_MULTIPLIER);
       bgGraphic.style.width = `${size}px`;
       bgGraphic.style.height = `${size}px`;
       

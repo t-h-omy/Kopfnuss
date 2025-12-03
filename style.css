@@ -1098,13 +1098,12 @@ button,
 }
 
 /* Celebration Background Graphic */
+/* Size set dynamically via JavaScript based on VISUAL_CONFIG */
 .challenge-bg-graphic {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 168px;
-  height: 168px;
   z-index: 1;
   pointer-events: none;
   opacity: 0.9;
@@ -2719,10 +2718,7 @@ button,
     font-size: 40px;
   }
 
-  .challenge-bg-graphic {
-    width: 180px;
-    height: 180px;
-  }
+  /* challenge-bg-graphic size set dynamically via JavaScript based on VISUAL_CONFIG */
 
   .challenge-info-card {
     max-width: 310px;
@@ -2753,10 +2749,7 @@ button,
 
   /* challenge-splash width and height set dynamically via JavaScript based on VISUAL_CONFIG */
 
-  .challenge-bg-graphic {
-    width: 192px;
-    height: 192px;
-  }
+  /* challenge-bg-graphic size set dynamically via JavaScript based on VISUAL_CONFIG */
 
   /* splash-ray height set dynamically via JavaScript based on VISUAL_CONFIG */
 }

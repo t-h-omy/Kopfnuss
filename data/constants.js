@@ -132,18 +132,6 @@ export const RESIZE_CONFIG = {
  * Applied in: main.js - loadChallengesScreen(), style.css via CSS variables
  */
 export const VISUAL_CONFIG = {
-  // Size in pixels of the celebration graphic behind completed challenge nodes
-  // Applied in: main.js - loadChallengesScreen() challenge completion display
-  CELEBRATION_GRAPHIC_SIZE: 200,
-  
-  // Scale multiplier for celebration graphic on tablet screens (768px+)
-  // Applied in: main.js - loadChallengesScreen()
-  CELEBRATION_GRAPHIC_SCALE_TABLET: 1.07,
-  
-  // Scale multiplier for celebration graphic on desktop screens (1024px+)
-  // Applied in: main.js - loadChallengesScreen()
-  CELEBRATION_GRAPHIC_SCALE_DESKTOP: 1.14,
-  
   // Delay in ms before celebration graphic animation starts (after scroll completes)
   // Applied in: main.js - loadChallengesScreen()
   CELEBRATION_ANIMATION_DELAY: 800,
@@ -163,7 +151,11 @@ export const VISUAL_CONFIG = {
   
   // Size in pixels of splash graphic for Super Challenges
   // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_SUPER: 45
+  SPLASH_SIZE_SUPER: 45,
+  
+  // Celebration background graphic size multiplier (celebration graphic size = splash size * this)
+  // Applied in: main.js - celebration graphic sizing for completed challenges
+  CELEBRATION_GRAPHIC_MULTIPLIER: 5.0
 };
 
 /**
