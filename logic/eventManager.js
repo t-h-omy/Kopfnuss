@@ -18,6 +18,7 @@ import {
   loadSeasonalLastKnownPurchasable,
   saveSeasonalLastKnownPurchasable,
   clearShopOpenedFlag,
+  wasShopOpenedWithNewBackgrounds,
   getTodayDate
 } from './storageManager.js';
 
@@ -538,11 +539,12 @@ export function getSeasonalBackgroundInfo(backgroundId) {
   const currency = getSeasonalCurrency();
   const unlockedBackgrounds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
   const isUnlocked = unlockedBackgrounds.includes(backgroundId);
-  const lastKnownPurchasable = loadSeasonalLastKnownPurchasable(activeEvent.id);
+  const shopOpened = wasShopOpenedWithNewBackgrounds();
   
   // Check if this background is newly purchasable
   const isPurchasable = !isUnlocked && taskCount >= background.tasksRequired;
-  const isNewlyPurchasable = isPurchasable && !lastKnownPurchasable.includes(backgroundId);
+  // Show NEW badge if background is purchasable and shop hasn't been opened since it became available
+  const isNewlyPurchasable = isPurchasable && !shopOpened;
   
   return {
     ...background,

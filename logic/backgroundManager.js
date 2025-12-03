@@ -77,7 +77,7 @@ export function getTasksRemaining(background) {
  */
 export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
-  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  const shopOpened = wasShopOpenedWithNewBackgrounds();
   
   const backgrounds = Object.values(BACKGROUNDS)
     .map(bg => {
@@ -87,7 +87,8 @@ export function getAllBackgrounds() {
         isUnlocked: bg.isDefault || unlockedIds.includes(bg.id),
         state: state,
         tasksRemaining: getTasksRemaining(bg),
-        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !lastKnownPurchasable.includes(bg.id)
+        // Show NEW badge if background is purchasable and shop hasn't been opened since it became available
+        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !shopOpened
       };
     })
     .sort((a, b) => (a.tasksRequired || 0) - (b.tasksRequired || 0));
