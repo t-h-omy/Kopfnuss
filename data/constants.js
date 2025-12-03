@@ -141,21 +141,23 @@ export const VISUAL_CONFIG = {
   // Affects: style.css - .challenges-container::before, .task-screen::before
   BACKGROUND_OPACITY: 1.00,
   
-  // Size in pixels of splash graphic for standard challenges
-  // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_STANDARD: 35,
+  // Scale value for standard challenge graphics (ray effect and celebration graphic)
+  // Controls the visual size of both the ray effect and celebration background
+  // Recommended range: 150-200 (default: 175)
+  // Applied in: main.js - standard challenge nodes
+  STANDARD_CHALLENGE_SCALE: 175,
   
-  // Size in pixels of splash graphic for premium challenges (Kopfnuss, Zeit-Challenge)
-  // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_PREMIUM: 40,
+  // Scale value for super challenge graphics (ray effect and celebration graphic)
+  // Controls the visual size of both the ray effect and celebration background
+  // Recommended range: 175-225 (default: 200)
+  // Applied in: main.js - super challenge nodes
+  SUPER_CHALLENGE_SCALE: 200,
   
-  // Size in pixels of splash graphic for Super Challenges
-  // Applied in: main.js - generateSplashRaysHtml()
-  SPLASH_SIZE_SUPER: 40,
-  
-  // Celebration background graphic size multiplier (celebration graphic size = splash size * this)
-  // Applied in: main.js - celebration graphic sizing for completed challenges
-  CELEBRATION_GRAPHIC_MULTIPLIER: 5.0
+  // Scale value for premium challenge graphics (ray effect and celebration graphic)
+  // Controls the visual size of both the ray effect and celebration background for Zeit-Challenge and Kopfnuss
+  // Recommended range: 175-225 (default: 200)
+  // Applied in: main.js - Zeit-Challenge and Kopfnuss premium challenges
+  PREMIUM_CHALLENGE_SCALE: 200
 };
 
 /**
