@@ -452,12 +452,120 @@
     }
   },
   "SUMMER_BACKGROUNDS": {
-    "summerBeach": {
-      "id": "summerBeach",
-      "name": "Strandparadies",
-      "file": "backgrounds/background_compressed.webp",
+    "summerPool": {
+      "id": "summerPool",
+      "name": "Poolszene",
+      "file": "backgrounds/summer/pool.webp",
+      "cost": 1,
+      "tasksRequired": 40,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerIcecream": {
+      "id": "summerIcecream",
+      "name": "Eismuster",
+      "file": "backgrounds/summer/icecream_pattern.webp",
+      "cost": 1,
+      "tasksRequired": 80,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerWatermelon": {
+      "id": "summerWatermelon",
+      "name": "Wassermelonen",
+      "file": "backgrounds/summer/watermelon_pattern.webp",
       "cost": 2,
-      "tasksRequired": 90,
+      "tasksRequired": 120,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerFruits": {
+      "id": "summerFruits",
+      "name": "Sommerfrüchte",
+      "file": "backgrounds/summer/summer_fruits.webp",
+      "cost": 2,
+      "tasksRequired": 160,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerChalk": {
+      "id": "summerChalk",
+      "name": "Straßenkreide",
+      "file": "backgrounds/summer/street_chalk.webp",
+      "cost": 2,
+      "tasksRequired": 200,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerFlamingo": {
+      "id": "summerFlamingo",
+      "name": "Flamingo",
+      "file": "backgrounds/summer/flamingo.webp",
+      "cost": 3,
+      "tasksRequired": 240,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerButterflies": {
+      "id": "summerButterflies",
+      "name": "Schmetterlinge",
+      "file": "backgrounds/summer/butterflies.webp",
+      "cost": 3,
+      "tasksRequired": 280,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerLadybug": {
+      "id": "summerLadybug",
+      "name": "Marienkäfer",
+      "file": "backgrounds/summer/ladybug.webp",
+      "cost": 3,
+      "tasksRequired": 320,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerInstruments": {
+      "id": "summerInstruments",
+      "name": "Musikinstrumente",
+      "file": "backgrounds/summer/instruments.webp",
+      "cost": 4,
+      "tasksRequired": 360,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerSunset": {
+      "id": "summerSunset",
+      "name": "Sonnenuntergang",
+      "file": "backgrounds/summer/sunset.webp",
+      "cost": 4,
+      "tasksRequired": 400,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerOrca": {
+      "id": "summerOrca",
+      "name": "Orca",
+      "file": "backgrounds/summer/orca.webp",
+      "cost": 4,
+      "tasksRequired": 440,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerPuma": {
+      "id": "summerPuma",
+      "name": "Schlafender Puma",
+      "file": "backgrounds/summer/puma_sleeping.webp",
+      "cost": 5,
+      "tasksRequired": 480,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerSavanna": {
+      "id": "summerSavanna",
+      "name": "Savanne",
+      "file": "backgrounds/summer/savanna.webp",
+      "cost": 5,
+      "tasksRequired": 520,
       "eventId": "summer",
       "isSeasonal": true
     }
