@@ -172,6 +172,41 @@
       "file": "backgrounds/02_standard/orca_background_optimized.webp",
       "cost": 3,
       "tasksRequired": 1350
+    },
+    "gecko": {
+      "id": "gecko",
+      "name": "Gecko",
+      "file": "backgrounds/02_standard/bg_standard_12.webp",
+      "cost": 3,
+      "tasksRequired": 40
+    },
+    "owl": {
+      "id": "owl",
+      "name": "Eule",
+      "file": "backgrounds/02_standard/bg_standard_13.webp",
+      "cost": 2,
+      "tasksRequired": 110
+    },
+    "platypus": {
+      "id": "platypus",
+      "name": "Schnabeltier",
+      "file": "backgrounds/02_standard/bg_standard_14.webp",
+      "cost": 4,
+      "tasksRequired": 450
+    },
+    "seahorse": {
+      "id": "seahorse",
+      "name": "Seepferdchen",
+      "file": "backgrounds/02_standard/bg_standard_15.webp",
+      "cost": 4,
+      "tasksRequired": 650
+    },
+    "toyHorses": {
+      "id": "toyHorses",
+      "name": "Spielzeugpferde",
+      "file": "backgrounds/02_standard/bg_standard_16.webp",
+      "cost": 3,
+      "tasksRequired": 1500
     }
   },
   "SEASONAL_EVENTS": {

@@ -2,7 +2,7 @@
   "name": "Kopfnuss - Kopfrechnen Trainer",
   "short_name": "Kopfnuss",
   "description": "Ein Lernspiel für schnelles Kopfrechnen (6. Klasse). Tägliche Herausforderungen, Streak-System, Diamanten-Belohnungen.",
-  "version": "1.25.1",
+  "version": "1.25.2",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
