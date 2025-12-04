@@ -184,7 +184,7 @@
       "startMonth": 12,
       "startDay": 1,
       "endMonth": 12,
-      "endDay": 28,
+      "endDay": 2,
       "popupTitle": "Weihnachts-Event",
       "popupDescription": "Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!"
     },
@@ -233,10 +233,10 @@
       "emoticon": "☀️",
       "currencyName": "Sonnen",
       "currencyNameSingular": "Sonne",
-      "startMonth": 6,
-      "startDay": 1,
-      "endMonth": 8,
-      "endDay": 31,
+      "startMonth": 12,
+      "startDay": 4,
+      "endMonth": 12,
+      "endDay": 5,
       "popupTitle": "Sommerferien-Event",
       "popupDescription": "Sammle Sonnen und schalte sommerliche Hintergründe frei!"
     },
