@@ -184,7 +184,7 @@
       "startMonth": 12,
       "startDay": 1,
       "endMonth": 12,
-      "endDay": 28,
+      "endDay": 2,
       "popupTitle": "Weihnachts-Event",
       "popupDescription": "Sammle Schneeflocken und schalte weihnachtliche Hintergründe frei!"
     },
@@ -233,10 +233,10 @@
       "emoticon": "☀️",
       "currencyName": "Sonnen",
       "currencyNameSingular": "Sonne",
-      "startMonth": 6,
-      "startDay": 1,
-      "endMonth": 8,
-      "endDay": 31,
+      "startMonth": 12,
+      "startDay": 4,
+      "endMonth": 12,
+      "endDay": 5,
       "popupTitle": "Sommerferien-Event",
       "popupDescription": "Sammle Sonnen und schalte sommerliche Hintergründe frei!"
     },
@@ -452,12 +452,120 @@
     }
   },
   "SUMMER_BACKGROUNDS": {
-    "summerBeach": {
-      "id": "summerBeach",
-      "name": "Strandparadies",
-      "file": "backgrounds/background_compressed.webp",
+    "butterflies": {
+      "id": "butterflies",
+      "name": "Schmetterlinge",
+      "file": "backgrounds/summer/butterflies.webp",
+      "cost": 1,
+      "tasksRequired": 4,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "icecreamPattern": {
+      "id": "icecreamPattern",
+      "name": "Eiscreme-Muster",
+      "file": "backgrounds/summer/icecream_pattern.webp",
       "cost": 2,
-      "tasksRequired": 9,
+      "tasksRequired": 8,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "watermelonPattern": {
+      "id": "watermelonPattern",
+      "name": "Wassermelonen-Muster",
+      "file": "backgrounds/summer/watermelon_pattern.webp",
+      "cost": 2,
+      "tasksRequired": 12,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "summerFruitsGlass": {
+      "id": "summerFruitsGlass",
+      "name": "Sommerfrüchte",
+      "file": "backgrounds/summer/summer_fruits_glass_pattern.webp",
+      "cost": 2,
+      "tasksRequired": 16,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "poolscene": {
+      "id": "poolscene",
+      "name": "Poolszene",
+      "file": "backgrounds/summer/poolscene.webp",
+      "cost": 2,
+      "tasksRequired": 20,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "flamingo": {
+      "id": "flamingo",
+      "name": "Flamingo",
+      "file": "backgrounds/summer/flamingo.webp",
+      "cost": 2,
+      "tasksRequired": 24,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "streetChalk": {
+      "id": "streetChalk",
+      "name": "Straßenkreide",
+      "file": "backgrounds/summer/street_chalk.webp",
+      "cost": 2,
+      "tasksRequired": 28,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "cat": {
+      "id": "cat",
+      "name": "Katze",
+      "file": "backgrounds/summer/cat.webp",
+      "cost": 2,
+      "tasksRequired": 32,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "ladybug": {
+      "id": "ladybug",
+      "name": "Marienkäfer",
+      "file": "backgrounds/summer/ladybug.webp",
+      "cost": 2,
+      "tasksRequired": 36,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "pumaSleeping": {
+      "id": "pumaSleeping",
+      "name": "Schlafender Puma",
+      "file": "backgrounds/summer/puma_sleeping.webp",
+      "cost": 2,
+      "tasksRequired": 40,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "savanna": {
+      "id": "savanna",
+      "name": "Savanne",
+      "file": "backgrounds/summer/savanna.webp",
+      "cost": 2,
+      "tasksRequired": 44,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "cartoonOutline": {
+      "id": "cartoonOutline",
+      "name": "Cartoon-Umrisse",
+      "file": "backgrounds/summer/cartoon_outline.webp",
+      "cost": 2,
+      "tasksRequired": 48,
+      "eventId": "summer",
+      "isSeasonal": true
+    },
+    "softGradientShapes": {
+      "id": "softGradientShapes",
+      "name": "Weiche Farbverläufe",
+      "file": "backgrounds/summer/soft_gradient_shapes.webp",
+      "cost": 2,
+      "tasksRequired": 52,
       "eventId": "summer",
       "isSeasonal": true
     }

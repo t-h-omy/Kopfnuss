@@ -19,7 +19,8 @@ import {
   saveSeasonalLastKnownPurchasable,
   clearShopOpenedFlag,
   wasShopOpenedWithNewBackgrounds,
-  getTodayDate
+  getTodayDate,
+  loadDevModeSetting
 } from './storageManager.js';
 
 /**
@@ -74,9 +75,17 @@ function isDateInEventRange(date, event) {
 
 /**
  * Get the currently active seasonal event
+ * In production mode, returns the event based on current date
+ * In dev mode, always returns the summer event for testing purposes
  * @returns {Object|null} Active event configuration or null if no event is active
  */
 export function getActiveEvent() {
+  // In dev mode, force summer event to be active for testing
+  const isDevMode = loadDevModeSetting();
+  if (isDevMode && SEASONAL_EVENTS.summer) {
+    return SEASONAL_EVENTS.summer;
+  }
+  
   const currentDate = getCurrentDate();
   
   for (const eventKey in SEASONAL_EVENTS) {
