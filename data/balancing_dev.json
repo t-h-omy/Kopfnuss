@@ -178,35 +178,35 @@
       "name": "Gecko",
       "file": "backgrounds/02_standard/bg_standard_12.webp",
       "cost": 2,
-      "tasksRequired": 2
+      "tasksRequired": 5
     },
     "owl": {
       "id": "owl",
       "name": "Eule",
       "file": "backgrounds/02_standard/bg_standard_13.webp",
       "cost": 2,
-      "tasksRequired": 2
+      "tasksRequired": 6
     },
     "platypus": {
       "id": "platypus",
       "name": "Schnabeltier",
       "file": "backgrounds/02_standard/bg_standard_14.webp",
       "cost": 2,
-      "tasksRequired": 3
+      "tasksRequired": 7
     },
     "seahorse": {
       "id": "seahorse",
       "name": "Seepferdchen",
       "file": "backgrounds/02_standard/bg_standard_15.webp",
       "cost": 2,
-      "tasksRequired": 3
+      "tasksRequired": 8
     },
     "toyHorses": {
       "id": "toyHorses",
       "name": "Spielzeugpferde",
       "file": "backgrounds/02_standard/bg_standard_16.webp",
       "cost": 2,
-      "tasksRequired": 5
+      "tasksRequired": 9
     }
   },
   "SEASONAL_EVENTS": {
