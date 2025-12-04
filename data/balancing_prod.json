@@ -91,7 +91,7 @@
     "default": {
       "id": "default",
       "name": "Standard",
-      "file": "backgrounds/background_compressed.webp",
+      "file": "backgrounds/01_default/background_compressed.webp",
       "cost": 0,
       "tasksRequired": 0,
       "isDefault": true
@@ -99,77 +99,77 @@
     "sunset": {
       "id": "sunset",
       "name": "Sonnenuntergang",
-      "file": "backgrounds/sunset_background_optimized.webp",
+      "file": "backgrounds/02_standard/sunset_background_optimized.webp",
       "cost": 1,
       "tasksRequired": 16
     },
     "unicorn": {
       "id": "unicorn",
       "name": "Einhorn",
-      "file": "backgrounds/unicorn_background_optimized.webp",
+      "file": "backgrounds/02_standard/unicorn_background_optimized.webp",
       "cost": 2,
       "tasksRequired": 70
     },
     "candy": {
       "id": "candy",
       "name": "Süßigkeiten",
-      "file": "backgrounds/candy_background_optimized.webp",
+      "file": "backgrounds/02_standard/candy_background_optimized.webp",
       "cost": 2,
       "tasksRequired": 140
     },
     "maineCoon": {
       "id": "maineCoon",
       "name": "Maine Coon",
-      "file": "backgrounds/maine_coon_background_optimized.webp",
+      "file": "backgrounds/02_standard/maine_coon_background_optimized.webp",
       "cost": 4,
       "tasksRequired": 350
     },
     "elephant": {
       "id": "elephant",
       "name": "Elefant",
-      "file": "backgrounds/elefant_pattern_mobile.webp",
+      "file": "backgrounds/02_standard/elefant_pattern_mobile.webp",
       "cost": 4,
       "tasksRequired": 530
     },
     "pomeranian": {
       "id": "pomeranian",
       "name": "Zwergspitz",
-      "file": "backgrounds/pomeranian_background_soft_optimized.webp",
+      "file": "backgrounds/02_standard/pomeranian_background_soft_optimized.webp",
       "cost": 3,
       "tasksRequired": 710
     },
     "snakeJungle": {
       "id": "snakeJungle",
       "name": "Dschungelschlange",
-      "file": "backgrounds/snake_jungle_background_optimized.webp",
+      "file": "backgrounds/02_standard/snake_jungle_background_optimized.webp",
       "cost": 4,
       "tasksRequired": 230
     },
     "capybara": {
       "id": "capybara",
       "name": "Capybara",
-      "file": "backgrounds/capybara_background_less_saturated.webp",
+      "file": "backgrounds/02_standard/capybara_background_less_saturated.webp",
       "cost": 4,
       "tasksRequired": 850
     },
     "dino": {
       "id": "dino",
       "name": "Dinosaurier",
-      "file": "backgrounds/dino_background_optimized.webp",
+      "file": "backgrounds/02_standard/dino_background_optimized.webp",
       "cost": 3,
       "tasksRequired": 1000
     },
     "instruments": {
       "id": "instruments",
       "name": "Musikinstrumente",
-      "file": "backgrounds/instruments_optimized.webp",
+      "file": "backgrounds/02_standard/instruments_optimized.webp",
       "cost": 3,
       "tasksRequired": 1180
     },
     "orca": {
       "id": "orca",
       "name": "Orca",
-      "file": "backgrounds/orca_background_optimized.webp",
+      "file": "backgrounds/02_standard/orca_background_optimized.webp",
       "cost": 3,
       "tasksRequired": 1350
     }
@@ -574,7 +574,7 @@
     "halloweenSpooky": {
       "id": "halloweenSpooky",
       "name": "Gruselhaus",
-      "file": "backgrounds/background_compressed.webp",
+      "file": "backgrounds/01_default/background_compressed.webp",
       "cost": 2,
       "tasksRequired": 80,
       "eventId": "halloween",

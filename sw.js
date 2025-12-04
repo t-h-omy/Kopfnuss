@@ -4,7 +4,7 @@
 
 // Version wird aus version.js importiert (in SW context manuell definiert)
 // Bei Updates: Version in version.js UND hier aktualisieren
-const APP_VERSION = '1.25.0';
+const APP_VERSION = '1.25.1';
 const CACHE_NAME = `kopfnuss-v${APP_VERSION}`;
 const CACHE_PREFIX = 'kopfnuss-v';
 
@@ -38,14 +38,14 @@ const urlsToCache = [
   './assets/celebration/challenge-node-bg-3.webp',
   './assets/celebration/challenge-node-bg-4.webp',
   './assets/celebration/challenge-node-bg-5.webp',
-  './assets/backgrounds/background_compressed.webp',
-  './assets/backgrounds/sunset_background_optimized.webp',
-  './assets/backgrounds/unicorn_background_optimized.webp',
-  './assets/backgrounds/candy_background_optimized.webp',
-  './assets/backgrounds/maine_coon_background_optimized.webp',
-  './assets/backgrounds/elephant_background_less_saturated.webp',
-  './assets/backgrounds/pomeranian_background_soft_optimized.webp',
-  './assets/backgrounds/snake_jungle_background_optimized.webp'
+  './assets/backgrounds/01_default/background_compressed.webp',
+  './assets/backgrounds/02_standard/sunset_background_optimized.webp',
+  './assets/backgrounds/02_standard/unicorn_background_optimized.webp',
+  './assets/backgrounds/02_standard/candy_background_optimized.webp',
+  './assets/backgrounds/02_standard/maine_coon_background_optimized.webp',
+  './assets/backgrounds/02_standard/elefant_pattern_mobile.webp',
+  './assets/backgrounds/02_standard/pomeranian_background_soft_optimized.webp',
+  './assets/backgrounds/02_standard/snake_jungle_background_optimized.webp'
 ];
 
 /**
