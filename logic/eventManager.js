@@ -75,13 +75,14 @@ function isDateInEventRange(date, event) {
 
 /**
  * Get the currently active seasonal event
- * In dev mode, always returns the summer event
+ * In production mode, returns the event based on current date
+ * In dev mode, always returns the summer event for testing purposes
  * @returns {Object|null} Active event configuration or null if no event is active
  */
 export function getActiveEvent() {
-  // In dev mode, force summer event to be active
+  // In dev mode, force summer event to be active for testing
   const isDevMode = loadDevModeSetting();
-  if (isDevMode) {
+  if (isDevMode && SEASONAL_EVENTS.summer) {
     return SEASONAL_EVENTS.summer;
   }
   
