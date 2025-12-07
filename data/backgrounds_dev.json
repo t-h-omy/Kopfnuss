@@ -47,7 +47,7 @@
         },
         {
             "id": "candy",
-            "name": "Süßigkeiten",
+            "name": "Sï¿½ï¿½igkeiten",
             "file": "backgrounds\/02_standard\/candy_background_optimized.webp",
             "category": "standard",
             "cost": 1,
@@ -256,6 +256,81 @@
             "isDefault": false
         },
         {
+            "id": "dolphinPattern",
+            "name": "Delfin-Muster",
+            "file": "backgrounds\/02_standard\/dolphin_pattern_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 68,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "greyCat",
+            "name": "Graue Katze",
+            "file": "backgrounds\/02_standard\/grey_cat_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 72,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "leekPattern",
+            "name": "Lauch-Muster",
+            "file": "backgrounds\/02_standard\/leek_pattern_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 76,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "leekSleeping",
+            "name": "Schlafender Lauch",
+            "file": "backgrounds\/02_standard\/leek_sleeping_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 80,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "boeserHase",
+            "name": "BÃ¶ser Hase",
+            "file": "backgrounds\/02_standard\/boeser_hase.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 84,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
             "id": "gingerbreadman",
             "name": "Gingerbreadman",
             "file": "backgrounds\/christmas\/gingerbread_optimized.webp",
@@ -347,7 +422,7 @@
         },
         {
             "id": "luckySymbols",
-            "name": "Glückssymbole",
+            "name": "Glï¿½ckssymbole",
             "file": "backgrounds\/newyear\/lucky_symbols_optimized.webp",
             "category": "seasonal",
             "cost": 1,
@@ -497,7 +572,7 @@
         },
         {
             "id": "easterForest",
-            "name": "Frühlingswald",
+            "name": "Frï¿½hlingswald",
             "file": "backgrounds\/easter\/forest_bg_optimized.webp",
             "category": "seasonal",
             "cost": 1,
@@ -617,7 +692,7 @@
         },
         {
             "id": "summerFruitsGlass",
-            "name": "Sommerfrüchte",
+            "name": "Sommerfrï¿½chte",
             "file": "backgrounds\/summer\/summer_fruits_glass_pattern.webp",
             "category": "seasonal",
             "cost": 1,
@@ -662,7 +737,7 @@
         },
         {
             "id": "streetChalk",
-            "name": "Straßenkreide",
+            "name": "Straï¿½enkreide",
             "file": "backgrounds\/summer\/street_chalk.webp",
             "category": "seasonal",
             "cost": 1,
@@ -692,7 +767,7 @@
         },
         {
             "id": "ladybug",
-            "name": "Marienkäfer",
+            "name": "Marienkï¿½fer",
             "file": "backgrounds\/summer\/ladybug.webp",
             "category": "seasonal",
             "cost": 1,
@@ -752,7 +827,7 @@
         },
         {
             "id": "softGradientShapes",
-            "name": "Weiche Farbverläufe",
+            "name": "Weiche Farbverlï¿½ufe",
             "file": "backgrounds\/summer\/soft_gradient_shapes.webp",
             "category": "seasonal",
             "cost": 1,
