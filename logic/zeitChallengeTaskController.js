@@ -17,7 +17,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
-import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
+import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic } from './audioBootstrap.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -25,6 +25,7 @@ let errors = 0;
 let timerInterval = null;
 let timeRemaining = 0;
 let isInputDisabled = false;
+let finalCountdownStarted = false; // Track if final 10 seconds music has started
 
 /**
  * Motivation phrases for Zeit-Challenge completion
@@ -93,6 +94,7 @@ export function initZeitChallengeTaskScreen() {
   timeRemaining = (storedTime && storedTime > 0) ? storedTime : defaultTime;
   
   isInputDisabled = false;
+  finalCountdownStarted = false; // Reset final countdown flag
   
   // Display first task
   displayCurrentTask();
@@ -100,8 +102,13 @@ export function initZeitChallengeTaskScreen() {
   // Setup event listeners
   setupTaskScreenEventListeners();
   
-  // Start background music
-  playZeitChallengeMusic();
+  // Start background music (check if we should start with final countdown)
+  if (timeRemaining <= 10) {
+    finalCountdownStarted = true;
+    playFinalCountdownMusic();
+  } else {
+    playZeitChallengeMusic();
+  }
   
   // Start the timer
   startTimer();
@@ -125,6 +132,12 @@ function startTimer() {
     
     // Update display
     updateTimerDisplay();
+    
+    // Start final countdown music when 10 seconds remain
+    if (timeRemaining === 10 && !finalCountdownStarted) {
+      finalCountdownStarted = true;
+      playFinalCountdownMusic();
+    }
     
     // Save time remaining to state less frequently (every 10 seconds) to reduce I/O
     if (timeRemaining % 10 === 0 || timeRemaining <= 10) {
@@ -549,6 +562,7 @@ export function cleanupZeitChallengeTaskScreen() {
   errors = 0;
   timeRemaining = 0;
   isInputDisabled = false;
+  finalCountdownStarted = false;
 }
 
 export { initZeitChallengeTaskScreen as default };

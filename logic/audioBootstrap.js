@@ -362,6 +362,13 @@ export function playZeitChallengeMusic() {
 }
 
 /**
+ * Play final 10 seconds countdown music (crossfade from main music)
+ */
+export function playFinalCountdownMusic() {
+  audioManager.crossfadeMusic('countdown_tick', { volume: 0.4 }, 0.5);
+}
+
+/**
  * Stop Zeit challenge background music
  */
 export function stopZeitChallengeMusic() {

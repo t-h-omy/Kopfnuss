@@ -294,6 +294,54 @@ class AudioManager {
   }
 
   /**
+   * Fade out and stop currently playing music, then start new music
+   * @param {string} newMusicName - Name of new music to play
+   * @param {Object} [options] - Options for new music
+   * @param {number} [fadeDuration=1] - Fade duration in seconds
+   */
+  crossfadeMusic(newMusicName, options = {}, fadeDuration = 1) {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // Fade out current music if playing
+    if (this.currentMusicGain && this.currentMusicSource) {
+      const now = ctx.currentTime;
+      const currentGain = this.currentMusicGain;
+      const currentSource = this.currentMusicSource;
+      
+      // Fade out
+      try {
+        currentGain.gain.setValueAtTime(currentGain.gain.value, now);
+        currentGain.gain.linearRampToValueAtTime(0.001, now + fadeDuration);
+        
+        // Stop after fade completes
+        setTimeout(() => {
+          try {
+            if (currentSource.context.state !== 'closed') {
+              currentSource.stop();
+            }
+          } catch (e) {
+            // Already stopped
+          }
+        }, fadeDuration * 1000);
+      } catch (e) {
+        // Fade failed, just stop
+        try {
+          currentSource.stop();
+        } catch (e2) {
+          // Already stopped
+        }
+      }
+    }
+    
+    // Start new music after a short delay to ensure old one is fading
+    // Don't clear currentMusicSource yet - wait for new music to start
+    setTimeout(() => {
+      this.playMusic(newMusicName, options);
+    }, 100);
+  }
+
+  /**
    * Set muted state
    * @param {boolean} muted
    */
