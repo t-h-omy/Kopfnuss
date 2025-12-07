@@ -319,6 +319,14 @@ export function showScreen(screenName, data = null) {
   // Track if we're returning from Zeit-Challenge task screen to challenges
   if (currentScreen === 'zeitChallengeTaskScreen' && screenName === 'challenges') {
     returningFromZeitChallengeScreen = true;
+    // Cleanup Zeit challenge when leaving
+    import('./logic/zeitChallengeTaskController.js').then(module => {
+      if (module.cleanupZeitChallengeTaskScreen) {
+        module.cleanupZeitChallengeTaskScreen();
+      }
+    }).catch(() => {
+      // Silently ignore if module not loaded
+    });
   }
   
   // Store current screen
