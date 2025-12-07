@@ -64,6 +64,12 @@ function convertToLegacyFormat(unifiedBg) {
 function getBackgroundsSource() {
   const backgrounds = {};
   
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
+  
   // Filter for standard backgrounds only
   BACKGROUNDS_UNIFIED
     .filter(bg => bg.category === 'standard' && bg.active)
@@ -81,6 +87,12 @@ function getBackgroundsSource() {
  */
 function getSeasonalBackgroundsSource() {
   const backgrounds = {};
+  
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
   
   // Filter for seasonal backgrounds only
   BACKGROUNDS_UNIFIED

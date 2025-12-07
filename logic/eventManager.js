@@ -31,6 +31,12 @@ import {
 function getSeasonalBackgroundsSource() {
   const backgrounds = {};
   
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[EventManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
+  
   // Filter for seasonal backgrounds only
   BACKGROUNDS_UNIFIED
     .filter(bg => bg.category === 'seasonal' && bg.active)
