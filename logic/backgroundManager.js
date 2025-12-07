@@ -273,8 +273,27 @@ export function getSelectedBackground() {
     return seasonalBackground;
   }
   
-  // If selected background doesn't exist in either, return default
-  return backgroundsSource['default'] || backgroundsSource[Object.keys(backgroundsSource)[0]];
+  // If selected background doesn't exist in either, return default background
+  // Explicitly check for 'default' ID first, then fallback to first background
+  if (backgroundsSource['default']) {
+    return backgroundsSource['default'];
+  }
+  
+  // Final fallback: return first available background
+  const firstId = Object.keys(backgroundsSource)[0];
+  if (firstId) {
+    return backgroundsSource[firstId];
+  }
+  
+  // This should never happen, but provide a minimal fallback
+  return {
+    id: 'default',
+    name: 'Standard',
+    file: 'backgrounds/01_default/background_compressed.webp',
+    cost: 0,
+    tasksRequired: 0,
+    isDefault: true
+  };
 }
 
 /**
