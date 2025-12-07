@@ -72,7 +72,8 @@ function attachClickSoundHandlers() {
                           target.closest('.shop-button, .burger-menu-button');
     
     // Play UI click sound for buttons and interactive capsules
-    if (isButton || isInButton || isStatCapsule || isShopButton) {
+    // Skip shop buttons as they trigger popup sounds instead
+    if ((isButton || isInButton || isStatCapsule) && !isShopButton) {
       audioManager.play('ui_click');
     }
   }, { passive: true });
@@ -80,7 +81,7 @@ function attachClickSoundHandlers() {
 
 /**
  * Attach delegated handler for challenge node selection
- * Plays node_select when user clicks on a challenge node
+ * Plays ui_click when user clicks on a challenge node
  */
 function attachNodeSelectionHandlers() {
   document.addEventListener('click', (e) => {
@@ -93,7 +94,7 @@ function attachNodeSelectionHandlers() {
       // Check if the node is clickable (has cursor: pointer or is in an interactive state)
       const style = window.getComputedStyle(nodeContainer);
       if (style.cursor === 'pointer') {
-        audioManager.play('node_select');
+        audioManager.play('ui_click');
       }
     }
   }, { passive: true });

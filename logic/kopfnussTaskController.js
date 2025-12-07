@@ -15,6 +15,7 @@ import {
   addSeasonalCurrency 
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
+import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -158,6 +159,9 @@ function handleAnswerSubmit() {
     feedbackElement.textContent = '✓ Richtig!';
     feedbackElement.className = 'task-feedback feedback-correct';
     
+    // Play correct answer sound
+    playAnswerFeedback(true);
+    
     // Move to next task after a short delay
     setTimeout(() => {
       currentTaskIndex++;
@@ -177,6 +181,9 @@ function handleAnswerSubmit() {
     errors++;
     feedbackElement.textContent = `✗ Falsch! Versuche es nochmal.`;
     feedbackElement.className = 'task-feedback feedback-incorrect';
+    
+    // Play wrong answer sound
+    playAnswerFeedback(false);
     
     // Update errors in storage
     updateKopfnussChallenge({
@@ -198,6 +205,9 @@ function handleAnswerSubmit() {
  */
 function handleKopfnussChallengeCompletion() {
   const isPerfect = errors === 0;
+  
+  // Play challenge complete sound
+  playChallengeComplete();
   
   // Complete the challenge
   const result = completeKopfnussChallenge(errors);

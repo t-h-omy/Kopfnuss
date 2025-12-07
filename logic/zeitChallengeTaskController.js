@@ -17,7 +17,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
-import { playZeitChallengeMusic, stopZeitChallengeMusic } from './audioBootstrap.js';
+import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -321,6 +321,9 @@ function handleAnswerSubmit() {
     feedbackElement.textContent = '✓ Richtig!';
     feedbackElement.className = 'task-feedback feedback-correct';
     
+    // Play correct answer sound
+    playAnswerFeedback(true);
+    
     // Move to next task after a short delay (faster than Kopfnuss for time pressure)
     setTimeout(() => {
       currentTaskIndex++;
@@ -340,6 +343,9 @@ function handleAnswerSubmit() {
     errors++;
     feedbackElement.textContent = `✗ Falsch! Versuche es nochmal.`;
     feedbackElement.className = 'task-feedback feedback-incorrect';
+    
+    // Play wrong answer sound
+    playAnswerFeedback(false);
     
     // Update errors in storage
     updateZeitChallenge({
@@ -362,6 +368,9 @@ function handleAnswerSubmit() {
 function handleZeitChallengeCompletion() {
   // Stop the timer
   stopTimer();
+  
+  // Play challenge complete sound
+  playChallengeComplete();
   
   // Complete the challenge (always success if all tasks solved in time)
   const result = completeZeitChallenge(errors);

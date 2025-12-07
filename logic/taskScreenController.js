@@ -14,6 +14,7 @@ import { startChallenge } from './challengeStateManager.js';
 import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult } from '../main.js';
 import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
 import { getChallenge } from './challengeGenerator.js';
+import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
 
 let taskFlowState = null;
 
@@ -158,6 +159,9 @@ function handleAnswerSubmit() {
     feedbackElement.textContent = '✓ Richtig!';
     feedbackElement.className = 'task-feedback feedback-correct';
     
+    // Play correct answer sound
+    playAnswerFeedback(true);
+    
     // Move to next task after a short delay (only on correct answer)
     setTimeout(() => {
       const nextTaskResult = nextTask();
@@ -171,6 +175,9 @@ function handleAnswerSubmit() {
   } else {
     feedbackElement.textContent = `✗ Falsch! Versuche es nochmal.`;
     feedbackElement.className = 'task-feedback feedback-incorrect';
+    
+    // Play wrong answer sound
+    playAnswerFeedback(false);
     
     // Clear input and let user retry after a short delay
     setTimeout(() => {
@@ -196,6 +203,9 @@ function handleAnswerSubmit() {
 function handleChallengeCompletion() {
   // Stop super challenge sparkles if they were running
   stopSuperChallengeSparkles();
+  
+  // Play challenge complete sound
+  playChallengeComplete();
   
   const results = completeCurrentChallenge();
   

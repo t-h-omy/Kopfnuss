@@ -80,7 +80,8 @@ import { audioManager } from './logic/audioManager.js';
 import { 
   playBackgroundPurchased, 
   playZeitChallengeMusic, 
-  stopZeitChallengeMusic 
+  stopZeitChallengeMusic,
+  playDiamondEarn
 } from './logic/audioBootstrap.js';
 
 /**
@@ -1319,6 +1320,9 @@ function showRewardPopup() {
   // Add event listener for new challenge button
   const newChallengeButton = document.getElementById('new-challenge-button');
   newChallengeButton.addEventListener('click', () => {
+    // Play diamond earn sound
+    playDiamondEarn();
+    
     // Award the diamond when user confirms
     addDiamonds(1);
     
@@ -1386,6 +1390,9 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond, onClose =
   // Add event listener for close button
   const closeButton = document.getElementById('diamond-celebration-close-button');
   closeButton.addEventListener('click', () => {
+    // Play diamond earn sound
+    playDiamondEarn();
+    
     closeDiamondCelebrationPopup();
     // Call onClose callback if provided (for sequential popups)
     if (onClose && typeof onClose === 'function') {
