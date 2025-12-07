@@ -1,7 +1,7 @@
 // Kopfnuss - Event Manager
 // Manages seasonal events, seasonal currency, and event-based backgrounds
 
-import { SEASONAL_EVENTS, BACKGROUNDS_UNIFIED, SEASONAL_BACKGROUNDS } from '../data/balancingLoader.js';
+import { SEASONAL_EVENTS, BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
 import {
   loadSeasonalCurrency,
   saveSeasonalCurrency,
@@ -28,39 +28,26 @@ import {
  * Returns backgrounds in legacy format for compatibility
  * @returns {Object} Object with background IDs as keys
  */
-function getSeasonalBackgroundsFromUnified() {
+function getSeasonalBackgroundsSource() {
   const backgrounds = {};
   
   // Filter for seasonal backgrounds only
-  if (BACKGROUNDS_UNIFIED && BACKGROUNDS_UNIFIED.length > 0) {
-    BACKGROUNDS_UNIFIED
-      .filter(bg => bg.category === 'seasonal' && bg.active)
-      .forEach(bg => {
-        // Convert to legacy format
-        backgrounds[bg.id] = {
-          id: bg.id,
-          name: bg.name,
-          file: bg.file,
-          cost: bg.cost,
-          tasksRequired: bg.requirements.minTasksSinceEventStart || 0,
-          eventId: bg.event,
-          isSeasonal: true
-        };
-      });
-  }
+  BACKGROUNDS_UNIFIED
+    .filter(bg => bg.category === 'seasonal' && bg.active)
+    .forEach(bg => {
+      // Convert to legacy format
+      backgrounds[bg.id] = {
+        id: bg.id,
+        name: bg.name,
+        file: bg.file,
+        cost: bg.cost,
+        tasksRequired: bg.requirements.minTasksSinceEventStart || 0,
+        eventId: bg.event,
+        isSeasonal: true
+      };
+    });
   
   return backgrounds;
-}
-
-/**
- * Get the appropriate seasonal backgrounds source (unified or legacy)
- * @returns {Object} Seasonal backgrounds object
- */
-function getSeasonalBackgroundsSource() {
-  if (BACKGROUNDS_UNIFIED && BACKGROUNDS_UNIFIED.length > 0) {
-    return getSeasonalBackgroundsFromUnified();
-  }
-  return SEASONAL_BACKGROUNDS;
 }
 
 /**

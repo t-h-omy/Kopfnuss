@@ -1,7 +1,7 @@
 // Kopfnuss - Background Manager
 // Manages background unlocking, selection, and display
 
-import { BACKGROUNDS_UNIFIED, BACKGROUNDS, SEASONAL_BACKGROUNDS } from '../data/balancingLoader.js';
+import { BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
 import { 
   loadUnlockedBackgrounds, 
   saveUnlockedBackgrounds,
@@ -57,11 +57,11 @@ function convertToLegacyFormat(unifiedBg) {
 }
 
 /**
- * Get all backgrounds from unified structure
+ * Get all standard backgrounds from unified structure
  * Returns backgrounds in legacy format for compatibility
  * @returns {Object} Object with background IDs as keys
  */
-function getBackgroundsFromUnified() {
+function getBackgroundsSource() {
   const backgrounds = {};
   
   // Filter for standard backgrounds only
@@ -79,7 +79,7 @@ function getBackgroundsFromUnified() {
  * Returns backgrounds in legacy format for compatibility
  * @returns {Object} Object with background IDs as keys
  */
-function getSeasonalBackgroundsFromUnified() {
+function getSeasonalBackgroundsSource() {
   const backgrounds = {};
   
   // Filter for seasonal backgrounds only
@@ -90,28 +90,6 @@ function getSeasonalBackgroundsFromUnified() {
     });
   
   return backgrounds;
-}
-
-/**
- * Get the appropriate backgrounds source (unified or legacy)
- * @returns {Object} Backgrounds object
- */
-function getBackgroundsSource() {
-  if (BACKGROUNDS_UNIFIED && BACKGROUNDS_UNIFIED.length > 0) {
-    return getBackgroundsFromUnified();
-  }
-  return BACKGROUNDS;
-}
-
-/**
- * Get the appropriate seasonal backgrounds source (unified or legacy)
- * @returns {Object} Seasonal backgrounds object
- */
-function getSeasonalBackgroundsSource() {
-  if (BACKGROUNDS_UNIFIED && BACKGROUNDS_UNIFIED.length > 0) {
-    return getSeasonalBackgroundsFromUnified();
-  }
-  return SEASONAL_BACKGROUNDS;
 }
 
 /**
