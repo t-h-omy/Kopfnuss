@@ -29,7 +29,7 @@ import {
   markShopOpenedWithNewBackgrounds
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
-import { CONFIG, BACKGROUNDS, SEASONAL_BACKGROUNDS } from './data/balancingLoader.js';
+import { CONFIG } from './data/balancingLoader.js';
 import { ANIMATION_TIMING, RESIZE_CONFIG, VISUAL_CONFIG, DEV_SETTINGS_CONFIG } from './data/constants.js';
 import { 
   scrollToAndHighlightChallenge, 

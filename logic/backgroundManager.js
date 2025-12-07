@@ -1,7 +1,7 @@
 // Kopfnuss - Background Manager
 // Manages background unlocking, selection, and display
 
-import { BACKGROUNDS, SEASONAL_BACKGROUNDS } from '../data/balancingLoader.js';
+import { BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
 import { 
   loadUnlockedBackgrounds, 
   saveUnlockedBackgrounds,
@@ -25,6 +25,84 @@ export const BACKGROUND_STATE = {
   UNLOCKED: 'unlocked',   // Already purchased
   ACTIVE: 'active'        // Currently selected
 };
+
+/**
+ * Convert unified background schema to legacy format for backward compatibility
+ * @param {Object} unifiedBg - Background in new unified schema
+ * @returns {Object} Background in legacy format
+ */
+function convertToLegacyFormat(unifiedBg) {
+  const legacy = {
+    id: unifiedBg.id,
+    name: unifiedBg.name,
+    file: unifiedBg.file,
+    cost: unifiedBg.cost
+  };
+  
+  // Add tasksRequired based on category
+  if (unifiedBg.category === 'standard') {
+    legacy.tasksRequired = unifiedBg.requirements.minTasksSinceStart || 0;
+  } else {
+    // Seasonal backgrounds
+    legacy.tasksRequired = unifiedBg.requirements.minTasksSinceEventStart || 0;
+    legacy.eventId = unifiedBg.event;
+    legacy.isSeasonal = true;
+  }
+  
+  if (unifiedBg.isDefault) {
+    legacy.isDefault = true;
+  }
+  
+  return legacy;
+}
+
+/**
+ * Get all standard backgrounds from unified structure
+ * Returns backgrounds in legacy format for compatibility
+ * @returns {Object} Object with background IDs as keys
+ */
+function getBackgroundsSource() {
+  const backgrounds = {};
+  
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
+  
+  // Filter for standard backgrounds only
+  BACKGROUNDS_UNIFIED
+    .filter(bg => bg.category === 'standard' && bg.active)
+    .forEach(bg => {
+      backgrounds[bg.id] = convertToLegacyFormat(bg);
+    });
+  
+  return backgrounds;
+}
+
+/**
+ * Get seasonal backgrounds from unified structure
+ * Returns backgrounds in legacy format for compatibility
+ * @returns {Object} Object with background IDs as keys
+ */
+function getSeasonalBackgroundsSource() {
+  const backgrounds = {};
+  
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
+  
+  // Filter for seasonal backgrounds only
+  BACKGROUNDS_UNIFIED
+    .filter(bg => bg.category === 'seasonal' && bg.active)
+    .forEach(bg => {
+      backgrounds[bg.id] = convertToLegacyFormat(bg);
+    });
+  
+  return backgrounds;
+}
 
 /**
  * Get the state of a background for shop display
@@ -79,7 +157,9 @@ export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
   const shopOpened = wasShopOpenedWithNewBackgrounds();
   
-  const backgrounds = Object.values(BACKGROUNDS)
+  const backgroundsSource = getBackgroundsSource();
+  
+  const backgrounds = Object.values(backgroundsSource)
     .map(bg => {
       const state = getBackgroundState(bg);
       return {
@@ -133,8 +213,9 @@ export function checkForNewlyPurchasableBackgrounds() {
   }
   
   // Get the first newly purchasable background object for display
+  const backgroundsSource = getBackgroundsSource();
   const firstNewBackground = newlyPurchasable.length > 0 
-    ? BACKGROUNDS[newlyPurchasable[0]] 
+    ? backgroundsSource[newlyPurchasable[0]] 
     : null;
   
   return {
@@ -167,20 +248,42 @@ export function updateKnownPurchasableBackgrounds() {
 export function getSelectedBackground() {
   const selectedId = loadSelectedBackground();
   
+  const backgroundsSource = getBackgroundsSource();
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  
   // Check regular backgrounds first
-  const background = BACKGROUNDS[selectedId];
+  const background = backgroundsSource[selectedId];
   if (background) {
     return background;
   }
   
   // Check seasonal backgrounds
-  const seasonalBackground = SEASONAL_BACKGROUNDS[selectedId];
+  const seasonalBackground = seasonalBackgroundsSource[selectedId];
   if (seasonalBackground) {
     return seasonalBackground;
   }
   
-  // If selected background doesn't exist in either, return default
-  return BACKGROUNDS.default;
+  // If selected background doesn't exist in either, return default background
+  // Explicitly check for 'default' ID first, then fallback to first background
+  if (backgroundsSource['default']) {
+    return backgroundsSource['default'];
+  }
+  
+  // Final fallback: return first available background
+  const firstId = Object.keys(backgroundsSource)[0];
+  if (firstId) {
+    return backgroundsSource[firstId];
+  }
+  
+  // This should never happen, but provide a minimal fallback
+  return {
+    id: 'default',
+    name: 'Standard',
+    file: 'backgrounds/01_default/background_compressed.webp',
+    cost: 0,
+    tasksRequired: 0,
+    isDefault: true
+  };
 }
 
 /**
@@ -198,7 +301,8 @@ export function getSelectedBackgroundPath() {
  * @returns {boolean} True if the background is unlocked
  */
 export function isBackgroundUnlocked(backgroundId) {
-  const background = BACKGROUNDS[backgroundId];
+  const backgroundsSource = getBackgroundsSource();
+  const background = backgroundsSource[backgroundId];
   if (!background) return false;
   if (background.isDefault) return true;
   
@@ -213,7 +317,8 @@ export function isBackgroundUnlocked(backgroundId) {
  * @returns {Object} Result with success status and message
  */
 export function unlockBackground(backgroundId) {
-  const background = BACKGROUNDS[backgroundId];
+  const backgroundsSource = getBackgroundsSource();
+  const background = backgroundsSource[backgroundId];
   
   if (!background) {
     return {
@@ -281,7 +386,8 @@ export function unlockBackground(backgroundId) {
  * @returns {Object} Result with success status and message
  */
 export function selectBackground(backgroundId) {
-  const background = BACKGROUNDS[backgroundId];
+  const backgroundsSource = getBackgroundsSource();
+  const background = backgroundsSource[backgroundId];
   
   if (!background) {
     return {
@@ -321,7 +427,8 @@ export function applySelectedBackground() {
  * @returns {Object|null} Background info or null if not found
  */
 export function getBackgroundInfo(backgroundId) {
-  return BACKGROUNDS[backgroundId] || null;
+  const backgroundsSource = getBackgroundsSource();
+  return backgroundsSource[backgroundId] || null;
 }
 
 /**

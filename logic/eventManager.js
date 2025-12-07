@@ -1,7 +1,7 @@
 // Kopfnuss - Event Manager
 // Manages seasonal events, seasonal currency, and event-based backgrounds
 
-import { SEASONAL_EVENTS, SEASONAL_BACKGROUNDS } from '../data/balancingLoader.js';
+import { SEASONAL_EVENTS, BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
 import {
   loadSeasonalCurrency,
   saveSeasonalCurrency,
@@ -22,6 +22,39 @@ import {
   getTodayDate,
   loadDevModeSetting
 } from './storageManager.js';
+
+/**
+ * Get seasonal backgrounds from unified structure
+ * Returns backgrounds in legacy format for compatibility
+ * @returns {Object} Object with background IDs as keys
+ */
+function getSeasonalBackgroundsSource() {
+  const backgrounds = {};
+  
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[EventManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
+  
+  // Filter for seasonal backgrounds only
+  BACKGROUNDS_UNIFIED
+    .filter(bg => bg.category === 'seasonal' && bg.active)
+    .forEach(bg => {
+      // Convert to legacy format
+      backgrounds[bg.id] = {
+        id: bg.id,
+        name: bg.name,
+        file: bg.file,
+        cost: bg.cost,
+        tasksRequired: bg.requirements.minTasksSinceEventStart || 0,
+        eventId: bg.event,
+        isSeasonal: true
+      };
+    });
+  
+  return backgrounds;
+}
 
 /**
  * Get the current date or a simulated date for testing
@@ -299,7 +332,8 @@ export function canUnlockSeasonalBackground(backgroundId) {
     };
   }
   
-  const background = SEASONAL_BACKGROUNDS[backgroundId];
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  const background = seasonalBackgroundsSource[backgroundId];
   if (!background) {
     return {
       canUnlock: false,
@@ -364,7 +398,8 @@ export function unlockSeasonalBackground(backgroundId) {
   }
   
   const activeEvent = getActiveEvent();
-  const background = SEASONAL_BACKGROUNDS[backgroundId];
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  const background = seasonalBackgroundsSource[backgroundId];
   
   // Spend the seasonal currency
   const spendResult = spendSeasonalCurrency(background.cost);
@@ -391,7 +426,8 @@ export function unlockSeasonalBackground(backgroundId) {
  * @returns {boolean} True if the background can be used
  */
 export function isSeasonalBackgroundUsable(backgroundId) {
-  const background = SEASONAL_BACKGROUNDS[backgroundId];
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  const background = seasonalBackgroundsSource[backgroundId];
   if (!background) {
     return false;
   }
@@ -414,7 +450,8 @@ export function checkAndResetSeasonalBackground() {
   const selectedId = loadSelectedBackground();
   
   // Check if the selected background is a seasonal one
-  const seasonalBg = SEASONAL_BACKGROUNDS[selectedId];
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  const seasonalBg = seasonalBackgroundsSource[selectedId];
   if (!seasonalBg) {
     // Not a seasonal background, nothing to do
     return {
@@ -537,7 +574,8 @@ export function clearEventData(eventId) {
  * @returns {Object|null} Background info with unlock status
  */
 export function getSeasonalBackgroundInfo(backgroundId) {
-  const background = SEASONAL_BACKGROUNDS[backgroundId];
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  const background = seasonalBackgroundsSource[backgroundId];
   if (!background) {
     return null;
   }
@@ -583,8 +621,10 @@ export function getAllActiveSeasonalBackgrounds() {
     return [];
   }
   
-  return Object.keys(SEASONAL_BACKGROUNDS)
-    .filter(id => SEASONAL_BACKGROUNDS[id].eventId === activeEvent.id)
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
+  
+  return Object.keys(seasonalBackgroundsSource)
+    .filter(id => seasonalBackgroundsSource[id].eventId === activeEvent.id)
     .map(id => getSeasonalBackgroundInfo(id))
     .filter(bg => bg !== null);
 }
@@ -602,10 +642,11 @@ function getPurchasableSeasonalBackgroundIds() {
   
   const taskCount = getSeasonalTaskCount();
   const unlockedBackgrounds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
+  const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
   
-  return Object.keys(SEASONAL_BACKGROUNDS)
+  return Object.keys(seasonalBackgroundsSource)
     .filter(id => {
-      const bg = SEASONAL_BACKGROUNDS[id];
+      const bg = seasonalBackgroundsSource[id];
       // Must be for the active event
       if (bg.eventId !== activeEvent.id) return false;
       // Must have enough tasks
@@ -655,8 +696,9 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
   let firstNewBackground = null;
   if (newlyPurchasable.length > 0) {
     const bgId = newlyPurchasable[0];
+    const seasonalBackgroundsSource = getSeasonalBackgroundsSource();
     firstNewBackground = {
-      ...SEASONAL_BACKGROUNDS[bgId],
+      ...seasonalBackgroundsSource[bgId],
       eventEmoticon: activeEvent.emoticon,
       eventName: activeEvent.name,
       isSeasonal: true

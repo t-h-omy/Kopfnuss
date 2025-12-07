@@ -33,7 +33,15 @@ if (!response.ok) {
 }
 const balancingData = await response.json();
 
-console.log(`[BalancingLoader] Loaded ${useDevBalancing ? 'DEV' : 'PROD'} balancing`);
+// Load the appropriate backgrounds file using top-level await
+const backgroundsFile = useDevBalancing ? './backgrounds_dev.json' : './backgrounds_prod.json';
+const backgroundsResponse = await fetch(new URL(backgroundsFile, import.meta.url));
+if (!backgroundsResponse.ok) {
+  throw new Error(`Failed to load backgrounds file: ${backgroundsFile}, status: ${backgroundsResponse.status}`);
+}
+const backgroundsData = await backgroundsResponse.json();
+
+console.log(`[BalancingLoader] Loaded ${useDevBalancing ? 'DEV' : 'PROD'} balancing and backgrounds`);
 
 /**
  * Balancing values for different mathematical operations
@@ -61,41 +69,18 @@ export const CHALLENGE_TYPES = balancingData.CHALLENGE_TYPES;
 export const KOPFNUSS_DIFFICULTY = balancingData.KOPFNUSS_DIFFICULTY;
 
 /**
- * Background customization configuration
- * Applied in: logic/backgroundManager.js, main.js
+ * Unified backgrounds configuration
+ * All backgrounds (regular + seasonal) in a single array with consistent schema.
+ * Loaded from dedicated backgrounds_{dev|prod}.json files.
+ * Applied in: logic/backgroundManager.js, logic/eventManager.js, main.js
  */
-export const BACKGROUNDS = balancingData.BACKGROUNDS;
+export const BACKGROUNDS_UNIFIED = backgroundsData.backgrounds || [];
 
 /**
  * Seasonal events configuration
  * Applied in: logic/eventManager.js
  */
 export const SEASONAL_EVENTS = balancingData.SEASONAL_EVENTS;
-
-/**
- * Individual event background sections
- * Each event has its own section for better organization
- */
-export const CHRISTMAS_BACKGROUNDS = balancingData.CHRISTMAS_BACKGROUNDS;
-export const NEWYEAR_BACKGROUNDS = balancingData.NEWYEAR_BACKGROUNDS;
-export const VALENTINES_BACKGROUNDS = balancingData.VALENTINES_BACKGROUNDS;
-export const EASTER_BACKGROUNDS = balancingData.EASTER_BACKGROUNDS;
-export const SUMMER_BACKGROUNDS = balancingData.SUMMER_BACKGROUNDS;
-export const HALLOWEEN_BACKGROUNDS = balancingData.HALLOWEEN_BACKGROUNDS;
-
-/**
- * Seasonal backgrounds configuration (merged from all event sections)
- * Applied in: logic/backgroundManager.js, logic/eventManager.js
- * This combines all event-specific backgrounds for backward compatibility
- */
-export const SEASONAL_BACKGROUNDS = {
-  ...balancingData.CHRISTMAS_BACKGROUNDS,
-  ...balancingData.NEWYEAR_BACKGROUNDS,
-  ...balancingData.VALENTINES_BACKGROUNDS,
-  ...balancingData.EASTER_BACKGROUNDS,
-  ...balancingData.SUMMER_BACKGROUNDS,
-  ...balancingData.HALLOWEEN_BACKGROUNDS
-};
 
 /**
  * Check if currently using dev balancing
