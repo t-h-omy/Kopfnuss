@@ -21,7 +21,9 @@ const POPUP_SFX_MAP = {
   'zeit-popup-overlay': 'premium_challenge_popup',
   'event-info-popup-overlay': 'modal_open',
   'event-start-popup-overlay': 'success_fanfare',
-  'task-exit-confirmation-overlay': 'modal_open'
+  'task-exit-confirmation-overlay': 'modal_open',
+  'background-unlock-celebration-popup-overlay': 'background_unlocked',
+  'seasonal-background-unlock-celebration-popup-overlay': 'background_unlocked'
 };
 
 /**
