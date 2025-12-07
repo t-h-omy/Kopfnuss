@@ -526,8 +526,14 @@ function setupTaskScreenEventListeners() {
  */
 export function cleanupZeitChallengeTaskScreen() {
   stopTimer();
-  // Stop background music
-  stopZeitChallengeMusic();
+  
+  // Stop background music - ensure this happens even if other cleanup fails
+  try {
+    stopZeitChallengeMusic();
+  } catch (e) {
+    console.error('Error stopping Zeit challenge music:', e);
+  }
+  
   // Reset all module-level variables to prevent state leakage
   zeitState = null;
   currentTaskIndex = 0;

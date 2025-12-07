@@ -21,7 +21,7 @@ const SFX_DEFINITIONS = {
   countdown_tick: { freq: 1000, duration: 0.03, type: 'sine', gain: 0.15 },
   times_up: { freq: [400, 300, 200], duration: 0.4, type: 'triangle', gain: 0.3 },
   low_time_warning: { freq: [600, 500], duration: 0.1, type: 'triangle', gain: 0.3 },
-  time_challenge_music: { freq: 440, duration: 0.5, type: 'sine', gain: 0.15 }, // Fallback for looping music
+  time_challenge_music: { freq: 440, duration: 0.5, type: 'sine', gain: 0.15 }, // Fallback for Zeit challenge looping music
   
   // Diamond/Currency sounds
   diamond_earn: { freq: [880, 1047, 1319], duration: 0.12, type: 'sine', gain: 0.25 },
@@ -239,7 +239,7 @@ class AudioManager {
         const gainNode = ctx.createGain();
         
         source.buffer = buffer;
-        source.loop = options.loop ?? false;
+        source.loop = (options.loop === true);
         gainNode.gain.value = options.volume ?? 1;
         
         source.connect(gainNode);
@@ -281,9 +281,12 @@ class AudioManager {
   stopMusic() {
     if (this.currentMusicSource) {
       try {
-        this.currentMusicSource.stop();
+        // Check if source is already stopped to prevent errors
+        if (this.currentMusicSource.context.state !== 'closed') {
+          this.currentMusicSource.stop();
+        }
       } catch (e) {
-        // Already stopped or invalid state
+        // Already stopped or invalid state - this is fine
       }
       this.currentMusicSource = null;
       this.currentMusicGain = null;
