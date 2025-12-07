@@ -391,6 +391,156 @@
             "isDefault": false
         },
         {
+            "id": "snowyOwl",
+            "name": "Schnee-Eule",
+            "file": "backgrounds\/christmas\/snowy_owl_background_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 20
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "gnome",
+            "name": "Wichtel",
+            "file": "backgrounds\/christmas\/gnome_silhouette_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 24
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "iceCrystal",
+            "name": "Eiskristalle",
+            "file": "backgrounds\/christmas\/ice_crystal_modern_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 28
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "northernLights",
+            "name": "Nordlichter",
+            "file": "backgrounds\/christmas\/northern_lights_2_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 32
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "origamiCrane",
+            "name": "Origami-Kranich",
+            "file": "backgrounds\/christmas\/origami_crane_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 36
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "penguin",
+            "name": "Pinguin",
+            "file": "backgrounds\/christmas\/penguin_background_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 40
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "reindeerCalf",
+            "name": "Rentier-Kalb",
+            "file": "backgrounds\/christmas\/reindeer_calf_silhouette_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 44
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "reindeer",
+            "name": "Rentier",
+            "file": "backgrounds\/christmas\/reindeer_silhouette_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 48
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "santaHut",
+            "name": "Weihnachtshütte",
+            "file": "backgrounds\/christmas\/santa_hut_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 52
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "snowSquirrel",
+            "name": "Schnee-Eichhörnchen",
+            "file": "backgrounds\/christmas\/snow_squirrel_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 56
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
             "id": "newYearFireworks",
             "name": "Silvester-Feuerwerk",
             "file": "backgrounds\/newyear\/silvester_fireworks_optimized.webp",
