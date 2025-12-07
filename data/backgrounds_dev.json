@@ -1,681 +1,784 @@
 {
-  "backgrounds": [
-    {
-      "id": "default",
-      "name": "Standard",
-      "file": "backgrounds/01_default/background_compressed.webp",
-      "category": "standard",
-      "cost": 0,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 0
-      },
-      "event": null,
-      "active": true,
-      "isDefault": true
-    },
-    {
-      "id": "elephant",
-      "name": "Elefant",
-      "file": "backgrounds/02_standard/elefant_pattern_mobile.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 2
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "pomeranian",
-      "name": "Zwergspitz",
-      "file": "backgrounds/02_standard/pomeranian_background_soft_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 2
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "snakeJungle",
-      "name": "Dschungelschlange",
-      "file": "backgrounds/02_standard/snake_jungle_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 2
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "capybara",
-      "name": "Capybara",
-      "file": "backgrounds/02_standard/capybara_background_less_saturated.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 3
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "dino",
-      "name": "Dinosaurier",
-      "file": "backgrounds/02_standard/dino_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 3
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "instruments",
-      "name": "Musikinstrumente",
-      "file": "backgrounds/02_standard/instruments_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 4
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "orca",
-      "name": "Orca",
-      "file": "backgrounds/02_standard/orca_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 4
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "sunset",
-      "name": "Sonnenuntergang",
-      "file": "backgrounds/02_standard/sunset_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 5
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "gecko",
-      "name": "Gecko",
-      "file": "backgrounds/02_standard/bg_standard_12.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 5
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "owl",
-      "name": "Eule",
-      "file": "backgrounds/02_standard/bg_standard_13.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 6
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "platypus",
-      "name": "Schnabeltier",
-      "file": "backgrounds/02_standard/bg_standard_14.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 7
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "seahorse",
-      "name": "Seepferdchen",
-      "file": "backgrounds/02_standard/bg_standard_15.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 8
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "toyHorses",
-      "name": "Spielzeugpferde",
-      "file": "backgrounds/02_standard/bg_standard_16.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 9
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "unicorn",
-      "name": "Einhorn",
-      "file": "backgrounds/02_standard/unicorn_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 10
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "candy",
-      "name": "SÃ¼ÃŸigkeiten",
-      "file": "backgrounds/02_standard/candy_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 10
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "maineCoon",
-      "name": "Maine Coon",
-      "file": "backgrounds/02_standard/maine_coon_background_optimized.webp",
-      "category": "standard",
-      "cost": 2,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": 15
-      },
-      "event": null,
-      "active": true
-    },
-    {
-      "id": "gingerbreadman",
-      "name": "Lebkuchen",
-      "file": "backgrounds/christmas/gingerbread_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 5
-      },
-      "event": "christmas",
-      "active": true
-    },
-    {
-      "id": "christmasTree",
-      "name": "Weihnachtsbaum",
-      "file": "backgrounds/christmas/christmas_tree_presents_mobile.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 10
-      },
-      "event": "christmas",
-      "active": true
-    },
-    {
-      "id": "christmasCookies",
-      "name": "Weihnachtskekse",
-      "file": "backgrounds/christmas/cookies_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 15
-      },
-      "event": "christmas",
-      "active": true
-    },
-    {
-      "id": "snowyWinter",
-      "name": "Schneelandschaft",
-      "file": "backgrounds/christmas/snow_background_mobile_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 20
-      },
-      "event": "christmas",
-      "active": true
-    },
-    {
-      "id": "newYearFireworks",
-      "name": "Silvester-Feuerwerk",
-      "file": "backgrounds/newyear/silvester_fireworks_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 5
-      },
-      "event": "newYear",
-      "active": true
-    },
-    {
-      "id": "confetti",
-      "name": "Konfetti",
-      "file": "backgrounds/newyear/confetti_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 10
-      },
-      "event": "newYear",
-      "active": true
-    },
-    {
-      "id": "luckySymbols",
-      "name": "GlÃ¼ckssymbole",
-      "file": "backgrounds/newyear/lucky_symbols_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 15
-      },
-      "event": "newYear",
-      "active": true
-    },
-    {
-      "id": "neonHearts",
-      "name": "Neon-Herzen",
-      "file": "backgrounds/valentines/neon_hearts.webp",
-      "category": "seasonal",
-      "cost": 1,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 4
-      },
-      "event": "valentines",
-      "active": true
-    },
-    {
-      "id": "sunsetHearts",
-      "name": "Sonnenuntergang mit Herzen",
-      "file": "backgrounds/valentines/sunset_hearts.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 8
-      },
-      "event": "valentines",
-      "active": true
-    },
-    {
-      "id": "rosePond",
-      "name": "Rosenteich",
-      "file": "backgrounds/valentines/rose_pond.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 12
-      },
-      "event": "valentines",
-      "active": true
-    },
-    {
-      "id": "pixelatedHearts",
-      "name": "Pixel-Herzen",
-      "file": "backgrounds/valentines/pixelated_hearts.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 16
-      },
-      "event": "valentines",
-      "active": true
-    },
-    {
-      "id": "origamiHeart",
-      "name": "Origami-Herz",
-      "file": "backgrounds/valentines/origami_heart.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 20
-      },
-      "event": "valentines",
-      "active": true
-    },
-    {
-      "id": "pixelHeartsMobile",
-      "name": "Wolkenherzen",
-      "file": "backgrounds/valentines/pixel_hearts_mobile.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 24
-      },
-      "event": "valentines",
-      "active": true
-    },
-    {
-      "id": "easterBunnies",
-      "name": "Osterhasen",
-      "file": "backgrounds/easter/bunnies_q92.webp",
-      "category": "seasonal",
-      "cost": 1,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 4
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterEggs",
-      "name": "Ostereier",
-      "file": "backgrounds/easter/eggs_q88.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 8
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterCutout",
-      "name": "Ausschnitt",
-      "file": "backgrounds/easter/easter_cutout.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 12
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterForest",
-      "name": "FrÃ¼hlingswald",
-      "file": "backgrounds/easter/forest_bg_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 16
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterPaperCutout",
-      "name": "Papier-Ausschnitt",
-      "file": "backgrounds/easter/paper_cutout_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 20
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterSoftClay",
-      "name": "Weiche Knete",
-      "file": "backgrounds/easter/easter_soft_clay.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 24
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterGradientShapes",
-      "name": "Farbverlauf-Formen",
-      "file": "backgrounds/easter/soft_gradient_shapes_optimized.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 28
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "easterWatercolor",
-      "name": "Aquarell",
-      "file": "backgrounds/easter/easter_watercolor.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 32
-      },
-      "event": "easter",
-      "active": true
-    },
-    {
-      "id": "butterflies",
-      "name": "Schmetterlinge",
-      "file": "backgrounds/summer/butterflies.webp",
-      "category": "seasonal",
-      "cost": 1,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 4
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "icecreamPattern",
-      "name": "Eiscreme-Muster",
-      "file": "backgrounds/summer/icecream_pattern.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 8
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "watermelonPattern",
-      "name": "Wassermelonen-Muster",
-      "file": "backgrounds/summer/watermelon_pattern.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 12
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "summerFruitsGlass",
-      "name": "SommerfrÃ¼chte",
-      "file": "backgrounds/summer/summer_fruits_glass_pattern.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 16
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "poolscene",
-      "name": "Poolszene",
-      "file": "backgrounds/summer/poolscene.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 20
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "flamingo",
-      "name": "Flamingo",
-      "file": "backgrounds/summer/flamingo.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 24
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "streetChalk",
-      "name": "StraÃŸenkreide",
-      "file": "backgrounds/summer/street_chalk.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 28
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "cat",
-      "name": "Katze",
-      "file": "backgrounds/summer/cat.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 32
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "ladybug",
-      "name": "MarienkÃ¤fer",
-      "file": "backgrounds/summer/ladybug.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 36
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "pumaSleeping",
-      "name": "Schlafender Puma",
-      "file": "backgrounds/summer/puma_sleeping.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 40
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "savanna",
-      "name": "Savanne",
-      "file": "backgrounds/summer/savanna.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 44
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "cartoonOutline",
-      "name": "Cartoon-Umrisse",
-      "file": "backgrounds/summer/cartoon_outline.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 48
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "softGradientShapes",
-      "name": "Weiche FarbverlÃ¤ufe",
-      "file": "backgrounds/summer/soft_gradient_shapes.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 52
-      },
-      "event": "summer",
-      "active": true
-    },
-    {
-      "id": "halloweenSpooky",
-      "name": "Gruselhaus",
-      "file": "backgrounds/01_default/background_compressed.webp",
-      "category": "seasonal",
-      "cost": 2,
-      "currency": "seasonal",
-      "requirements": {
-        "minTasksSinceEventStart": 8
-      },
-      "event": "halloween",
-      "active": true
-    }
-  ]
+    "backgrounds": [
+        {
+            "id": "default",
+            "name": "Standard",
+            "file": "backgrounds\/01_default\/background_compressed.webp",
+            "category": "standard",
+            "cost": 0,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 0,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": true
+        },
+        {
+            "id": "sunset",
+            "name": "Sonnenuntergang",
+            "file": "backgrounds\/02_standard\/sunset_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 4,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "unicorn",
+            "name": "Einhorn",
+            "file": "backgrounds\/02_standard\/unicorn_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 8,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "candy",
+            "name": "Süßigkeiten",
+            "file": "backgrounds\/02_standard\/candy_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 12,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "snakeJungle",
+            "name": "Dschungelschlange",
+            "file": "backgrounds\/02_standard\/snake_jungle_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 16,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "maineCoon",
+            "name": "Maine Coon",
+            "file": "backgrounds\/02_standard\/maine_coon_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 20,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "elephant",
+            "name": "Elefant",
+            "file": "backgrounds\/02_standard\/elefant_pattern_mobile.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 24,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "pomeranian",
+            "name": "Zwergspitz",
+            "file": "backgrounds\/02_standard\/pomeranian_background_soft_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 28,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "capybara",
+            "name": "Capybara",
+            "file": "backgrounds\/02_standard\/capybara_background_less_saturated.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 32,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "dino",
+            "name": "Dinosaurier",
+            "file": "backgrounds\/02_standard\/dino_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 36,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "instruments",
+            "name": "Musikinstrumente",
+            "file": "backgrounds\/02_standard\/instruments_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 40,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "orca",
+            "name": "Orca",
+            "file": "backgrounds\/02_standard\/orca_background_optimized.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 44,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "gecko",
+            "name": "Gecko",
+            "file": "backgrounds\/02_standard\/bg_standard_12.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 48,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "owl",
+            "name": "Eule",
+            "file": "backgrounds\/02_standard\/bg_standard_13.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 52,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "platypus",
+            "name": "Schnabeltier",
+            "file": "backgrounds\/02_standard\/bg_standard_14.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 56,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "seahorse",
+            "name": "Seepferdchen",
+            "file": "backgrounds\/02_standard\/bg_standard_15.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 60,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "toyHorses",
+            "name": "Spielzeugpferde",
+            "file": "backgrounds\/02_standard\/bg_standard_16.webp",
+            "category": "standard",
+            "cost": 1,
+            "currency": "diamonds",
+            "requirements": {
+                "minTasksSinceStart": 64,
+                "minTasksSinceEventStart": null
+            },
+            "event": null,
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "gingerbreadman",
+            "name": "Gingerbreadman",
+            "file": "backgrounds\/christmas\/gingerbread_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 4
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "christmasTree",
+            "name": "Weihnachtsbaum",
+            "file": "backgrounds\/christmas\/christmas_tree_presents_mobile.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 8
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "christmasCookies",
+            "name": "Weihnachtskekse",
+            "file": "backgrounds\/christmas\/cookies_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 12
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "snowyWinter",
+            "name": "Schneelandschaft",
+            "file": "backgrounds\/christmas\/snow_background_mobile_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 16
+            },
+            "event": "christmas",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "newYearFireworks",
+            "name": "Silvester-Feuerwerk",
+            "file": "backgrounds\/newyear\/silvester_fireworks_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 4
+            },
+            "event": "newYear",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "confetti",
+            "name": "Konfetti",
+            "file": "backgrounds\/newyear\/confetti_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 8
+            },
+            "event": "newYear",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "luckySymbols",
+            "name": "Glückssymbole",
+            "file": "backgrounds\/newyear\/lucky_symbols_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 12
+            },
+            "event": "newYear",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "neonHearts",
+            "name": "Neon-Herzen",
+            "file": "backgrounds\/valentines\/neon_hearts.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 4
+            },
+            "event": "valentines",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "sunsetHearts",
+            "name": "Sonnenuntergang mit Herzen",
+            "file": "backgrounds\/valentines\/sunset_hearts.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 8
+            },
+            "event": "valentines",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "rosePond",
+            "name": "Rosenteich",
+            "file": "backgrounds\/valentines\/rose_pond.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 12
+            },
+            "event": "valentines",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "pixelatedHearts",
+            "name": "Pixel-Herzen",
+            "file": "backgrounds\/valentines\/pixelated_hearts.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 16
+            },
+            "event": "valentines",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "origamiHeart",
+            "name": "Origami-Herz",
+            "file": "backgrounds\/valentines\/origami_heart.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 20
+            },
+            "event": "valentines",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "pixelHeartsMobile",
+            "name": "Wolkenherzen",
+            "file": "backgrounds\/valentines\/pixel_hearts_mobile.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 24
+            },
+            "event": "valentines",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterBunnies",
+            "name": "Osterhasen",
+            "file": "backgrounds\/easter\/bunnies_q92.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 4
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterEggs",
+            "name": "Ostereier",
+            "file": "backgrounds\/easter\/eggs_q88.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 8
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterCutout",
+            "name": "Blumenwiese",
+            "file": "backgrounds\/easter\/easter_cutout.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 12
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterForest",
+            "name": "Frühlingswald",
+            "file": "backgrounds\/easter\/forest_bg_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 16
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterPaperCutout",
+            "name": "Papierblumen",
+            "file": "backgrounds\/easter\/paper_cutout_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 20
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterSoftClay",
+            "name": "Mamahuhn",
+            "file": "backgrounds\/easter\/easter_soft_clay.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 24
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterGradientShapes",
+            "name": "Sonnenaufgang",
+            "file": "backgrounds\/easter\/soft_gradient_shapes_optimized.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 28
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "easterWatercolor",
+            "name": "Aquarell",
+            "file": "backgrounds\/easter\/easter_watercolor.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 32
+            },
+            "event": "easter",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "butterflies",
+            "name": "Schmetterlinge",
+            "file": "backgrounds\/summer\/butterflies.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 4
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "icecreamPattern",
+            "name": "Eiscreme-Muster",
+            "file": "backgrounds\/summer\/icecream_pattern.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 8
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "watermelonPattern",
+            "name": "Wassermelonen-Muster",
+            "file": "backgrounds\/summer\/watermelon_pattern.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 12
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "summerFruitsGlass",
+            "name": "Sommerfrüchte",
+            "file": "backgrounds\/summer\/summer_fruits_glass_pattern.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 16
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "poolscene",
+            "name": "Poolszene",
+            "file": "backgrounds\/summer\/poolscene.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 20
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "flamingo",
+            "name": "Flamingo",
+            "file": "backgrounds\/summer\/flamingo.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 24
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "streetChalk",
+            "name": "Straßenkreide",
+            "file": "backgrounds\/summer\/street_chalk.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 28
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "cat",
+            "name": "Katze",
+            "file": "backgrounds\/summer\/cat.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 32
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "ladybug",
+            "name": "Marienkäfer",
+            "file": "backgrounds\/summer\/ladybug.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 36
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "pumaSleeping",
+            "name": "Schlafender Puma",
+            "file": "backgrounds\/summer\/puma_sleeping.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 40
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "savanna",
+            "name": "Savanne",
+            "file": "backgrounds\/summer\/savanna.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 44
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "cartoonOutline",
+            "name": "Cartoon-Umrisse",
+            "file": "backgrounds\/summer\/cartoon_outline.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 48
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "softGradientShapes",
+            "name": "Weiche Farbverläufe",
+            "file": "backgrounds\/summer\/soft_gradient_shapes.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 52
+            },
+            "event": "summer",
+            "active": true,
+            "isDefault": false
+        },
+        {
+            "id": "halloweenSpooky",
+            "name": "Gruselhaus",
+            "file": "backgrounds\/01_default\/background_compressed.webp",
+            "category": "seasonal",
+            "cost": 1,
+            "currency": "seasonal",
+            "requirements": {
+                "minTasksSinceStart": null,
+                "minTasksSinceEventStart": 4
+            },
+            "event": "halloween",
+            "active": true,
+            "isDefault": false
+        }
+    ]
 }
