@@ -17,6 +17,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
+import { playZeitChallengeMusic, stopZeitChallengeMusic } from './audioBootstrap.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -98,6 +99,9 @@ export function initZeitChallengeTaskScreen() {
   
   // Setup event listeners
   setupTaskScreenEventListeners();
+  
+  // Start background music
+  playZeitChallengeMusic();
   
   // Start the timer
   startTimer();
@@ -522,6 +526,8 @@ function setupTaskScreenEventListeners() {
  */
 export function cleanupZeitChallengeTaskScreen() {
   stopTimer();
+  // Stop background music
+  stopZeitChallengeMusic();
   // Reset all module-level variables to prevent state leakage
   zeitState = null;
   currentTaskIndex = 0;

@@ -77,6 +77,11 @@ import {
   updateKnownSeasonalPurchasableBackgrounds
 } from './logic/eventManager.js';
 import { audioManager } from './logic/audioManager.js';
+import { 
+  playBackgroundPurchased, 
+  playZeitChallengeMusic, 
+  stopZeitChallengeMusic 
+} from './logic/audioBootstrap.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -4190,6 +4195,9 @@ function executeBackgroundUnlock(bgId) {
   closeBackgroundUnlockConfirmPopup();
   
   if (result.success) {
+    // Play purchase sound
+    playBackgroundPurchased();
+    
     // Update the shop display
     closeBackgroundShopPopup();
     showBackgroundShopPopup();

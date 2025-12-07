@@ -11,14 +11,14 @@ const POPUP_SFX_MAP = {
   'reward-popup-overlay': 'success_fanfare',
   'diamond-celebration-popup-overlay': 'diamond_gain',
   'streak-celebration-popup-overlay': 'streak_gain',
-  'streak-popup-overlay': 'streak_gain',
+  'streak-popup-overlay': 'streak_popup',
   'settings-popup-overlay': 'modal_open',
   'background-shop-overlay': 'modal_open',
   'confirmation-popup-overlay': 'modal_open',
   'background-confirm-overlay': 'modal_open',
-  'super-challenge-popup-overlay': 'modal_open',
-  'kopfnuss-popup-overlay': 'modal_open',
-  'zeit-popup-overlay': 'modal_open',
+  'super-challenge-popup-overlay': 'super_challenge_popup',
+  'kopfnuss-popup-overlay': 'premium_challenge_popup',
+  'zeit-popup-overlay': 'premium_challenge_popup',
   'event-info-popup-overlay': 'modal_open',
   'event-start-popup-overlay': 'success_fanfare',
   'task-exit-confirmation-overlay': 'modal_open'
@@ -337,6 +337,34 @@ export function playConfettiPop() {
  */
 export function playNotEnoughDiamondsHint() {
   audioManager.play('not_enough_diamonds_hint');
+}
+
+/**
+ * Play sound when purchasing a background with diamonds
+ */
+export function playBackgroundPurchased() {
+  audioManager.play('background_purchased');
+}
+
+/**
+ * Play streak popup sound
+ */
+export function playStreakPopup() {
+  audioManager.play('streak_popup');
+}
+
+/**
+ * Play Zeit challenge background music (looping)
+ */
+export function playZeitChallengeMusic() {
+  audioManager.playMusic('time_challenge_music', { volume: 0.3 });
+}
+
+/**
+ * Stop Zeit challenge background music
+ */
+export function stopZeitChallengeMusic() {
+  audioManager.stopMusic();
 }
 
 // Initialize when DOM is ready
