@@ -61,8 +61,17 @@ export const CHALLENGE_TYPES = balancingData.CHALLENGE_TYPES;
 export const KOPFNUSS_DIFFICULTY = balancingData.KOPFNUSS_DIFFICULTY;
 
 /**
- * Background customization configuration
+ * Unified backgrounds configuration (NEW STRUCTURE)
+ * All backgrounds (regular + seasonal) in a single array with consistent schema.
+ * This is the primary export for background data going forward.
+ * Applied in: logic/backgroundManager.js, logic/eventManager.js, main.js
+ */
+export const BACKGROUNDS_UNIFIED = balancingData.BACKGROUNDS_UNIFIED || [];
+
+/**
+ * Background customization configuration (LEGACY - for backward compatibility)
  * Applied in: logic/backgroundManager.js, main.js
+ * @deprecated Use BACKGROUNDS_UNIFIED instead
  */
 export const BACKGROUNDS = balancingData.BACKGROUNDS;
 
@@ -73,8 +82,9 @@ export const BACKGROUNDS = balancingData.BACKGROUNDS;
 export const SEASONAL_EVENTS = balancingData.SEASONAL_EVENTS;
 
 /**
- * Individual event background sections
+ * Individual event background sections (LEGACY - for backward compatibility)
  * Each event has its own section for better organization
+ * @deprecated Use BACKGROUNDS_UNIFIED instead
  */
 export const CHRISTMAS_BACKGROUNDS = balancingData.CHRISTMAS_BACKGROUNDS;
 export const NEWYEAR_BACKGROUNDS = balancingData.NEWYEAR_BACKGROUNDS;
@@ -87,6 +97,7 @@ export const HALLOWEEN_BACKGROUNDS = balancingData.HALLOWEEN_BACKGROUNDS;
  * Seasonal backgrounds configuration (merged from all event sections)
  * Applied in: logic/backgroundManager.js, logic/eventManager.js
  * This combines all event-specific backgrounds for backward compatibility
+ * @deprecated Use BACKGROUNDS_UNIFIED instead
  */
 export const SEASONAL_BACKGROUNDS = {
   ...balancingData.CHRISTMAS_BACKGROUNDS,
