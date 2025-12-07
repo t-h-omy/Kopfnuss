@@ -223,6 +223,71 @@
       "active": true
     },
     {
+      "id": "dolphinPattern",
+      "name": "Delfin-Muster",
+      "file": "backgrounds/02_standard/dolphin_pattern_optimized.webp",
+      "category": "standard",
+      "cost": 3,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 2250
+      },
+      "event": null,
+      "active": true
+    },
+    {
+      "id": "greyCat",
+      "name": "Graue Katze",
+      "file": "backgrounds/02_standard/grey_cat_background_optimized.webp",
+      "category": "standard",
+      "cost": 3,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 2400
+      },
+      "event": null,
+      "active": true
+    },
+    {
+      "id": "leekPattern",
+      "name": "Lauch-Muster",
+      "file": "backgrounds/02_standard/leek_pattern_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 2550
+      },
+      "event": null,
+      "active": true
+    },
+    {
+      "id": "leekSleeping",
+      "name": "Schlafender Lauch",
+      "file": "backgrounds/02_standard/leek_sleeping_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 2700
+      },
+      "event": null,
+      "active": true
+    },
+    {
+      "id": "boeserHase",
+      "name": "Böser Hase",
+      "file": "backgrounds/02_standard/boeser_hase.webp",
+      "category": "standard",
+      "cost": 5,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 2850
+      },
+      "event": null,
+      "active": true
+    },
+    {
       "id": "gingerbreadman",
       "name": "Gingerbreadman",
       "file": "backgrounds/christmas/gingerbread_optimized.webp",
