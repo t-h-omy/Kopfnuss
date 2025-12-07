@@ -17,7 +17,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
-import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic } from './audioBootstrap.js';
+import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed } from './audioBootstrap.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -193,6 +193,17 @@ function updateTimerDisplay() {
 function handleTimeout() {
   // Stop the timer
   stopTimer();
+  
+  // Stop all music (including countdown music)
+  stopZeitChallengeMusic();
+  
+  // Play times up sound
+  playTimesUp();
+  
+  // Play challenge failed sound after a short delay
+  setTimeout(() => {
+    playChallengeFailed();
+  }, 800);
   
   // Disable input
   isInputDisabled = true;

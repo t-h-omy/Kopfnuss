@@ -11,7 +11,7 @@ import { SFX_VOLUME } from '../data/constants.js';
 const POPUP_SFX_MAP = {
   'reward-popup-overlay': 'success_fanfare',
   'diamond-celebration-popup-overlay': 'diamond_gain',
-  'streak-celebration-popup-overlay': 'streak_gain',
+  'streak-celebration-popup-overlay': 'streak_popup',
   'streak-popup-overlay': 'streak_popup',
   'settings-popup-overlay': 'modal_open',
   'background-shop-overlay': 'modal_open',
