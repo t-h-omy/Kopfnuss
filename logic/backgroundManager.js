@@ -445,3 +445,77 @@ export function shouldShowNewBadge() {
   // Check if shop was already opened with these backgrounds
   return !wasShopOpenedWithNewBackgrounds();
 }
+
+/**
+ * Get all pack backgrounds from unified structure
+ * Returns backgrounds in legacy format for compatibility
+ * @returns {Object} Object with background IDs as keys
+ */
+function getPackBackgroundsSource() {
+  const backgrounds = {};
+  
+  // Safety check: ensure BACKGROUNDS_UNIFIED is an array
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    return backgrounds;
+  }
+  
+  // Filter for pack backgrounds only
+  BACKGROUNDS_UNIFIED
+    .filter(bg => bg.category === 'pack' && bg.active)
+    .forEach(bg => {
+      backgrounds[bg.id] = {
+        id: bg.id,
+        name: bg.name,
+        file: bg.file,
+        cost: bg.cost,
+        pack: bg.pack,
+        tasksRequiredSincePackUnlock: bg.requirements?.minTasksSincePackUnlock || 0,
+        isPack: true
+      };
+    });
+  
+  return backgrounds;
+}
+
+/**
+ * Get all pack backgrounds with their states and unlock requirements
+ * @param {string} packId - Pack ID to filter by
+ * @param {number} tasksSincePackUnlock - Tasks completed since pack unlock
+ * @returns {Array} Array of pack background objects with states
+ */
+export function getPackBackgroundsWithStates(packId, tasksSincePackUnlock) {
+  const packBackgroundsSource = getPackBackgroundsSource();
+  const unlockedIds = loadUnlockedBackgrounds();
+  const selectedId = loadSelectedBackground();
+  
+  return Object.values(packBackgroundsSource)
+    .filter(bg => bg.pack === packId)
+    .map(bg => {
+      const tasksRequired = bg.tasksRequiredSincePackUnlock || 0;
+      const hasEnoughTasks = tasksSincePackUnlock >= tasksRequired;
+      const isUnlocked = unlockedIds.includes(bg.id);
+      const isActive = selectedId === bg.id;
+      
+      let state;
+      if (isActive) {
+        state = BACKGROUND_STATE.ACTIVE;
+      } else if (isUnlocked) {
+        state = BACKGROUND_STATE.UNLOCKED;
+      } else if (hasEnoughTasks) {
+        state = BACKGROUND_STATE.PURCHASABLE;
+      } else {
+        state = BACKGROUND_STATE.LOCKED;
+      }
+      
+      return {
+        ...bg,
+        state,
+        isUnlocked,
+        isActive,
+        hasEnoughTasks,
+        tasksRemaining: Math.max(0, tasksRequired - tasksSincePackUnlock)
+      };
+    })
+    .sort((a, b) => a.tasksRequiredSincePackUnlock - b.tasksRequiredSincePackUnlock);
+}
