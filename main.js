@@ -578,6 +578,9 @@ function loadChallengesScreen(container) {
   const header = document.createElement('div');
   header.className = 'challenges-header';
   
+  // Get streak stone info
+  const streakStones = getStreakStones();
+  
   header.innerHTML = `
     <div class="header-row header-row-1">
       <div class="header-row-left">
@@ -589,6 +592,10 @@ function loadChallengesScreen(container) {
           <div class="stat-capsule">
             <span class="stat-icon">💎</span>
             <span class="stat-value">${diamondInfo.current}</span>
+          </div>
+          <div class="stat-capsule">
+            <span class="stat-icon">🪨</span>
+            <span class="stat-value">${streakStones}</span>
           </div>
           ${seasonalCurrencyHtml}
         </div>
