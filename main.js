@@ -594,7 +594,7 @@ function loadChallengesScreen(container) {
             <span class="stat-value">${diamondInfo.current}</span>
           </div>
           <div class="stat-capsule">
-            <span class="stat-icon">🪨</span>
+            <span class="stat-icon">🫧</span>
             <span class="stat-value">${streakStones}</span>
           </div>
           ${seasonalCurrencyHtml}
@@ -1955,7 +1955,7 @@ function showStreakMilestonePopup(onClose = null) {
     <p class="milestone-choice-text">Wähle deine Belohnung:</p>
     <div class="milestone-rewards-container">
       <button class="milestone-reward-choice" id="choose-streak-stone">
-        <div class="milestone-reward-icon">💎</div>
+        <div class="milestone-reward-icon">🫧</div>
         <div class="milestone-reward-amount">${streakStoneReward} Streak-Stein${streakStoneReward > 1 ? 'e' : ''}</div>
       </button>
       <button class="milestone-reward-choice" id="choose-diamond">
@@ -3767,66 +3767,195 @@ function executeFullReset() {
 }
 
 /**
- * Show background shop popup with all available backgrounds
- * Supports four states: locked, purchasable, unlocked, active
- * Includes seasonal backgrounds section when an event is active
- * @param {string|null} scrollToBackgroundId - Optional background ID to scroll to and highlight
+ * Create standard backgrounds tab content
  */
-function showBackgroundShopPopup(scrollToBackgroundId = null) {
-  const backgrounds = getAllBackgrounds();
-  const selectedBg = getSelectedBackground();
-  const diamonds = loadDiamonds();
+function createStandardBackgroundsTab(backgrounds, selectedBg) {
+  let html = '<div class="backgrounds-grid">';
   
-  // Get seasonal event info
-  const activeEvent = getActiveEvent();
-  const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
-  const seasonalBackgrounds = activeEvent ? getAllActiveSeasonalBackgrounds() : [];
-  
-  // Create popup overlay
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay background-shop-overlay';
-  overlay.id = 'background-shop-overlay';
-  
-  // Create popup card
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card background-shop-card';
-  
-  // Create header with diamond count and seasonal currency if active
-  let currencyDisplayHtml = `
-    <div class="background-shop-diamonds">
-      <span>💎</span>
-      <span id="shop-diamond-count">${diamonds}</span>
-    </div>
-  `;
-  
-  if (activeEvent) {
-    currencyDisplayHtml += `
-      <div class="background-shop-seasonal-currency">
-        <span>${activeEvent.emoticon}</span>
-        <span id="shop-seasonal-count">${seasonalCurrency}</span>
+  backgrounds.forEach(bg => {
+    const state = bg.state;
+    const isDefault = bg.isDefault;
+    
+    let tileClass = 'background-tile';
+    tileClass += ` state-${state}`;
+    
+    if (state === BACKGROUND_STATE.UNLOCKED || state === BACKGROUND_STATE.ACTIVE) {
+      tileClass += ' unlocked';
+    }
+    if (state === BACKGROUND_STATE.LOCKED) {
+      tileClass += ' locked';
+    }
+    if (state === BACKGROUND_STATE.ACTIVE) {
+      tileClass += ' selected';
+    }
+    if (state === BACKGROUND_STATE.PURCHASABLE) {
+      tileClass += ' purchasable';
+    }
+    
+    let costHtml = '';
+    if (isDefault) {
+      costHtml = '<span class="background-cost">✓ Gratis</span>';
+    } else if (state === BACKGROUND_STATE.ACTIVE || state === BACKGROUND_STATE.UNLOCKED) {
+      costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
+    } else if (state === BACKGROUND_STATE.PURCHASABLE) {
+      costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
+    } else if (state === BACKGROUND_STATE.LOCKED) {
+      const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
+      costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
+    }
+    
+    let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
+    let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
+    let newBadge = (state === BACKGROUND_STATE.PURCHASABLE && bg.isNewlyPurchasable) ? '<div class="background-new-badge">NEU</div>' : '';
+    
+    html += `
+      <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="false">
+        <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
+        ${lockIcon}
+        ${activeBadge}
+        ${newBadge}
+        <div class="background-info">
+          <div class="background-name">${bg.name}</div>
+          ${costHtml}
+        </div>
       </div>
+    `;
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Create packs tab content
+ */
+function createPacksTab(packStatuses, selectedBg, streakStones) {
+  let html = '<div class="packs-container">';
+  
+  // Show unlocked packs first
+  packStatuses.unlocked.forEach(pack => {
+    html += createPackSection(pack, selectedBg, streakStones, true);
+  });
+  
+  // Then show locked packs
+  packStatuses.locked.forEach(pack => {
+    html += createPackSection(pack, selectedBg, streakStones, false);
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Create a single pack section
+ */
+function createPackSection(pack, selectedBg, streakStones, isUnlocked) {
+  let html = `<div class="pack-section ${isUnlocked ? 'unlocked' : 'locked'}" data-pack-id="${pack.id}">`;
+  html += `<h3 class="pack-title">${pack.name}</h3>`;
+  
+  // Show unlock button if not unlocked
+  if (!isUnlocked) {
+    const canAfford = streakStones >= pack.cost;
+    const buttonClass = canAfford ? 'pack-unlock-button' : 'pack-unlock-button disabled';
+    html += `
+      <button class="${buttonClass}" data-pack-id="${pack.id}">
+        <span>🫧 ${pack.cost}</span>
+        <span>Pack freischalten</span>
+      </button>
     `;
   }
   
-  let headerHtml = `
-    <h2>🎨 Hintergründe</h2>
-    <div class="background-shop-header">
-      ${currencyDisplayHtml}
+  // Show backgrounds in pack
+  html += '<div class="pack-backgrounds-grid">';
+  
+  if (isUnlocked) {
+    const backgrounds = getPackBackgroundsWithStates(pack.id, pack.tasksSinceUnlock);
+    backgrounds.forEach(bg => {
+      html += createPackBackgroundTile(bg, selectedBg, isUnlocked);
+    });
+  } else {
+    // Show locked preview of backgrounds
+    pack.backgrounds.forEach(bg => {
+      html += createPackBackgroundTile(bg, selectedBg, false);
+    });
+  }
+  
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Create a background tile for a pack
+ */
+function createPackBackgroundTile(bg, selectedBg, isPackUnlocked) {
+  const isActive = selectedBg.id === bg.id;
+  
+  let tileClass = 'background-tile pack-background-tile';
+  let costHtml = '';
+  let statusHtml = '';
+  let lockIcon = '';
+  
+  if (!isPackUnlocked) {
+    tileClass += ' pack-locked';
+    lockIcon = '<div class="background-lock-icon">🔒</div>';
+    costHtml = '<span class="background-cost background-locked-text">Pack gesperrt</span>';
+  } else if (isActive) {
+    tileClass += ' state-active selected';
+    costHtml = '<span class="background-cost">✓ Aktiv</span>';
+    statusHtml = '<div class="background-selected-badge">Aktiv</div>';
+  } else if (bg.isUnlocked) {
+    tileClass += ' state-unlocked unlocked';
+    costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
+  } else if (bg.hasEnoughTasks) {
+    tileClass += ' state-purchasable purchasable';
+    costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
+  } else {
+    tileClass += ' state-locked locked';
+    const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
+    costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
+    lockIcon = '<div class="background-lock-icon">🔒</div>';
+  }
+  
+  return `
+    <div class="${tileClass}" data-bg-id="${bg.id}" data-is-pack="true">
+      <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
+      ${lockIcon}
+      ${statusHtml}
+      <div class="background-info">
+        <div class="background-name">${bg.name}</div>
+        ${costHtml}
+      </div>
     </div>
   `;
+}
+
+/**
+ * Create seasonal tab content
+ */
+function createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent) {
+  let html = '';
   
-  // Create seasonal section if event is active
-  let seasonalSectionHtml = '';
-  if (activeEvent && seasonalBackgrounds.length > 0) {
-    seasonalSectionHtml = `
-      <div class="seasonal-backgrounds-section">
-        <h3 class="seasonal-section-title">${activeEvent.emoticon} ${activeEvent.name}-Event</h3>
-        <div class="seasonal-backgrounds-grid">
+  if (!activeEvent) {
+    // Show "no event active" message
+    html = `
+      <div class="no-event-message">
+        <p>🎈 Derzeit läuft kein saisonales Event.</p>
+        <p>Schau bald wieder vorbei!</p>
+      </div>
     `;
+  } else if (seasonalBackgrounds.length === 0) {
+    html = `
+      <div class="no-event-message">
+        <p>${activeEvent.emoticon} ${activeEvent.name}-Event läuft!</p>
+        <p>Keine Hintergründe verfügbar.</p>
+      </div>
+    `;
+  } else {
+    html = '<div class="seasonal-backgrounds-grid">';
     
     seasonalBackgrounds.forEach(bg => {
       const isUnlocked = bg.isUnlocked;
-      const canAfford = bg.canAfford;
       const hasEnoughTasks = bg.hasEnoughTasks;
       const isActive = selectedBg.id === bg.id;
       
@@ -3851,13 +3980,12 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
       } else {
         tileClass += ' state-purchasable purchasable seasonal-purchasable';
         costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
-        // Add NEW badge for newly purchasable seasonal backgrounds
         if (bg.isNewlyPurchasable) {
           newBadge = '<div class="background-new-badge">NEU</div>';
         }
       }
       
-      seasonalSectionHtml += `
+      html += `
         <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="true">
           <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
           ${lockIcon}
@@ -3871,80 +3999,104 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
       `;
     });
     
-    seasonalSectionHtml += `
-        </div>
-      </div>
-    `;
+    html += '</div>';
   }
   
-  // Create grid of regular background tiles
-  let tilesHtml = '<div class="regular-backgrounds-section">';
+  return html;
+}
+
+/**
+ * Show background shop popup with 3-tab system
+ * Tab 1: Standard & Default backgrounds
+ * Tab 2: Background Packs
+ * Tab 3: Seasonal backgrounds
+ * @param {string|null} scrollToBackgroundId - Optional background ID to scroll to and highlight
+ * @param {string} initialTab - Initial tab to show ('standard', 'packs', or 'seasonal')
+ */
+function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'standard') {
+  const backgrounds = getAllBackgrounds();
+  const selectedBg = getSelectedBackground();
+  const diamonds = loadDiamonds();
+  const streakStones = getStreakStones();
+  
+  // Get seasonal event info
+  const activeEvent = getActiveEvent();
+  const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
+  const seasonalBackgrounds = activeEvent ? getAllActiveSeasonalBackgrounds() : [];
+  
+  // Get pack info
+  const packStatuses = getAllPackStatuses();
+  
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-shop-overlay';
+  overlay.id = 'background-shop-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-shop-card';
+  
+  // Create header with currencies
+  let currencyDisplayHtml = `
+    <div class="background-shop-diamonds">
+      <span>💎</span>
+      <span id="shop-diamond-count">${diamonds}</span>
+    </div>
+    <div class="background-shop-diamonds">
+      <span>🫧</span>
+      <span id="shop-streak-stone-count">${streakStones}</span>
+    </div>
+  `;
+  
   if (activeEvent) {
-    tilesHtml += '<h3 class="regular-section-title">🎨 Hintergründe</h3>';
-  }
-  tilesHtml += '<div class="backgrounds-grid" id="backgrounds-grid">';
-  
-  backgrounds.forEach(bg => {
-    const state = bg.state;
-    const isDefault = bg.isDefault;
-    
-    // Build tile class based on state
-    let tileClass = 'background-tile';
-    tileClass += ` state-${state}`;
-    
-    // Add legacy classes for compatibility
-    if (state === BACKGROUND_STATE.UNLOCKED || state === BACKGROUND_STATE.ACTIVE) {
-      tileClass += ' unlocked';
-    }
-    if (state === BACKGROUND_STATE.LOCKED) {
-      tileClass += ' locked';
-    }
-    if (state === BACKGROUND_STATE.ACTIVE) {
-      tileClass += ' selected';
-    }
-    if (state === BACKGROUND_STATE.PURCHASABLE) {
-      tileClass += ' purchasable';
-    }
-    
-    // Build cost/status HTML based on state
-    let costHtml = '';
-    if (isDefault) {
-      costHtml = '<span class="background-cost">✓ Gratis</span>';
-    } else if (state === BACKGROUND_STATE.ACTIVE || state === BACKGROUND_STATE.UNLOCKED) {
-      costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
-    } else if (state === BACKGROUND_STATE.PURCHASABLE) {
-      costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
-    } else if (state === BACKGROUND_STATE.LOCKED) {
-      const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
-      costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
-    }
-    
-    // Build badges and icons
-    let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
-    let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
-    let newBadge = (state === BACKGROUND_STATE.PURCHASABLE && bg.isNewlyPurchasable) ? '<div class="background-new-badge">NEU</div>' : '';
-    
-    tilesHtml += `
-      <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="false">
-        <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
-        ${lockIcon}
-        ${activeBadge}
-        ${newBadge}
-        <div class="background-info">
-          <div class="background-name">${bg.name}</div>
-          ${costHtml}
-        </div>
+    currencyDisplayHtml += `
+      <div class="background-shop-seasonal-currency">
+        <span>${activeEvent.emoticon}</span>
+        <span id="shop-seasonal-count">${seasonalCurrency}</span>
       </div>
     `;
-  });
+  }
   
-  tilesHtml += '</div></div>';
+  // Create tab navigation
+  const tabsHtml = `
+    <div class="shop-tabs">
+      <button class="shop-tab ${initialTab === 'standard' ? 'active' : ''}" data-tab="standard">
+        Standard
+      </button>
+      <button class="shop-tab ${initialTab === 'packs' ? 'active' : ''}" data-tab="packs">
+        Pakete
+      </button>
+      <button class="shop-tab ${initialTab === 'seasonal' ? 'active' : ''}" data-tab="seasonal">
+        Saisonal
+      </button>
+    </div>
+  `;
+  
+  // Create standard backgrounds content
+  const standardBackgroundsHtml = createStandardBackgroundsTab(backgrounds, selectedBg);
+  
+  // Create packs content
+  const packsHtml = createPacksTab(packStatuses, selectedBg, streakStones);
+  
+  // Create seasonal content
+  const seasonalHtml = createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent);
   
   popupCard.innerHTML = `
     <div class="background-shop-content">
-      ${headerHtml}
-      ${seasonalSectionHtml}
-      ${tilesHtml}
+      <h2>🎨 Hintergründe</h2>
+      <div class="background-shop-header">
+        ${currencyDisplayHtml}
+      </div>
+      ${tabsHtml}
+      <div class="shop-tab-content ${initialTab === 'standard' ? 'active' : ''}" data-tab-content="standard">
+        ${standardBackgroundsHtml}
+      </div>
+      <div class="shop-tab-content ${initialTab === 'packs' ? 'active' : ''}" data-tab-content="packs">
+        ${packsHtml}
+      </div>
+      <div class="shop-tab-content ${initialTab === 'seasonal' ? 'active' : ''}" data-tab-content="seasonal">
+        ${seasonalHtml}
+      </div>
     </div>
     <button id="close-background-shop" class="btn-secondary background-shop-close">Schließen</button>
   `;
@@ -3952,13 +4104,33 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
   overlay.appendChild(popupCard);
   document.body.appendChild(overlay);
   
-  // Add click handlers for tiles (regular backgrounds)
-  const regularTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="false"]');
+  // Add tab switching handlers
+  const tabButtons = popupCard.querySelectorAll('.shop-tab');
+  const tabContents = popupCard.querySelectorAll('.shop-tab-content');
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tabName = button.dataset.tab;
+      
+      // Remove active from all tabs and contents
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      // Add active to clicked tab and corresponding content
+      button.classList.add('active');
+      const content = popupCard.querySelector(`[data-tab-content="${tabName}"]`);
+      if (content) {
+        content.classList.add('active');
+      }
+    });
+  });
+  
+  // Add click handlers for standard background tiles
+  const regularTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="false"]:not([data-is-pack="true"])');
   regularTiles.forEach(tile => {
     const bgId = tile.dataset.bgId;
     const bg = backgrounds.find(b => b.id === bgId);
     
-    // Only make tiles clickable if they are purchasable, unlocked, or active
     if (bg && bg.state !== BACKGROUND_STATE.LOCKED) {
       tile.addEventListener('click', () => {
         handleBackgroundTileClick(bgId);
@@ -3972,7 +4144,6 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     const bgId = tile.dataset.bgId;
     const bg = seasonalBackgrounds.find(b => b.id === bgId);
     
-    // Only make tiles clickable if they are purchasable, unlocked, or active
     if (bg && (bg.isUnlocked || bg.hasEnoughTasks)) {
       tile.addEventListener('click', () => {
         handleSeasonalBackgroundTileClick(bgId);
@@ -3980,36 +4151,28 @@ function showBackgroundShopPopup(scrollToBackgroundId = null) {
     }
   });
   
+  // Add pack unlock button handlers
+  const packUnlockButtons = popupCard.querySelectorAll('.pack-unlock-button');
+  packUnlockButtons.forEach(button => {
+    const packId = button.dataset.packId;
+    button.addEventListener('click', () => {
+      handlePackUnlock(packId, overlay);
+    });
+  });
+  
+  // Add click handlers for pack background tiles
+  const packTiles = popupCard.querySelectorAll('.background-tile[data-is-pack="true"]');
+  packTiles.forEach(tile => {
+    const bgId = tile.dataset.bgId;
+    tile.addEventListener('click', () => {
+      handlePackBackgroundTileClick(bgId);
+    });
+  });
+  
   // Add close button handler
   const closeBtn = document.getElementById('close-background-shop');
   if (closeBtn) {
     closeBtn.addEventListener('click', closeBackgroundShopPopup);
-  }
-  
-  // Scroll to and highlight specific background if requested
-  if (scrollToBackgroundId) {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const targetTile = popupCard.querySelector(`.background-tile[data-bg-id="${scrollToBackgroundId}"]`);
-        if (targetTile) {
-          // Scroll tile into view
-          targetTile.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-          
-          // Apply highlight effect (same as reward button effect)
-          setTimeout(() => {
-            targetTile.classList.add('background-newly-purchasable-highlight');
-            
-            // Remove highlight after animation
-            setTimeout(() => {
-              targetTile.classList.remove('background-newly-purchasable-highlight');
-            }, ANIMATION_TIMING.REWARD_HIGHLIGHT_DURATION);
-          }, ANIMATION_TIMING.SCROLL_SETTLE_DELAY);
-        }
-      }, ANIMATION_TIMING.DOM_RENDER_DELAY);
-    });
   }
 }
 
@@ -4233,6 +4396,167 @@ function showNotEnoughSeasonalCurrencyHint() {
   setTimeout(() => {
     hint.remove();
   }, 3000);
+}
+
+/**
+ * Handle pack unlock button click
+ * @param {string} packId - The pack ID to unlock
+ * @param {HTMLElement} overlay - The shop overlay element
+ */
+function handlePackUnlock(packId, overlay) {
+  const result = unlockPack(packId);
+  
+  if (result.needsStreakStones) {
+    showNotEnoughStreakStonesPopup(result.required, result.current);
+  } else if (result.success) {
+    // Refresh shop to show unlocked pack
+    closeBackgroundShopPopup();
+    showBackgroundShopPopup(null, 'packs');
+  }
+}
+
+/**
+ * Show "not enough streak stones" popup
+ * @param {number} required - Required streak stones
+ * @param {number} current - Current streak stones
+ */
+function showNotEnoughStreakStonesPopup(required, current) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  overlay.id = 'not-enough-streak-stones-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card';
+  
+  popupCard.innerHTML = `
+    <h2>Nicht genug Streak-Steine!</h2>
+    <p>Du benötigst <strong>${required} 🫧</strong> aber hast nur <strong>${current} 🫧</strong>.</p>
+    <p>Erreiche Streak-Meilensteine, um mehr Streak-Steine zu verdienen!</p>
+    <button id="close-not-enough-stones" class="btn-primary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  document.getElementById('close-not-enough-stones').addEventListener('click', () => {
+    overlay.remove();
+  });
+}
+
+/**
+ * Handle click on a pack background tile
+ * @param {string} bgId - The ID of the pack background
+ */
+function handlePackBackgroundTileClick(bgId) {
+  // Get pack backgrounds by finding which pack this background belongs to
+  const allPacks = getAllPackStatuses();
+  let targetBg = null;
+  let packUnlocked = false;
+  
+  for (const pack of allPacks.unlocked) {
+    const backgrounds = getPackBackgroundsWithStates(pack.id, pack.tasksSinceUnlock);
+    targetBg = backgrounds.find(b => b.id === bgId);
+    if (targetBg) {
+      packUnlocked = true;
+      break;
+    }
+  }
+  
+  if (!targetBg || !packUnlocked) {
+    return; // Pack not unlocked or background not found
+  }
+  
+  const selectedBg = getSelectedBackground();
+  const isActive = selectedBg.id === bgId;
+  
+  if (isActive) {
+    return; // Already active
+  }
+  
+  if (targetBg.isUnlocked) {
+    // Background is unlocked - select it
+    selectBackground(bgId);
+    closeBackgroundShopPopup();
+    showBackgroundShopPopup(null, 'packs');
+  } else if (targetBg.hasEnoughTasks) {
+    // Background is purchasable - show unlock confirmation
+    showPackBackgroundUnlockConfirmPopup(targetBg);
+  }
+}
+
+/**
+ * Show popup to confirm unlocking a pack background
+ * @param {Object} background - The pack background object
+ */
+function showPackBackgroundUnlockConfirmPopup(background) {
+  const diamonds = loadDiamonds();
+  const canAfford = diamonds >= background.cost;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-confirm-overlay';
+  overlay.id = 'pack-background-unlock-confirm-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-confirm-card';
+  
+  let buttonHtml;
+  if (canAfford) {
+    buttonHtml = `
+      <button id="confirm-pack-bg-unlock-button" class="btn-primary">Ja, freischalten</button>
+      <button id="cancel-pack-bg-unlock-button" class="btn-secondary">Nein</button>
+    `;
+  } else {
+    buttonHtml = `<button id="close-pack-bg-unlock-button" class="btn-primary">OK</button>`;
+  }
+  
+  let messageHtml = canAfford ? '' : '<p class="not-enough-diamonds-message">Nicht genug Diamanten!</p>';
+  
+  popupCard.innerHTML = `
+    <h2>Hintergrund freischalten?</h2>
+    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
+    <p><strong>${background.name}</strong></p>
+    <div class="background-confirm-cost">
+      <span>💎</span>
+      <span>${background.cost} Diamanten</span>
+    </div>
+    ${messageHtml}
+    <div class="background-confirm-buttons">
+      ${buttonHtml}
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  if (canAfford) {
+    const confirmBtn = document.getElementById('confirm-pack-bg-unlock-button');
+    const cancelBtn = document.getElementById('cancel-pack-bg-unlock-button');
+    
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => {
+        const result = unlockBackground(background.id);
+        if (result.success) {
+          playBackgroundPurchased();
+          overlay.remove();
+          closeBackgroundShopPopup();
+          showBackgroundShopPopup(null, 'packs');
+        }
+      });
+    }
+    
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => {
+        overlay.remove();
+      });
+    }
+  } else {
+    const closeBtn = document.getElementById('close-pack-bg-unlock-button');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        overlay.remove();
+      });
+    }
+  }
 }
 
 /**
