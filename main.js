@@ -81,7 +81,8 @@ import {
   playBackgroundPurchased, 
   playZeitChallengeMusic, 
   stopZeitChallengeMusic,
-  playDiamondEarn
+  playDiamondEarn,
+  playButtonTap
 } from './logic/audioBootstrap.js';
 
 /**
@@ -972,6 +973,9 @@ function loadChallengesScreen(container) {
         challenge.state === 'super_available' || challenge.state === 'super_in_progress') {
       nodeContainer.style.cursor = 'pointer';
       nodeContainer.addEventListener('click', () => {
+        // Play UI click sound
+        playButtonTap();
+        
         if (challenge.isSuperChallenge && 
             (challenge.state === 'super_available' || challenge.state === 'available')) {
           // Show super challenge popup before starting
@@ -1033,6 +1037,7 @@ function loadChallengesScreen(container) {
     
     if (!isZeitCompleted) {
       zeitNodeContainer.addEventListener('click', () => {
+        playButtonTap();
         showZeitChallengeStartPopup();
       });
     }
@@ -1045,6 +1050,7 @@ function loadChallengesScreen(container) {
     
     if (!isKopfnussCompleted) {
       kopfnussNodeContainer.addEventListener('click', () => {
+        playButtonTap();
         showKopfnussChallengeStartPopup();
       });
     }

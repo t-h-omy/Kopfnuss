@@ -9,9 +9,15 @@ import { SFX_VOLUME } from '../data/constants.js';
  * Map of popup overlay class patterns to their corresponding SFX
  */
 const POPUP_SFX_MAP = {
-  'reward-popup-overlay': 'success_fanfare',
-  'diamond-celebration-popup-overlay': 'diamond_gain',
+  // Specific celebration popups (check these first before generic reward-popup-overlay)
   'streak-celebration-popup-overlay': 'streak_popup',
+  'diamond-celebration-popup-overlay': 'diamond_gain',
+  'background-unlock-celebration-popup-overlay': 'background_unlocked',
+  'seasonal-background-unlock-celebration-popup-overlay': 'background_unlocked',
+  'background-unlock-celebration-overlay': 'background_unlocked',
+  
+  // Generic popups
+  'reward-popup-overlay': 'success_fanfare',
   'streak-popup-overlay': 'streak_popup',
   'settings-popup-overlay': 'modal_open',
   'background-shop-overlay': 'modal_open',
@@ -22,9 +28,7 @@ const POPUP_SFX_MAP = {
   'zeit-popup-overlay': 'premium_challenge_popup',
   'event-info-popup-overlay': 'modal_open',
   'event-start-popup-overlay': 'success_fanfare',
-  'task-exit-confirmation-overlay': 'modal_open',
-  'background-unlock-celebration-popup-overlay': 'background_unlocked',
-  'seasonal-background-unlock-celebration-popup-overlay': 'background_unlocked'
+  'task-exit-confirmation-overlay': 'modal_open'
 };
 
 /**
