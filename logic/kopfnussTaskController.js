@@ -15,7 +15,7 @@ import {
   addSeasonalCurrency 
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
-import { playAnswerFeedback, playChallengeComplete, playDiamondEarn } from './audioBootstrap.js';
+import { playAnswerFeedback, playChallengeComplete, playDiamondEarn, playChallengeFailed } from './audioBootstrap.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -206,8 +206,12 @@ function handleAnswerSubmit() {
 function handleKopfnussChallengeCompletion() {
   const isPerfect = errors === 0;
   
-  // Play challenge complete sound
-  playChallengeComplete();
+  // Play appropriate sound based on result
+  if (isPerfect) {
+    playChallengeComplete();
+  } else {
+    playChallengeFailed();
+  }
   
   // Complete the challenge
   const result = completeKopfnussChallenge(errors);
