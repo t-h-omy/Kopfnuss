@@ -3,22 +3,32 @@
 // Hooks into the UI without modifying main.js logic
 
 import { audioManager } from './audioManager.js';
+import { SFX_VOLUME } from '../data/constants.js';
 
 /**
  * Map of popup overlay class patterns to their corresponding SFX
  */
 const POPUP_SFX_MAP = {
-  'reward-popup-overlay': 'success_fanfare',
+  // Specific celebration popups (check these first before generic reward-popup-overlay)
+  'streak-celebration-popup-overlay': 'streak_popup',
   'diamond-celebration-popup-overlay': 'diamond_gain',
-  'streak-celebration-popup-overlay': 'streak_gain',
-  'streak-popup-overlay': 'streak_gain',
+  'background-unlock-celebration-popup-overlay': 'background_unlocked',
+  'seasonal-background-unlock-celebration-popup-overlay': 'background_unlocked',
+  'background-unlock-celebration-overlay': 'background_unlocked',
+  'super-challenge-start-popup-overlay': 'super_challenge_popup',
+  'kopfnuss-start-popup-overlay': 'premium_challenge_popup',
+  'zeit-start-popup-overlay': 'premium_challenge_popup',
+  
+  // Generic popups
+  'reward-popup-overlay': 'success_fanfare',
+  'streak-popup-overlay': 'streak_popup',
   'settings-popup-overlay': 'modal_open',
   'background-shop-overlay': 'modal_open',
   'confirmation-popup-overlay': 'modal_open',
   'background-confirm-overlay': 'modal_open',
-  'super-challenge-popup-overlay': 'modal_open',
-  'kopfnuss-popup-overlay': 'modal_open',
-  'zeit-popup-overlay': 'modal_open',
+  'super-challenge-popup-overlay': 'super_challenge_popup',
+  'kopfnuss-popup-overlay': 'premium_challenge_popup',
+  'zeit-popup-overlay': 'premium_challenge_popup',
   'event-info-popup-overlay': 'modal_open',
   'event-start-popup-overlay': 'success_fanfare',
   'task-exit-confirmation-overlay': 'modal_open'
@@ -72,15 +82,16 @@ function attachClickSoundHandlers() {
                           target.closest('.shop-button, .burger-menu-button');
     
     // Play UI click sound for buttons and interactive capsules
-    if (isButton || isInButton || isStatCapsule || isShopButton) {
-      audioManager.play('ui_click');
+    // Skip shop buttons as they trigger popup sounds instead
+    if ((isButton || isInButton || isStatCapsule) && !isShopButton) {
+      audioManager.play('ui_click', { volume: SFX_VOLUME.ui_click });
     }
   }, { passive: true });
 }
 
 /**
  * Attach delegated handler for challenge node selection
- * Plays node_select when user clicks on a challenge node
+ * Plays ui_click when user clicks on a challenge node
  */
 function attachNodeSelectionHandlers() {
   document.addEventListener('click', (e) => {
@@ -93,7 +104,7 @@ function attachNodeSelectionHandlers() {
       // Check if the node is clickable (has cursor: pointer or is in an interactive state)
       const style = window.getComputedStyle(nodeContainer);
       if (style.cursor === 'pointer') {
-        audioManager.play('node_select');
+        audioManager.play('ui_click', { volume: SFX_VOLUME.ui_click });
       }
     }
   }, { passive: true });
@@ -149,8 +160,9 @@ function handleAddedElement(element) {
         activePopupIds.add(elementId);
       }
       
-      // Play the open sound
-      audioManager.play(sfxName);
+      // Play the open sound with appropriate volume
+      const volume = SFX_VOLUME[sfxName] || 1.0;
+      audioManager.play(sfxName, { volume });
       return;
     }
   }
@@ -186,7 +198,8 @@ function handleRemovedElement(element) {
  * @param {boolean} isCorrect
  */
 export function playAnswerFeedback(isCorrect) {
-  audioManager.play(isCorrect ? 'answer_correct' : 'answer_incorrect');
+  const sfxName = isCorrect ? 'answer_correct' : 'answer_incorrect';
+  audioManager.play(sfxName, { volume: SFX_VOLUME[sfxName] });
 }
 
 /**
@@ -200,21 +213,21 @@ export function playNewTask() {
  * Play sound when a challenge starts
  */
 export function playChallengeStart() {
-  audioManager.play('challenge_start');
+  audioManager.play('challenge_start', { volume: SFX_VOLUME.challenge_start });
 }
 
 /**
  * Play sound when a challenge is successfully completed
  */
 export function playChallengeComplete() {
-  audioManager.play('challenge_complete');
+  audioManager.play('challenge_complete', { volume: SFX_VOLUME.challenge_complete });
 }
 
 /**
  * Play sound when a challenge is failed
  */
 export function playChallengeFailed() {
-  audioManager.play('challenge_failed');
+  audioManager.play('challenge_failed', { volume: SFX_VOLUME.challenge_failed });
 }
 
 /**
@@ -222,14 +235,14 @@ export function playChallengeFailed() {
  * For Zeit-Challenge timer
  */
 export function playCountdownTick() {
-  audioManager.play('countdown_tick');
+  audioManager.play('countdown_tick', { volume: SFX_VOLUME.countdown_tick });
 }
 
 /**
  * Play sound when time runs out
  */
 export function playTimesUp() {
-  audioManager.play('times_up');
+  audioManager.play('times_up', { volume: SFX_VOLUME.times_up });
 }
 
 /**
@@ -244,7 +257,7 @@ export function playLowTimeWarning() {
  * Play sound when earning diamonds
  */
 export function playDiamondEarn() {
-  audioManager.play('diamond_earn');
+  audioManager.play('diamond_earn', { volume: SFX_VOLUME.diamond_earn });
 }
 
 /**
@@ -258,7 +271,7 @@ export function playDiamondSpend() {
  * Play sound when a background is unlocked
  */
 export function playBackgroundUnlocked() {
-  audioManager.play('background_unlocked');
+  audioManager.play('background_unlocked', { volume: SFX_VOLUME.background_unlocked });
 }
 
 /**
@@ -272,7 +285,7 @@ export function playPopupRewardOpen() {
  * Play generic UI button tap sound
  */
 export function playButtonTap() {
-  audioManager.play('ui_click');
+  audioManager.play('ui_click', { volume: SFX_VOLUME.ui_click });
 }
 
 /**
@@ -321,7 +334,7 @@ export function playNodeHighlight() {
  * Play sound when an action is not allowed
  */
 export function playActionNotAllowed() {
-  audioManager.play('action_not_allowed');
+  audioManager.play('action_not_allowed', { volume: SFX_VOLUME.action_not_allowed });
 }
 
 /**
@@ -337,6 +350,41 @@ export function playConfettiPop() {
  */
 export function playNotEnoughDiamondsHint() {
   audioManager.play('not_enough_diamonds_hint');
+}
+
+/**
+ * Play sound when purchasing a background with diamonds
+ */
+export function playBackgroundPurchased() {
+  audioManager.play('background_purchased', { volume: SFX_VOLUME.background_purchased });
+}
+
+/**
+ * Play streak popup sound
+ */
+export function playStreakPopup() {
+  audioManager.play('streak_popup', { volume: SFX_VOLUME.streak_popup });
+}
+
+/**
+ * Play Zeit challenge background music (looping)
+ */
+export function playZeitChallengeMusic() {
+  audioManager.playMusic('time_challenge_music', { volume: SFX_VOLUME.time_challenge_music });
+}
+
+/**
+ * Play final 10 seconds countdown music (crossfade from main music)
+ */
+export function playFinalCountdownMusic() {
+  audioManager.crossfadeMusic('countdown_tick', { volume: SFX_VOLUME.countdown_tick }, 0.5);
+}
+
+/**
+ * Stop Zeit challenge background music
+ */
+export function stopZeitChallengeMusic() {
+  audioManager.stopMusic();
 }
 
 // Initialize when DOM is ready

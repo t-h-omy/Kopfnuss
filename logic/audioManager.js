@@ -21,6 +21,7 @@ const SFX_DEFINITIONS = {
   countdown_tick: { freq: 1000, duration: 0.03, type: 'sine', gain: 0.15 },
   times_up: { freq: [400, 300, 200], duration: 0.4, type: 'triangle', gain: 0.3 },
   low_time_warning: { freq: [600, 500], duration: 0.1, type: 'triangle', gain: 0.3 },
+  time_challenge_music: { freq: 440, duration: 0.5, type: 'sine', gain: 0.15 }, // Fallback for Zeit challenge looping music
   
   // Diamond/Currency sounds
   diamond_earn: { freq: [880, 1047, 1319], duration: 0.12, type: 'sine', gain: 0.25 },
@@ -48,6 +49,14 @@ const SFX_DEFINITIONS = {
   // Feedback sounds
   action_not_allowed: { freq: [300, 250], duration: 0.15, type: 'triangle', gain: 0.25 },
   
+  // Popup-specific sounds
+  streak_popup: { freq: [659, 784, 988], duration: 0.15, type: 'sine', gain: 0.25 },
+  premium_challenge_popup: { freq: [440, 554, 659], duration: 0.18, type: 'sine', gain: 0.25 },
+  super_challenge_popup: { freq: [523, 659, 784], duration: 0.2, type: 'sine', gain: 0.28 },
+  
+  // Background purchase sounds
+  background_purchased: { freq: [523, 659], duration: 0.1, type: 'sine', gain: 0.2 },
+  
   // Legacy aliases (for backwards compatibility)
   success_fanfare: { freq: [523, 659, 784, 1047], duration: 0.2, type: 'sine', gain: 0.25 },
   confetti_pop: { freq: 1200, duration: 0.03, type: 'sine', gain: 0.2 },
@@ -73,6 +82,12 @@ class AudioManager {
     
     /** @type {boolean} */
     this.muted = false;
+    
+    /** @type {AudioBufferSourceNode|null} */
+    this.currentMusicSource = null;
+    
+    /** @type {GainNode|null} */
+    this.currentMusicGain = null;
   }
 
   /**
@@ -201,6 +216,7 @@ class AudioManager {
    * @param {string} name - Sound effect name (e.g., 'ui_click', 'success_fanfare')
    * @param {Object} [options] - Playback options
    * @param {number} [options.volume=1] - Volume multiplier (0-1)
+   * @param {boolean} [options.loop=false] - Whether to loop the sound (for music)
    */
   play(name, options = {}) {
     if (this.muted) return;
@@ -223,11 +239,19 @@ class AudioManager {
         const gainNode = ctx.createGain();
         
         source.buffer = buffer;
+        source.loop = (options.loop === true);
         gainNode.gain.value = options.volume ?? 1;
         
         source.connect(gainNode);
         gainNode.connect(ctx.destination);
         source.start(0);
+        
+        // Store reference if this is looping music
+        if (options.loop) {
+          this.stopMusic(); // Stop any currently playing music first
+          this.currentMusicSource = source;
+          this.currentMusicGain = gainNode;
+        }
       } catch (e) {
         // Fallback to synth if buffer playback fails
         this.playSynthFallback(name, options);
@@ -236,6 +260,85 @@ class AudioManager {
       // Use synthesized fallback
       this.playSynthFallback(name, options);
     }
+  }
+
+  /**
+   * Play looping background music
+   * @param {string} name - Music name
+   * @param {Object} [options] - Playback options
+   * @param {number} [options.volume=0.5] - Volume multiplier (0-1), default lower for music
+   */
+  playMusic(name, options = {}) {
+    this.play(name, {
+      volume: options.volume ?? 0.5,
+      loop: true
+    });
+  }
+
+  /**
+   * Stop currently playing background music
+   */
+  stopMusic() {
+    if (this.currentMusicSource) {
+      try {
+        // Check if source is already stopped to prevent errors
+        if (this.currentMusicSource.context.state !== 'closed') {
+          this.currentMusicSource.stop();
+        }
+      } catch (e) {
+        // Already stopped or invalid state - this is fine
+      }
+      this.currentMusicSource = null;
+      this.currentMusicGain = null;
+    }
+  }
+
+  /**
+   * Fade out and stop currently playing music, then start new music
+   * @param {string} newMusicName - Name of new music to play
+   * @param {Object} [options] - Options for new music
+   * @param {number} [fadeDuration=1] - Fade duration in seconds
+   */
+  crossfadeMusic(newMusicName, options = {}, fadeDuration = 1) {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // Fade out current music if playing
+    if (this.currentMusicGain && this.currentMusicSource) {
+      const now = ctx.currentTime;
+      const currentGain = this.currentMusicGain;
+      const currentSource = this.currentMusicSource;
+      
+      // Fade out
+      try {
+        currentGain.gain.setValueAtTime(currentGain.gain.value, now);
+        currentGain.gain.linearRampToValueAtTime(0.001, now + fadeDuration);
+        
+        // Stop after fade completes
+        setTimeout(() => {
+          try {
+            if (currentSource.context.state !== 'closed') {
+              currentSource.stop();
+            }
+          } catch (e) {
+            // Already stopped
+          }
+        }, fadeDuration * 1000);
+      } catch (e) {
+        // Fade failed, just stop
+        try {
+          currentSource.stop();
+        } catch (e2) {
+          // Already stopped
+        }
+      }
+    }
+    
+    // Start new music after a short delay to ensure old one is fading
+    // Don't clear currentMusicSource yet - wait for new music to start
+    setTimeout(() => {
+      this.playMusic(newMusicName, options);
+    }, 100);
   }
 
   /**

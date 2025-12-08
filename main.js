@@ -77,6 +77,13 @@ import {
   updateKnownSeasonalPurchasableBackgrounds
 } from './logic/eventManager.js';
 import { audioManager } from './logic/audioManager.js';
+import { 
+  playBackgroundPurchased, 
+  playZeitChallengeMusic, 
+  stopZeitChallengeMusic,
+  playDiamondEarn,
+  playButtonTap
+} from './logic/audioBootstrap.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -313,6 +320,14 @@ export function showScreen(screenName, data = null) {
   // Track if we're returning from Zeit-Challenge task screen to challenges
   if (currentScreen === 'zeitChallengeTaskScreen' && screenName === 'challenges') {
     returningFromZeitChallengeScreen = true;
+    // Cleanup Zeit challenge when leaving
+    import('./logic/zeitChallengeTaskController.js').then(module => {
+      if (module.cleanupZeitChallengeTaskScreen) {
+        module.cleanupZeitChallengeTaskScreen();
+      }
+    }).catch(() => {
+      // Silently ignore if module not loaded
+    });
   }
   
   // Store current screen
@@ -958,6 +973,9 @@ function loadChallengesScreen(container) {
         challenge.state === 'super_available' || challenge.state === 'super_in_progress') {
       nodeContainer.style.cursor = 'pointer';
       nodeContainer.addEventListener('click', () => {
+        // Play UI click sound
+        playButtonTap();
+        
         if (challenge.isSuperChallenge && 
             (challenge.state === 'super_available' || challenge.state === 'available')) {
           // Show super challenge popup before starting
@@ -1019,6 +1037,7 @@ function loadChallengesScreen(container) {
     
     if (!isZeitCompleted) {
       zeitNodeContainer.addEventListener('click', () => {
+        playButtonTap();
         showZeitChallengeStartPopup();
       });
     }
@@ -1031,6 +1050,7 @@ function loadChallengesScreen(container) {
     
     if (!isKopfnussCompleted) {
       kopfnussNodeContainer.addEventListener('click', () => {
+        playButtonTap();
         showKopfnussChallengeStartPopup();
       });
     }
@@ -1314,6 +1334,9 @@ function showRewardPopup() {
   // Add event listener for new challenge button
   const newChallengeButton = document.getElementById('new-challenge-button');
   newChallengeButton.addEventListener('click', () => {
+    // Play diamond earn sound
+    playDiamondEarn();
+    
     // Award the diamond when user confirms
     addDiamonds(1);
     
@@ -1381,6 +1404,9 @@ function showDiamondCelebrationPopup(diamondsAwarded, tasksPerDiamond, onClose =
   // Add event listener for close button
   const closeButton = document.getElementById('diamond-celebration-close-button');
   closeButton.addEventListener('click', () => {
+    // Play diamond earn sound
+    playDiamondEarn();
+    
     closeDiamondCelebrationPopup();
     // Call onClose callback if provided (for sequential popups)
     if (onClose && typeof onClose === 'function') {
@@ -2015,6 +2041,9 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     
     if (chooseDiamondsBtn) {
       chooseDiamondsBtn.addEventListener('click', () => {
+        // Play currency received sound
+        playDiamondEarn();
+        
         addDiamonds(1);
         // Update diamond display
         const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
@@ -2032,6 +2061,9 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     
     if (chooseSeasonalBtn) {
       chooseSeasonalBtn.addEventListener('click', () => {
+        // Play currency received sound
+        playDiamondEarn();
+        
         addSeasonalCurrency(1);
         overlay.remove();
         removeConfettiPieces();
@@ -4190,6 +4222,9 @@ function executeBackgroundUnlock(bgId) {
   closeBackgroundUnlockConfirmPopup();
   
   if (result.success) {
+    // Play purchase sound
+    playBackgroundPurchased();
+    
     // Update the shop display
     closeBackgroundShopPopup();
     showBackgroundShopPopup();

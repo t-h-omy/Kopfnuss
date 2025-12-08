@@ -174,3 +174,47 @@ export const DEV_SETTINGS_CONFIG = {
   // Applied in: main.js - dev advance day function
   MS_PER_DAY: 24 * 60 * 60 * 1000
 };
+
+/**
+ * SFX volume balancing configuration
+ * Volume values from 0.0 (muted) to 1.0 (full volume)
+ * Applied in: logic/audioManager.js, logic/audioBootstrap.js
+ * All SFX files from assets/sfx/
+ */
+export const SFX_VOLUME = {
+  // Answer feedback sounds
+  answer_correct: 0.7,
+  answer_incorrect: 0.7,
+  
+  // Challenge flow sounds
+  challenge_start: 0.8,
+  challenge_complete: 0.8,
+  challenge_failed: 0.7,
+  
+  // Timer and countdown sounds
+  countdown_tick: 0.4,  // Looping music for final 10 seconds
+  times_up: 0.8,
+  
+  // Currency and rewards
+  diamond_earn: 0.7,
+  
+  // Background management
+  background_purchased: 0.7,
+  background_unlocked: 0.8,
+  
+  // Popup sounds
+  modal_open: 0.6,
+  streak_popup: 0.7,
+  premium_challenge_popup: 0.7,
+  super_challenge_popup: 0.7,
+  
+  // UI interaction
+  ui_click: 0.5,
+  
+  // Background music
+  time_challenge_music: 0.3,  // Looping music for Zeit challenge
+  
+  // Feedback sounds
+  action_not_allowed: 0.6
+};
+

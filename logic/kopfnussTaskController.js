@@ -15,6 +15,7 @@ import {
   addSeasonalCurrency 
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
+import { playAnswerFeedback, playChallengeComplete, playDiamondEarn, playChallengeFailed } from './audioBootstrap.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -158,6 +159,9 @@ function handleAnswerSubmit() {
     feedbackElement.textContent = '✓ Richtig!';
     feedbackElement.className = 'task-feedback feedback-correct';
     
+    // Play correct answer sound
+    playAnswerFeedback(true);
+    
     // Move to next task after a short delay
     setTimeout(() => {
       currentTaskIndex++;
@@ -177,6 +181,9 @@ function handleAnswerSubmit() {
     errors++;
     feedbackElement.textContent = `✗ Falsch! Versuche es nochmal.`;
     feedbackElement.className = 'task-feedback feedback-incorrect';
+    
+    // Play wrong answer sound
+    playAnswerFeedback(false);
     
     // Update errors in storage
     updateKopfnussChallenge({
@@ -198,6 +205,13 @@ function handleAnswerSubmit() {
  */
 function handleKopfnussChallengeCompletion() {
   const isPerfect = errors === 0;
+  
+  // Play appropriate sound based on result
+  if (isPerfect) {
+    playChallengeComplete();
+  } else {
+    playChallengeFailed();
+  }
   
   // Complete the challenge
   const result = completeKopfnussChallenge(errors);
@@ -295,6 +309,9 @@ function handleKopfnussChallengeCompletion() {
       
       if (chooseDiamondsBtn) {
         chooseDiamondsBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
@@ -305,6 +322,9 @@ function handleKopfnussChallengeCompletion() {
       
       if (chooseSeasonalBtn) {
         chooseSeasonalBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;

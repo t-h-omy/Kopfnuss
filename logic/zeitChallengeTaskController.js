@@ -17,6 +17,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
+import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed, playDiamondEarn } from './audioBootstrap.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -24,6 +25,7 @@ let errors = 0;
 let timerInterval = null;
 let timeRemaining = 0;
 let isInputDisabled = false;
+let finalCountdownStarted = false; // Track if final 10 seconds music has started
 
 /**
  * Motivation phrases for Zeit-Challenge completion
@@ -92,12 +94,21 @@ export function initZeitChallengeTaskScreen() {
   timeRemaining = (storedTime && storedTime > 0) ? storedTime : defaultTime;
   
   isInputDisabled = false;
+  finalCountdownStarted = false; // Reset final countdown flag
   
   // Display first task
   displayCurrentTask();
   
   // Setup event listeners
   setupTaskScreenEventListeners();
+  
+  // Start background music (check if we should start with final countdown)
+  if (timeRemaining <= 10) {
+    finalCountdownStarted = true;
+    playFinalCountdownMusic();
+  } else {
+    playZeitChallengeMusic();
+  }
   
   // Start the timer
   startTimer();
@@ -121,6 +132,12 @@ function startTimer() {
     
     // Update display
     updateTimerDisplay();
+    
+    // Start final countdown music when 10 seconds remain
+    if (timeRemaining === 10 && !finalCountdownStarted) {
+      finalCountdownStarted = true;
+      playFinalCountdownMusic();
+    }
     
     // Save time remaining to state less frequently (every 10 seconds) to reduce I/O
     if (timeRemaining % 10 === 0 || timeRemaining <= 10) {
@@ -176,6 +193,17 @@ function updateTimerDisplay() {
 function handleTimeout() {
   // Stop the timer
   stopTimer();
+  
+  // Stop all music (including countdown music)
+  stopZeitChallengeMusic();
+  
+  // Play times up sound
+  playTimesUp();
+  
+  // Play challenge failed sound after a short delay
+  setTimeout(() => {
+    playChallengeFailed();
+  }, 800);
   
   // Disable input
   isInputDisabled = true;
@@ -317,6 +345,9 @@ function handleAnswerSubmit() {
     feedbackElement.textContent = '✓ Richtig!';
     feedbackElement.className = 'task-feedback feedback-correct';
     
+    // Play correct answer sound
+    playAnswerFeedback(true);
+    
     // Move to next task after a short delay (faster than Kopfnuss for time pressure)
     setTimeout(() => {
       currentTaskIndex++;
@@ -336,6 +367,9 @@ function handleAnswerSubmit() {
     errors++;
     feedbackElement.textContent = `✗ Falsch! Versuche es nochmal.`;
     feedbackElement.className = 'task-feedback feedback-incorrect';
+    
+    // Play wrong answer sound
+    playAnswerFeedback(false);
     
     // Update errors in storage
     updateZeitChallenge({
@@ -358,6 +392,9 @@ function handleAnswerSubmit() {
 function handleZeitChallengeCompletion() {
   // Stop the timer
   stopTimer();
+  
+  // Play challenge complete sound
+  playChallengeComplete();
   
   // Complete the challenge (always success if all tasks solved in time)
   const result = completeZeitChallenge(errors);
@@ -467,6 +504,9 @@ function handleZeitChallengeCompletion() {
       
       if (chooseDiamondsBtn) {
         chooseDiamondsBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
@@ -477,6 +517,9 @@ function handleZeitChallengeCompletion() {
       
       if (chooseSeasonalBtn) {
         chooseSeasonalBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
@@ -522,12 +565,21 @@ function setupTaskScreenEventListeners() {
  */
 export function cleanupZeitChallengeTaskScreen() {
   stopTimer();
+  
+  // Stop background music - ensure this happens even if other cleanup fails
+  try {
+    stopZeitChallengeMusic();
+  } catch (e) {
+    console.error('Error stopping Zeit challenge music:', e);
+  }
+  
   // Reset all module-level variables to prevent state leakage
   zeitState = null;
   currentTaskIndex = 0;
   errors = 0;
   timeRemaining = 0;
   isInputDisabled = false;
+  finalCountdownStarted = false;
 }
 
 export { initZeitChallengeTaskScreen as default };
