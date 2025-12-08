@@ -2041,6 +2041,9 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     
     if (chooseDiamondsBtn) {
       chooseDiamondsBtn.addEventListener('click', () => {
+        // Play currency received sound
+        playDiamondEarn();
+        
         addDiamonds(1);
         // Update diamond display
         const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
@@ -2058,6 +2061,9 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     
     if (chooseSeasonalBtn) {
       chooseSeasonalBtn.addEventListener('click', () => {
+        // Play currency received sound
+        playDiamondEarn();
+        
         addSeasonalCurrency(1);
         overlay.remove();
         removeConfettiPieces();

@@ -15,6 +15,9 @@ const POPUP_SFX_MAP = {
   'background-unlock-celebration-popup-overlay': 'background_unlocked',
   'seasonal-background-unlock-celebration-popup-overlay': 'background_unlocked',
   'background-unlock-celebration-overlay': 'background_unlocked',
+  'super-challenge-start-popup-overlay': 'super_challenge_popup',
+  'kopfnuss-start-popup-overlay': 'premium_challenge_popup',
+  'zeit-start-popup-overlay': 'premium_challenge_popup',
   
   // Generic popups
   'reward-popup-overlay': 'success_fanfare',
