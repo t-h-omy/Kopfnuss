@@ -288,6 +288,102 @@
       "active": true
     },
     {
+      "id": "oceanWave",
+      "name": "Ozeanwelle",
+      "file": "backgrounds/02_standard/bg_standard_1.webp",
+      "category": "pack",
+      "cost": 3,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 150
+      },
+      "event": null,
+      "pack": "ocean_pack",
+      "active": true
+    },
+    {
+      "id": "oceanDeep",
+      "name": "Tiefsee",
+      "file": "backgrounds/02_standard/bg_standard_2.webp",
+      "category": "pack",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 300
+      },
+      "event": null,
+      "pack": "ocean_pack",
+      "active": true
+    },
+    {
+      "id": "spaceStars",
+      "name": "Sternenfeld",
+      "file": "backgrounds/02_standard/bg_standard_3.webp",
+      "category": "pack",
+      "cost": 5,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 150
+      },
+      "event": null,
+      "pack": "space_pack",
+      "active": true
+    },
+    {
+      "id": "spacePlanet",
+      "name": "Planet",
+      "file": "backgrounds/02_standard/bg_standard_4.webp",
+      "category": "pack",
+      "cost": 5,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 300
+      },
+      "event": null,
+      "pack": "space_pack",
+      "active": true
+    },
+    {
+      "id": "natureForest",
+      "name": "Wald",
+      "file": "backgrounds/02_standard/bg_standard_5.webp",
+      "category": "pack",
+      "cost": 3,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 150
+      },
+      "event": null,
+      "pack": "nature_pack",
+      "active": true
+    },
+    {
+      "id": "natureMountain",
+      "name": "Berge",
+      "file": "backgrounds/02_standard/bg_standard_6.webp",
+      "category": "pack",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 300
+      },
+      "event": null,
+      "pack": "nature_pack",
+      "active": true
+    },
+    {
       "id": "gingerbreadman",
       "name": "Gingerbreadman",
       "file": "backgrounds/christmas/gingerbread_optimized.webp",

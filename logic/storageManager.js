@@ -107,6 +107,14 @@ const BASE_STORAGE_KEYS = {
   SELECTED_BACKGROUND: 'kopfnuss_selected_background',
   LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds',
   SHOP_OPENED_WITH_NEW_BACKGROUNDS: 'kopfnuss_shop_opened_with_new',
+  // Streak milestone storage keys
+  STREAK_STONES: 'kopfnuss_streak_stones',
+  MILESTONE_PROGRESS: 'kopfnuss_milestone_progress',
+  // Background pack storage keys
+  UNLOCKED_PACKS: 'kopfnuss_unlocked_packs',
+  PACK_TASK_COUNTS: 'kopfnuss_pack_task_counts',
+  SHOP_TAB_OPENED: 'kopfnuss_shop_tab_opened_',
+  LAST_KNOWN_PURCHASABLE_PACK_BACKGROUNDS: 'kopfnuss_last_purchasable_pack_bgs_',
   // Seasonal event storage keys (appended with event ID)
   SEASONAL_CURRENCY: 'kopfnuss_seasonal_currency_',
   SEASONAL_TASK_COUNT: 'kopfnuss_seasonal_tasks_',
@@ -150,6 +158,14 @@ const STORAGE_KEYS = {
   get SELECTED_BACKGROUND() { return getStorageKey('kopfnuss_selected_background'); },
   get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); },
   get SHOP_OPENED_WITH_NEW_BACKGROUNDS() { return getStorageKey('kopfnuss_shop_opened_with_new'); },
+  // Streak milestone storage keys
+  get STREAK_STONES() { return getStorageKey('kopfnuss_streak_stones'); },
+  get MILESTONE_PROGRESS() { return getStorageKey('kopfnuss_milestone_progress'); },
+  // Background pack storage keys
+  get UNLOCKED_PACKS() { return getStorageKey('kopfnuss_unlocked_packs'); },
+  get PACK_TASK_COUNTS() { return getStorageKey('kopfnuss_pack_task_counts'); },
+  get SHOP_TAB_OPENED() { return getStorageKey('kopfnuss_shop_tab_opened_'); },
+  get LAST_KNOWN_PURCHASABLE_PACK_BACKGROUNDS() { return getStorageKey('kopfnuss_last_purchasable_pack_bgs_'); },
   // Seasonal event storage keys (appended with event ID)
   get SEASONAL_CURRENCY() { return getStorageKey('kopfnuss_seasonal_currency_'); },
   get SEASONAL_TASK_COUNT() { return getStorageKey('kopfnuss_seasonal_tasks_'); },
@@ -642,6 +658,131 @@ export function wasShopOpenedWithNewBackgrounds() {
  */
 export function clearShopOpenedFlag() {
   return saveToStorage(STORAGE_KEYS.SHOP_OPENED_WITH_NEW_BACKGROUNDS, false);
+}
+
+// ============================================
+// STREAK MILESTONE STORAGE FUNCTIONS
+// ============================================
+
+/**
+ * Save streak stones count
+ * @param {number} stones - Number of streak stones
+ * @returns {boolean} Success status
+ */
+export function saveStreakStones(stones) {
+  return saveToStorage(STORAGE_KEYS.STREAK_STONES, stones);
+}
+
+/**
+ * Load streak stones count
+ * @returns {number} Number of streak stones
+ */
+export function loadStreakStones() {
+  return loadFromStorage(STORAGE_KEYS.STREAK_STONES, 0);
+}
+
+/**
+ * Save milestone progress (days accumulated towards next milestone)
+ * @param {number} days - Days since last milestone
+ * @returns {boolean} Success status
+ */
+export function saveMilestoneProgress(days) {
+  return saveToStorage(STORAGE_KEYS.MILESTONE_PROGRESS, days);
+}
+
+/**
+ * Load milestone progress
+ * @returns {number} Days since last milestone
+ */
+export function loadMilestoneProgress() {
+  return loadFromStorage(STORAGE_KEYS.MILESTONE_PROGRESS, 0);
+}
+
+// ============================================
+// BACKGROUND PACK STORAGE FUNCTIONS
+// ============================================
+
+/**
+ * Save unlocked packs
+ * @param {Array<string>} unlockedPacks - Array of unlocked pack IDs
+ * @returns {boolean} Success status
+ */
+export function saveUnlockedPacks(unlockedPacks) {
+  return saveToStorage(STORAGE_KEYS.UNLOCKED_PACKS, unlockedPacks);
+}
+
+/**
+ * Load unlocked packs
+ * @returns {Array<string>} Array of unlocked pack IDs (defaults to empty array)
+ */
+export function loadUnlockedPacks() {
+  return loadFromStorage(STORAGE_KEYS.UNLOCKED_PACKS, []);
+}
+
+/**
+ * Save task counts since pack unlock for all packs
+ * @param {Object} packTaskCounts - Object with pack IDs as keys and task counts as values
+ * @returns {boolean} Success status
+ */
+export function savePackTaskCounts(packTaskCounts) {
+  return saveToStorage(STORAGE_KEYS.PACK_TASK_COUNTS, packTaskCounts);
+}
+
+/**
+ * Load task counts since pack unlock for all packs
+ * @returns {Object} Object with pack IDs as keys and task counts as values (defaults to empty object)
+ */
+export function loadPackTaskCounts() {
+  return loadFromStorage(STORAGE_KEYS.PACK_TASK_COUNTS, {});
+}
+
+/**
+ * Mark that a specific shop tab has been opened
+ * @param {string} tabId - Tab identifier ('standard', 'packs', 'seasonal')
+ */
+export function markShopTabOpened(tabId) {
+  const key = STORAGE_KEYS.SHOP_TAB_OPENED + tabId;
+  return saveToStorage(key, true);
+}
+
+/**
+ * Check if a shop tab was opened
+ * @param {string} tabId - Tab identifier ('standard', 'packs', 'seasonal')
+ * @returns {boolean} Whether the tab was opened
+ */
+export function wasShopTabOpened(tabId) {
+  const key = STORAGE_KEYS.SHOP_TAB_OPENED + tabId;
+  return loadFromStorage(key, false);
+}
+
+/**
+ * Clear shop tab opened flag (when new content becomes available)
+ * @param {string} tabId - Tab identifier ('standard', 'packs', 'seasonal')
+ */
+export function clearShopTabOpenedFlag(tabId) {
+  const key = STORAGE_KEYS.SHOP_TAB_OPENED + tabId;
+  return saveToStorage(key, false);
+}
+
+/**
+ * Save last known purchasable pack backgrounds for a specific pack
+ * @param {string} packId - ID of the pack
+ * @param {Array<string>} backgroundIds - Array of background IDs that were purchasable
+ * @returns {boolean} Success status
+ */
+export function saveLastKnownPurchasablePackBackgrounds(packId, backgroundIds) {
+  const key = STORAGE_KEYS.LAST_KNOWN_PURCHASABLE_PACK_BACKGROUNDS + packId;
+  return saveToStorage(key, backgroundIds);
+}
+
+/**
+ * Load last known purchasable pack backgrounds for a specific pack
+ * @param {string} packId - ID of the pack
+ * @returns {Array<string>} Array of background IDs (defaults to empty array)
+ */
+export function loadLastKnownPurchasablePackBackgrounds(packId) {
+  const key = STORAGE_KEYS.LAST_KNOWN_PURCHASABLE_PACK_BACKGROUNDS + packId;
+  return loadFromStorage(key, []);
 }
 
 export { STORAGE_KEYS };

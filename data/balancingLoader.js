@@ -83,6 +83,12 @@ export const BACKGROUNDS_UNIFIED = backgroundsData.backgrounds || [];
 export const SEASONAL_EVENTS = balancingData.SEASONAL_EVENTS;
 
 /**
+ * Background packs configuration
+ * Applied in: logic/packManager.js
+ */
+export const BACKGROUND_PACKS = balancingData.BACKGROUND_PACKS || {};
+
+/**
  * Check if currently using dev balancing
  * @returns {boolean} True if dev balancing is loaded
  */
