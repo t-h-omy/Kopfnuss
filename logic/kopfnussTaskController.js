@@ -15,7 +15,7 @@ import {
   addSeasonalCurrency 
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
-import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
+import { playAnswerFeedback, playChallengeComplete, playDiamondEarn } from './audioBootstrap.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -305,6 +305,9 @@ function handleKopfnussChallengeCompletion() {
       
       if (chooseDiamondsBtn) {
         chooseDiamondsBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
@@ -315,6 +318,9 @@ function handleKopfnussChallengeCompletion() {
       
       if (chooseSeasonalBtn) {
         chooseSeasonalBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;

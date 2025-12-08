@@ -17,7 +17,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
-import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed } from './audioBootstrap.js';
+import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed, playDiamondEarn } from './audioBootstrap.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -504,6 +504,9 @@ function handleZeitChallengeCompletion() {
       
       if (chooseDiamondsBtn) {
         chooseDiamondsBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
@@ -514,6 +517,9 @@ function handleZeitChallengeCompletion() {
       
       if (chooseSeasonalBtn) {
         chooseSeasonalBtn.addEventListener('click', () => {
+          // Play currency received sound
+          playDiamondEarn();
+          
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
