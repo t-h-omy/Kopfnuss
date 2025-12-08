@@ -11,7 +11,7 @@ import {
   getTaskFlowState
 } from './taskFlow.js';
 import { startChallenge } from './challengeStateManager.js';
-import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult } from '../main.js';
+import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult, notifyMilestoneReached } from '../main.js';
 import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
 import { getChallenge } from './challengeGenerator.js';
 import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
@@ -222,6 +222,11 @@ function handleChallengeCompletion() {
   // Notify main.js if streak was incremented during this challenge
   if (results.streakIncremented) {
     notifyStreakIncremented(results.streakIncremented);
+  }
+  
+  // Notify main.js if a milestone was reached
+  if (results.milestoneReached) {
+    notifyMilestoneReached();
   }
   
   // Notify main.js if this was a super challenge

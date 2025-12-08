@@ -15,6 +15,18 @@ import {
   STREAK_LOSS_REASON
 } from './logic/streakManager.js';
 import { getDiamondInfo, updateDiamonds, addDiamonds, loadDiamonds, saveDiamonds, spendDiamonds } from './logic/diamondManager.js';
+import {
+  getStreakStones,
+  awardStreakStones,
+  getMilestoneDiamondReward,
+  getMilestoneInfo
+} from './logic/streakMilestoneManager.js';
+import {
+  unlockPack,
+  getPackStatus,
+  getAllPackStatuses,
+  isPackUnlocked
+} from './logic/packManager.js';
 import { 
   clearAllData, 
   loadDevModeSetting, 
@@ -216,6 +228,7 @@ let returningFromKopfnussScreen = false; // Track if returning from Kopfnuss Cha
 let returningFromZeitChallengeScreen = false; // Track if returning from Zeit-Challenge
 let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
 let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+let milestoneWasReached = false; // Track if a streak milestone was reached during challenge completion
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
 let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean, seasonalCurrencyAwarded: object|null}
@@ -402,6 +415,8 @@ function loadChallengesScreen(container) {
     const showUnfrozen = typeof streakWasUnfrozen === 'number' && streakWasUnfrozen > 0;
     // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
     const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
+    // Check if milestone was reached
+    const showMilestone = milestoneWasReached;
     
     // Check for newly purchasable backgrounds (regular)
     const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
@@ -418,6 +433,7 @@ function loadChallengesScreen(container) {
     const incrementedStreakValue = streakWasIncremented;
     streakWasUnfrozen = false;
     streakWasIncremented = false;
+    milestoneWasReached = false;
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
@@ -433,7 +449,7 @@ function loadChallengesScreen(container) {
       }
     };
     
-    // Queue popups: super challenge result first, then unfrozen, then diamond, then streak, then background unlock
+    // Queue popups: super challenge result first, then unfrozen, then diamond, then streak, then milestone, then background unlock
     const popupsToShow = [];
     
     if (showSuperChallengeSuccess) {
@@ -450,6 +466,10 @@ function loadChallengesScreen(container) {
     if (showStreakIncremented) {
       // Show streak celebration popup when streak was incremented by challenge completion
       popupsToShow.push((next) => showStreakCelebrationPopup(incrementedStreakValue, next));
+    }
+    if (showMilestone) {
+      // Show milestone popup after streak celebration
+      popupsToShow.push((next) => showStreakMilestonePopup(next));
     }
     if (showBackgroundUnlock && newlyPurchasableBackground) {
       // Show background unlock celebration popup when a new background becomes purchasable
@@ -1886,6 +1906,14 @@ export function notifyStreakIncremented(newStreak) {
 }
 
 /**
+ * Notify that a streak milestone was reached
+ * This sets a flag that will trigger the milestone popup when returning to challenges screen
+ */
+export function notifyMilestoneReached() {
+  milestoneWasReached = true;
+}
+
+/**
  * Notify super challenge result
  * This sets a flag that will trigger the appropriate popup when returning to challenges screen
  * @param {boolean} success - Whether the super challenge was completed without errors
@@ -1895,6 +1923,69 @@ export function notifyStreakIncremented(newStreak) {
 export function notifySuperChallengeResult(success, awardedDiamond, seasonalCurrencyAwarded = null) {
   superChallengeResult = { success, awardedDiamond, seasonalCurrencyAwarded };
 }
+
+/**
+ * Show streak milestone reached popup with reward selection
+ * Player can choose between Streak Stone or Diamond
+ * @param {Function} onClose - Optional callback when popup closes
+ */
+function showStreakMilestonePopup(onClose = null) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'streak-milestone-popup-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card';
+  
+  const milestoneInfo = getMilestoneInfo();
+  const streakStoneReward = CONFIG.STREAK_MILESTONE_REWARD_STREAK_STONES;
+  const diamondReward = CONFIG.STREAK_MILESTONE_REWARD_DIAMONDS;
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🏆</div>
+    <h2>Streak-Meilenstein erreicht!</h2>
+    <p>Du hast einen Streak-Meilenstein erreicht!</p>
+    <p class="milestone-choice-text">Wähle deine Belohnung:</p>
+    <div class="milestone-rewards-container">
+      <button class="milestone-reward-choice" id="choose-streak-stone">
+        <div class="milestone-reward-icon">💎</div>
+        <div class="milestone-reward-amount">${streakStoneReward} Streak-Stein${streakStoneReward > 1 ? 'e' : ''}</div>
+      </button>
+      <button class="milestone-reward-choice" id="choose-diamond">
+        <div class="milestone-reward-icon">💎</div>
+        <div class="milestone-reward-amount">${diamondReward} Diamant${diamondReward > 1 ? 'en' : ''}</div>
+      </button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Show confetti
+  createConfettiEffect();
+  
+  // Play reward sound
+  playDiamondEarn();
+  
+  // Handle streak stone choice
+  document.getElementById('choose-streak-stone').addEventListener('click', () => {
+    awardStreakStones();
+    overlay.remove();
+    removeConfettiPieces();
+    processPopupQueue();
+    if (onClose) onClose();
+  });
+  
+  // Handle diamond choice
+  document.getElementById('choose-diamond').addEventListener('click', () => {
+    addDiamonds(diamondReward);
+    overlay.remove();
+    removeConfettiPieces();
+    processPopupQueue();
+    if (onClose) onClose();
+  });
+}
+
 
 /**
  * Show super challenge start popup

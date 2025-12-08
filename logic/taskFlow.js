@@ -10,6 +10,8 @@ import {
 } from './challengeStateManager.js';
 import { saveProgress, loadProgress, loadStreak } from './storageManager.js';
 import { unfreezeStreakByChallenge, incrementStreakByChallenge } from './streakManager.js';
+import { incrementMilestoneProgress } from './streakMilestoneManager.js';
+import { incrementPackTaskCounts } from './packManager.js';
 import { 
   isEventActive, 
   getActiveEvent, 
@@ -252,6 +254,7 @@ export function completeCurrentChallenge() {
   // Handle streak progression
   let streakUnfrozenResult = null;
   let streakIncrementedResult = null;
+  let milestoneReached = false;
   const streak = loadStreak();
   
   if (streak.isFrozen) {
@@ -259,13 +262,22 @@ export function completeCurrentChallenge() {
     streakUnfrozenResult = unfreezeStreakByChallenge();
     if (streakUnfrozenResult.wasUnfrozen) {
       streakUnfrozenDuringChallenge = true;
+      // Check for milestone after unfreezing
+      milestoneReached = incrementMilestoneProgress();
     }
   } else if (!streak.lossReason) {
     // If not frozen and no loss reason, increment streak by challenge completion
     streakIncrementedResult = incrementStreakByChallenge();
+    if (streakIncrementedResult && streakIncrementedResult.wasIncremented) {
+      // Check for milestone after incrementing
+      milestoneReached = incrementMilestoneProgress();
+    }
   }
   // Note: If there's a loss reason (expired streak), don't auto-increment
   // The player needs to handle this via the popup first
+  
+  // Increment task counts for all unlocked packs
+  incrementPackTaskCounts();
   
   // Get error analysis
   const errorAnalysis = analyzeErrors(currentChallengeIndex);
@@ -279,6 +291,7 @@ export function completeCurrentChallenge() {
     progress: progress,
     streakUnfrozen: streakUnfrozenResult && streakUnfrozenResult.wasUnfrozen ? streakUnfrozenResult.newStreak : null,
     streakIncremented: streakIncrementedResult && streakIncrementedResult.wasIncremented ? streakIncrementedResult.newStreak : null,
+    milestoneReached: milestoneReached,
     // Super challenge specific results
     isSuperChallenge: challenge?.isSuperChallenge || false,
     superChallengeSuccess: superChallengeSuccess,
