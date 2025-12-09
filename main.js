@@ -4106,6 +4106,9 @@ function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'stan
   overlay.appendChild(popupCard);
   document.body.appendChild(overlay);
   
+  // Prevent body scrolling when shop is open
+  document.body.style.overflow = 'hidden';
+  
   // Add tab switching handlers
   const tabButtons = popupCard.querySelectorAll('.shop-tab');
   const tabContents = popupCard.querySelectorAll('.shop-tab-content');
@@ -4186,6 +4189,10 @@ function closeBackgroundShopPopup() {
   if (overlay) {
     overlay.remove();
   }
+  
+  // Re-enable body scrolling when shop closes
+  document.body.style.overflow = '';
+  
   // Mark shop as opened to hide NEW badge after closing
   markShopOpenedWithNewBackgrounds();
   // Update the list of known purchasable backgrounds (marks them as "seen")
