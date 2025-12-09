@@ -4088,6 +4088,12 @@ function createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent) {
  * @param {string} initialTab - Initial tab to show ('standard', 'packs', or 'seasonal')
  */
 function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'standard') {
+  // Ensure any existing shop overlay is removed first
+  const existingOverlay = document.getElementById('background-shop-overlay');
+  if (existingOverlay) {
+    existingOverlay.remove();
+  }
+  
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
