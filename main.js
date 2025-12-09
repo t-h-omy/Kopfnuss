@@ -4352,8 +4352,9 @@ function closeBackgroundShopPopup() {
   const overlaysByClass = document.querySelectorAll('.background-shop-overlay');
   overlaysByClass.forEach(el => el.remove());
   
-  // Re-enable body scrolling when shop closes
+  // Re-enable body scrolling and pointer events when shop closes
   document.body.style.overflow = '';
+  document.body.style.pointerEvents = '';
   
   // Mark shop as opened to hide NEW badge after closing
   markShopOpenedWithNewBackgrounds();
@@ -4594,11 +4595,17 @@ function refreshBackgroundShopContent() {
   const seasonalBackgrounds = activeEvent ? getAllActiveSeasonalBackgrounds() : [];
   const packStatuses = getAllPackStatuses();
   
-  // Update currency displays
+  // Update currency displays in shop header
   const diamondCount = popupCard.querySelector('#shop-diamond-count');
   const streakStoneCount = popupCard.querySelector('#shop-streak-stone-count');
   if (diamondCount) diamondCount.textContent = diamonds;
   if (streakStoneCount) streakStoneCount.textContent = streakStones;
+  
+  // Also update challenge screen header to keep everything in sync
+  const headerDiamondValue = document.querySelector('.stat-capsule:nth-child(2) .stat-value');
+  const headerStreakStoneValue = document.querySelector('.stat-capsule:nth-child(3) .stat-value');
+  if (headerDiamondValue) headerDiamondValue.textContent = diamonds;
+  if (headerStreakStoneValue) headerStreakStoneValue.textContent = streakStones;
   
   // Update standard backgrounds tab content
   const standardTabContent = popupCard.querySelector('[data-tab-content="standard"]');
