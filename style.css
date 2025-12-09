@@ -475,6 +475,7 @@ button,
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
+  pointer-events: auto; /* Ensure overlay blocks all clicks to content behind it */
 }
 
 .popup-card {
@@ -1838,6 +1839,31 @@ button,
   display: flex;
   flex-direction: column;
   animation: scaleIn 0.3s ease;
+}
+
+/* Background shop header - fixed at top */
+.background-shop-header-fixed {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.background-shop-header-fixed h2 {
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+/* Background shop scrollable content area */
+.background-shop-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: var(--spacing-md);
 }
 
 .background-shop-content {
@@ -3805,8 +3831,6 @@ button,
 .shop-tab-content {
   display: none;
   padding: 16px 0;
-  max-height: 60vh;
-  overflow-y: auto;
 }
 
 .shop-tab-content.active {
@@ -3883,8 +3907,8 @@ button,
 
 .pack-backgrounds-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
 }
 
 .pack-background-tile {

@@ -4082,12 +4082,14 @@ function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'stan
   const seasonalHtml = createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent);
   
   popupCard.innerHTML = `
-    <div class="background-shop-content">
+    <div class="background-shop-header-fixed">
       <h2>🎨 Hintergründe</h2>
       <div class="background-shop-header">
         ${currencyDisplayHtml}
       </div>
       ${tabsHtml}
+    </div>
+    <div class="background-shop-scrollable">
       <div class="shop-tab-content ${initialTab === 'standard' ? 'active' : ''}" data-tab-content="standard">
         ${standardBackgroundsHtml}
       </div>
