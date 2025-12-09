@@ -4352,13 +4352,20 @@ function closeBackgroundShopPopup() {
   const overlaysByClass = document.querySelectorAll('.background-shop-overlay');
   overlaysByClass.forEach(el => el.remove());
   
-  // Re-enable body scrolling when shop closes
+  // Re-enable body scrolling and pointer events when shop closes
   document.body.style.overflow = '';
+  document.body.style.pointerEvents = '';
   
   // Ensure challenge screen is clickable again
   const challengeScreen = document.querySelector('.challenge-screen');
   if (challengeScreen) {
     challengeScreen.style.pointerEvents = '';
+  }
+  
+  // Also check for challenges-screen ID
+  const challengesScreen = document.getElementById('challenges-screen');
+  if (challengesScreen) {
+    challengesScreen.style.pointerEvents = '';
   }
   
   // Mark shop as opened to hide NEW badge after closing
@@ -4687,7 +4694,31 @@ function handlePackUnlock(packId) {
   } else if (result.success) {
     // Refresh shop content in place - don't close and reopen
     refreshBackgroundShopContent();
+    
+    // Scroll to the newly unlocked pack (which is now at the top)
+    setTimeout(() => {
+      scrollToUnlockedPack(packId);
+    }, 50); // Small delay to ensure DOM has updated
   }
+}
+
+/**
+ * Scroll to a newly unlocked pack in the shop
+ * @param {string} packId - The ID of the pack to scroll to
+ */
+function scrollToUnlockedPack(packId) {
+  const overlay = document.getElementById('background-shop-overlay');
+  if (!overlay) return;
+  
+  const packSection = overlay.querySelector(`.pack-section[data-pack-id="${packId}"]`);
+  if (!packSection) return;
+  
+  // Find the scrollable content area
+  const scrollContainer = overlay.querySelector('[data-tab-content="packs"]');
+  if (!scrollContainer) return;
+  
+  // Scroll the pack into view smoothly
+  packSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
