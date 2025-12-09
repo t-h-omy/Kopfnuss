@@ -3008,6 +3008,12 @@ function showSettingsPopup() {
             <button id="dev-tasks-plus" class="dev-btn-small">+10</button>
           </div>
         </div>
+        <div class="dev-setting-row">
+          <label>🛠️ Shop reparieren:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-fix-shop" class="dev-btn-action">Overlays entfernen</button>
+          </div>
+        </div>
       </div>
     </div>
   ` : '';
@@ -3692,6 +3698,27 @@ function setupDevSettingsListeners() {
       const mainSeasonalDisplay = document.querySelector('.stat-capsule.seasonal-currency .stat-value');
       if (mainSeasonalDisplay) mainSeasonalDisplay.textContent = newValue;
       showDevFeedback(`${activeEvent.emoticon} ${newValue}`);
+    });
+  }
+  
+  // Fix Shop button - removes any lingering overlays
+  const fixShopBtn = document.getElementById('dev-fix-shop');
+  
+  if (fixShopBtn) {
+    fixShopBtn.addEventListener('click', () => {
+      // Remove all shop overlays
+      const shopOverlay = document.getElementById('background-shop-overlay');
+      if (shopOverlay) {
+        shopOverlay.remove();
+        showDevFeedback('🛠️ Shop-Overlay entfernt');
+      } else {
+        showDevFeedback('✅ Kein Shop-Overlay gefunden');
+      }
+      
+      // Restore body overflow
+      document.body.style.overflow = '';
+      
+      showDevFeedback('🛠️ Shop repariert');
     });
   }
 }
