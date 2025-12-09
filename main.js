@@ -1979,7 +1979,12 @@ function showStreakMilestonePopup(onClose = null) {
   
   // Handle streak stone choice
   document.getElementById('choose-streak-stone').addEventListener('click', () => {
-    awardStreakStones();
+    const newCount = awardStreakStones();
+    // Update header display
+    const streakStonesDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(3) .stat-value');
+    if (streakStonesDisplay) {
+      streakStonesDisplay.textContent = newCount;
+    }
     overlay.remove();
     removeConfettiPieces();
     processPopupQueue();
@@ -1989,6 +1994,12 @@ function showStreakMilestonePopup(onClose = null) {
   // Handle diamond choice
   document.getElementById('choose-diamond').addEventListener('click', () => {
     addDiamonds(diamondReward);
+    // Update header display
+    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+    if (diamondDisplay) {
+      const currentDiamonds = loadDiamonds();
+      diamondDisplay.textContent = currentDiamonds;
+    }
     overlay.remove();
     removeConfettiPieces();
     processPopupQueue();
