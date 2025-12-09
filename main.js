@@ -38,7 +38,10 @@ import {
   saveSelectedBackground as saveSelectedBackgroundToStorage,
   loadAudioMutedSetting,
   saveAudioMutedSetting,
-  markShopOpenedWithNewBackgrounds
+  markShopOpenedWithNewBackgrounds,
+  saveStreakStones,
+  loadMilestoneProgress,
+  saveMilestoneProgress
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancingLoader.js';
@@ -2938,6 +2941,14 @@ function showSettingsPopup() {
             <button id="dev-diamonds-plus" class="dev-btn-small">+</button>
           </div>
         </div>
+        <div class="dev-setting-row">
+          <label>🫧 Streak-Steine:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-streak-stones-minus" class="dev-btn-small">-</button>
+            <span id="dev-streak-stones-value" class="dev-value">${getStreakStones()}</span>
+            <button id="dev-streak-stones-plus" class="dev-btn-small">+</button>
+          </div>
+        </div>
         ${seasonalCurrencyHtml}
         <div class="dev-setting-row">
           <label>🔥 Streak:</label>
@@ -3212,6 +3223,39 @@ function setupDevSettingsListeners() {
     });
   }
   
+  // Streak Stones controls
+  const streakStonesMinus = document.getElementById('dev-streak-stones-minus');
+  const streakStonesPlus = document.getElementById('dev-streak-stones-plus');
+  const streakStonesValue = document.getElementById('dev-streak-stones-value');
+  
+  if (streakStonesMinus) {
+    streakStonesMinus.addEventListener('click', () => {
+      const current = getStreakStones();
+      const newValue = Math.max(0, current - 1);
+      saveStreakStones(newValue);
+      // Update dev settings display
+      if (streakStonesValue) streakStonesValue.textContent = newValue;
+      // Update main UI streak stones display
+      const mainStonesDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(3) .stat-value');
+      if (mainStonesDisplay) mainStonesDisplay.textContent = newValue;
+      showDevFeedback('🫧 ' + newValue);
+    });
+  }
+  
+  if (streakStonesPlus) {
+    streakStonesPlus.addEventListener('click', () => {
+      const current = getStreakStones();
+      const newValue = current + 1;
+      saveStreakStones(newValue);
+      // Update dev settings display
+      if (streakStonesValue) streakStonesValue.textContent = newValue;
+      // Update main UI streak stones display
+      const mainStonesDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(3) .stat-value');
+      if (mainStonesDisplay) mainStonesDisplay.textContent = newValue;
+      showDevFeedback('🫧 ' + newValue);
+    });
+  }
+  
   // Streak controls
   const streakMinus = document.getElementById('dev-streak-minus');
   const streakPlus = document.getElementById('dev-streak-plus');
@@ -3222,6 +3266,11 @@ function setupDevSettingsListeners() {
       const streak = loadStreak();
       streak.currentStreak = Math.max(0, streak.currentStreak - 1);
       saveStreak(streak);
+      
+      // Also update milestone progress to match
+      const milestoneProgress = Math.max(0, loadMilestoneProgress() - 1);
+      saveMilestoneProgress(milestoneProgress);
+      
       // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
       // Update main UI streak display
@@ -3239,6 +3288,11 @@ function setupDevSettingsListeners() {
         streak.longestStreak = streak.currentStreak;
       }
       saveStreak(streak);
+      
+      // Also update milestone progress to match
+      const milestoneProgress = loadMilestoneProgress() + 1;
+      saveMilestoneProgress(milestoneProgress);
+      
       // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
       // Update main UI streak display
