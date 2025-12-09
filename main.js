@@ -3293,12 +3293,21 @@ function setupDevSettingsListeners() {
       const milestoneProgress = loadMilestoneProgress() + 1;
       saveMilestoneProgress(milestoneProgress);
       
+      // Check if milestone was reached
+      const interval = CONFIG.STREAK_MILESTONE_INTERVAL;
+      const milestoneReached = milestoneProgress % interval === 0;
+      
       // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
       // Update main UI streak display
       const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
       if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
       showDevFeedback('🔥 ' + streak.currentStreak);
+      
+      // Show milestone popup if reached
+      if (milestoneReached) {
+        showStreakMilestonePopup();
+      }
     });
   }
   
