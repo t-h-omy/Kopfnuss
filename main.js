@@ -4318,7 +4318,7 @@ function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'stan
   packUnlockButtons.forEach(button => {
     const packId = button.dataset.packId;
     button.addEventListener('click', () => {
-      handlePackUnlock(packId, overlay);
+      handlePackUnlock(packId);
     });
   });
   
@@ -4570,22 +4570,111 @@ function showNotEnoughSeasonalCurrencyHint() {
 }
 
 /**
+ * Refresh the shop content without closing and reopening
+ * This prevents overlay conflicts and maintains shop state
+ */
+function refreshBackgroundShopContent() {
+  const overlay = document.getElementById('background-shop-overlay');
+  if (!overlay) return;
+  
+  const popupCard = overlay.querySelector('.popup-card');
+  if (!popupCard) return;
+  
+  // Determine which tab is currently active
+  const activeTabButton = popupCard.querySelector('.shop-tab.active');
+  const currentTab = activeTabButton ? activeTabButton.dataset.tab : 'standard';
+  
+  // Get fresh data
+  const backgrounds = getAllBackgrounds();
+  const selectedBg = getSelectedBackground();
+  const diamonds = loadDiamonds();
+  const streakStones = getStreakStones();
+  const activeEvent = getActiveEvent();
+  const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
+  const seasonalBackgrounds = activeEvent ? getAllActiveSeasonalBackgrounds() : [];
+  const packStatuses = getAllPackStatuses();
+  
+  // Update currency displays
+  const diamondCount = popupCard.querySelector('#shop-diamond-count');
+  const streakStoneCount = popupCard.querySelector('#shop-streak-stone-count');
+  if (diamondCount) diamondCount.textContent = diamonds;
+  if (streakStoneCount) streakStoneCount.textContent = streakStones;
+  
+  // Update standard backgrounds tab content
+  const standardTabContent = popupCard.querySelector('[data-tab-content="standard"]');
+  if (standardTabContent) {
+    standardTabContent.innerHTML = createStandardBackgroundsTab(backgrounds, selectedBg);
+  }
+  
+  // Update packs tab content
+  const packsTabContent = popupCard.querySelector('[data-tab-content="packs"]');
+  if (packsTabContent) {
+    packsTabContent.innerHTML = createPacksTab(packStatuses, selectedBg, streakStones);
+  }
+  
+  // Update seasonal tab content
+  const seasonalTabContent = popupCard.querySelector('[data-tab-content="seasonal"]');
+  if (seasonalTabContent) {
+    seasonalTabContent.innerHTML = createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent);
+  }
+  
+  // Re-attach event listeners for standard backgrounds
+  const regularTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="false"]:not([data-is-pack="true"])');
+  regularTiles.forEach(tile => {
+    const bgId = tile.dataset.bgId;
+    const bg = backgrounds.find(b => b.id === bgId);
+    
+    if (bg && bg.state !== BACKGROUND_STATE.LOCKED) {
+      tile.addEventListener('click', () => {
+        handleBackgroundTileClick(bgId);
+      });
+    }
+  });
+  
+  // Re-attach event listeners for seasonal tiles
+  const seasonalTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="true"]');
+  seasonalTiles.forEach(tile => {
+    const bgId = tile.dataset.bgId;
+    const bg = seasonalBackgrounds.find(b => b.id === bgId);
+    
+    if (bg && (bg.isUnlocked || bg.hasEnoughTasks)) {
+      tile.addEventListener('click', () => {
+        handleSeasonalBackgroundTileClick(bgId);
+      });
+    }
+  });
+  
+  // Re-attach pack unlock button handlers
+  const packUnlockButtons = popupCard.querySelectorAll('.pack-unlock-button');
+  packUnlockButtons.forEach(button => {
+    const packId = button.dataset.packId;
+    button.addEventListener('click', () => {
+      handlePackUnlock(packId);
+    });
+  });
+  
+  // Re-attach event listeners for pack background tiles
+  const packTiles = popupCard.querySelectorAll('.background-tile[data-is-pack="true"]');
+  packTiles.forEach(tile => {
+    const bgId = tile.dataset.bgId;
+    tile.addEventListener('click', () => {
+      handlePackBackgroundTileClick(bgId);
+    });
+  });
+}
+
+/**
  * Handle pack unlock button click
  * @param {string} packId - The pack ID to unlock
- * @param {HTMLElement} overlay - The shop overlay element
  */
-function handlePackUnlock(packId, overlay) {
+function handlePackUnlock(packId) {
   const result = unlockPack(packId);
   
   if (result.needsStreakStones) {
     showNotEnoughStreakStonesPopup(result.required, result.current);
   } else if (result.success) {
-    // Refresh shop to show unlocked pack
-    // Use longer timeout to ensure complete DOM cleanup before reopening
-    closeBackgroundShopPopup();
-    setTimeout(() => {
-      showBackgroundShopPopup(null, 'packs');
-    }, 200);
+    // Refresh shop content in place - don't close and reopen
+    refreshBackgroundShopContent();
   }
 }
 
@@ -4650,10 +4739,8 @@ function handlePackBackgroundTileClick(bgId) {
   if (targetBg.isUnlocked) {
     // Background is unlocked - select it
     selectBackground(bgId);
-    closeBackgroundShopPopup();
-    setTimeout(() => {
-      showBackgroundShopPopup(null, 'packs');
-    }, 200);
+    // Refresh shop content instead of closing and reopening
+    refreshBackgroundShopContent();
   } else if (targetBg.hasEnoughTasks) {
     // Background is purchasable - show unlock confirmation
     showPackBackgroundUnlockConfirmPopup(targetBg);
@@ -4714,10 +4801,8 @@ function showPackBackgroundUnlockConfirmPopup(background) {
         if (result.success) {
           playBackgroundPurchased();
           overlay.remove();
-          closeBackgroundShopPopup();
-          setTimeout(() => {
-            showBackgroundShopPopup(null, 'packs');
-          }, 200);
+          // Refresh shop content instead of closing and reopening
+          refreshBackgroundShopContent();
         }
       });
     }
@@ -4912,9 +4997,8 @@ function executeBackgroundSelect(bgId) {
     // Apply the new background immediately
     applySelectedBackground();
     
-    // Update the shop display
-    closeBackgroundShopPopup();
-    showBackgroundShopPopup();
+    // Refresh shop content instead of closing and reopening
+    refreshBackgroundShopContent();
   }
 }
 
