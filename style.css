@@ -3848,6 +3848,7 @@ button,
 }
 
 .pack-section {
+  position: relative;
   padding-top: 16px;
   padding-bottom: 16px;
   border-top: 2px solid rgba(0, 0, 0, 0.1);
@@ -3869,45 +3870,58 @@ button,
   color: #333;
 }
 
-.pack-unlock-button {
+.pack-unlock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: auto;
-  min-width: 200px;
-  max-width: 100%;
-  margin: 0 auto 16px auto;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  color: white;
-  border: none;
+  z-index: 10;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+}
+
+.pack-unlock-overlay.can-afford {
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
 }
 
-.pack-unlock-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+.pack-unlock-overlay.can-afford:hover {
+  background: rgba(255, 255, 255, 0.98);
 }
 
-.pack-unlock-button:active {
-  transform: translateY(0);
-}
-
-.pack-unlock-button.disabled {
-  background: #999;
+.pack-unlock-overlay.cannot-afford {
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
-.pack-unlock-button.disabled:hover {
-  transform: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.unlock-prompt {
+  text-align: center;
+  padding: 20px;
+}
+
+.lock-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.unlock-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.unlock-cost {
+  font-size: 24px;
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.pack-unlock-overlay.cannot-afford .unlock-cost {
+  color: #999;
 }
 
 .pack-backgrounds-grid {
