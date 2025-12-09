@@ -3996,18 +3996,6 @@ function createPackSection(pack, selectedBg, streakStones, isUnlocked) {
   let html = `<div class="pack-section ${isUnlocked ? 'unlocked' : 'locked'}" data-pack-id="${pack.id}">`;
   html += `<h3 class="pack-title">${pack.name}</h3>`;
   
-  // Show unlock button if not unlocked
-  if (!isUnlocked) {
-    const canAfford = streakStones >= pack.cost;
-    const buttonClass = canAfford ? 'pack-unlock-button' : 'pack-unlock-button disabled';
-    html += `
-      <button class="${buttonClass}" data-pack-id="${pack.id}">
-        <span>🫧 ${pack.cost}</span>
-        <span>Pack freischalten</span>
-      </button>
-    `;
-  }
-  
   // Show backgrounds in pack
   html += '<div class="pack-backgrounds-grid">';
   
@@ -4663,15 +4651,6 @@ function refreshBackgroundShopContent() {
     }
   });
   
-  // Re-attach pack unlock button handlers
-  const packUnlockButtons = popupCard.querySelectorAll('.pack-unlock-button');
-  packUnlockButtons.forEach(button => {
-    const packId = button.dataset.packId;
-    button.addEventListener('click', () => {
-      handlePackUnlock(packId);
-    });
-  });
-  
   // Re-attach event listeners for pack background tiles
   const packTiles = popupCard.querySelectorAll('.background-tile[data-is-pack="true"]');
   packTiles.forEach(tile => {
@@ -4680,45 +4659,6 @@ function refreshBackgroundShopContent() {
       handlePackBackgroundTileClick(bgId);
     });
   });
-}
-
-/**
- * Handle pack unlock button click
- * @param {string} packId - The pack ID to unlock
- */
-function handlePackUnlock(packId) {
-  const result = unlockPack(packId);
-  
-  if (result.needsStreakStones) {
-    showNotEnoughStreakStonesPopup(result.required, result.current);
-  } else if (result.success) {
-    // Refresh shop content in place - don't close and reopen
-    refreshBackgroundShopContent();
-    
-    // Scroll to the newly unlocked pack (which is now at the top)
-    setTimeout(() => {
-      scrollToUnlockedPack(packId);
-    }, 50); // Small delay to ensure DOM has updated
-  }
-}
-
-/**
- * Scroll to a newly unlocked pack in the shop
- * @param {string} packId - The ID of the pack to scroll to
- */
-function scrollToUnlockedPack(packId) {
-  const overlay = document.getElementById('background-shop-overlay');
-  if (!overlay) return;
-  
-  const packSection = overlay.querySelector(`.pack-section[data-pack-id="${packId}"]`);
-  if (!packSection) return;
-  
-  // Find the scrollable content area
-  const scrollContainer = overlay.querySelector('[data-tab-content="packs"]');
-  if (!scrollContainer) return;
-  
-  // Scroll the pack into view smoothly
-  packSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
