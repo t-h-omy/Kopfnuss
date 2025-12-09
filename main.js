@@ -3996,16 +3996,15 @@ function createPackSection(pack, selectedBg, streakStones, isUnlocked) {
   let html = `<div class="pack-section ${isUnlocked ? 'unlocked' : 'locked'}" data-pack-id="${pack.id}">`;
   html += `<h3 class="pack-title">${pack.name}</h3>`;
   
-  // Show unlock overlay for locked packs
+  // Show unlock button for locked packs
   if (!isUnlocked) {
     const canAfford = streakStones >= pack.cost;
-    html += `<div class="pack-unlock-overlay ${canAfford ? 'can-afford' : 'cannot-afford'}" data-pack-id="${pack.id}" data-cost="${pack.cost}">`;
-    html += `<div class="unlock-prompt">`;
-    html += `<div class="lock-icon">🔒</div>`;
-    html += `<div class="unlock-text">Pack freischalten</div>`;
-    html += `<div class="unlock-cost">🫧 ${pack.cost}</div>`;
-    html += `</div>`;
-    html += `</div>`;
+    const buttonClass = canAfford ? 'pack-unlock-button can-afford' : 'pack-unlock-button cannot-afford';
+    html += `<button class="${buttonClass}" data-pack-id="${pack.id}" data-cost="${pack.cost}" ${!canAfford ? 'disabled' : ''}>`;
+    html += `<span class="unlock-icon">🔒</span>`;
+    html += `<span class="unlock-label">Pack freischalten</span>`;
+    html += `<span class="unlock-cost">🫧 ${pack.cost}</span>`;
+    html += `</button>`;
   }
   
   // Show backgrounds in pack
@@ -4017,7 +4016,7 @@ function createPackSection(pack, selectedBg, streakStones, isUnlocked) {
       html += createPackBackgroundTile(bg, selectedBg, isUnlocked);
     });
   } else {
-    // Show locked preview of backgrounds
+    // Show locked preview of backgrounds (backgrounds are visible but dimmed)
     pack.backgrounds.forEach(bg => {
       html += createPackBackgroundTile(bg, selectedBg, false);
     });
@@ -4663,16 +4662,15 @@ function refreshBackgroundShopContent() {
     }
   });
   
-  // Re-attach event listeners for pack unlock overlays
-  const unlockOverlays = popupCard.querySelectorAll('.pack-unlock-overlay');
-  unlockOverlays.forEach(unlockOverlay => {
-    const packId = unlockOverlay.dataset.packId;
-    const cost = parseInt(unlockOverlay.dataset.cost, 10);
-    const canAfford = unlockOverlay.classList.contains('can-afford');
+  // Re-attach event listeners for pack unlock buttons
+  const unlockButtons = popupCard.querySelectorAll('.pack-unlock-button');
+  unlockButtons.forEach(button => {
+    const packId = button.dataset.packId;
+    const cost = parseInt(button.dataset.cost, 10);
+    const canAfford = button.classList.contains('can-afford');
     
-    if (canAfford) {
-      unlockOverlay.style.cursor = 'pointer';
-      unlockOverlay.addEventListener('click', () => {
+    if (canAfford && !button.disabled) {
+      button.addEventListener('click', () => {
         handlePackUnlock(packId);
       });
     }
