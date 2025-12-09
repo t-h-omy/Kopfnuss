@@ -4352,9 +4352,14 @@ function closeBackgroundShopPopup() {
   const overlaysByClass = document.querySelectorAll('.background-shop-overlay');
   overlaysByClass.forEach(el => el.remove());
   
-  // Re-enable body scrolling and pointer events when shop closes
+  // Re-enable body scrolling when shop closes
   document.body.style.overflow = '';
-  document.body.style.pointerEvents = '';
+  
+  // Ensure challenge screen is clickable again
+  const challengeScreen = document.querySelector('.challenge-screen');
+  if (challengeScreen) {
+    challengeScreen.style.pointerEvents = '';
+  }
   
   // Mark shop as opened to hide NEW badge after closing
   markShopOpenedWithNewBackgrounds();
