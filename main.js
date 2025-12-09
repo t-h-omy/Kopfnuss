@@ -3701,45 +3701,66 @@ function setupDevSettingsListeners() {
     });
   }
   
-  // Fix Shop button - removes any lingering overlays
+  // Fix Shop button - removes any lingering overlays with aggressive cleanup
   const fixShopBtn = document.getElementById('dev-fix-shop');
   
   if (fixShopBtn) {
     fixShopBtn.addEventListener('click', () => {
       let overlaysRemoved = 0;
       
-      // Remove all shop overlays (in case multiple exist)
+      // AGGRESSIVE CLEANUP: Remove ALL overlay-like elements except settings
+      // This is nuclear option to recover from any stuck state
+      
+      // Remove by ID
       const shopOverlays = document.querySelectorAll('#background-shop-overlay');
       shopOverlays.forEach(overlay => {
         overlay.remove();
         overlaysRemoved++;
       });
       
-      // Also remove any popup overlays that might be blocking
+      // Remove ALL popup overlays except settings
       const popupOverlays = document.querySelectorAll('.popup-overlay');
       popupOverlays.forEach(overlay => {
-        // Don't remove the settings overlay itself
         if (!overlay.classList.contains('settings-overlay')) {
           overlay.remove();
           overlaysRemoved++;
         }
       });
       
-      // Also remove any overlays with the background-shop-overlay class
+      // Remove by class
       const bgShopOverlays = document.querySelectorAll('.background-shop-overlay');
       bgShopOverlays.forEach(overlay => {
         overlay.remove();
         overlaysRemoved++;
       });
       
-      // Restore body overflow
-      document.body.style.overflow = '';
+      // Look for any orphaned overlays without proper classes (fallback)
+      document.querySelectorAll('[id*="overlay"], [class*="overlay"]').forEach(element => {
+        // Keep settings overlay and challenge screen
+        if (!element.classList.contains('settings-overlay') && 
+            element.id !== 'challenges-screen' &&
+            element.id !== 'settings-popup-overlay') {
+          // Check if this is actually an overlay-type element
+          const styles = window.getComputedStyle(element);
+          if (styles.position === 'fixed' && styles.zIndex === '1000') {
+            element.remove();
+            overlaysRemoved++;
+          }
+        }
+      });
       
-      if (overlaysRemoved > 0) {
-        showDevFeedback(`🛠️ ${overlaysRemoved} Overlay(s) entfernt`);
-      } else {
-        showDevFeedback('✅ Keine Overlays gefunden');
+      // Force restore body overflow and pointer events
+      document.body.style.overflow = '';
+      document.body.style.pointerEvents = '';
+      
+      // Clear any inline styles on the challenges screen that might block interaction
+      const challengesScreen = document.getElementById('challenges-screen');
+      if (challengesScreen) {
+        challengesScreen.style.pointerEvents = '';
+        challengesScreen.style.overflow = '';
       }
+      
+      showDevFeedback(`🛠️ Shop repariert (${overlaysRemoved} Element(e) entfernt)`);
     });
   }
 }
@@ -4136,12 +4157,20 @@ function createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent) {
  * @param {string} initialTab - Initial tab to show ('standard', 'packs', or 'seasonal')
  */
 function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'standard') {
-  // Ensure any existing shop overlay is removed first
-  const existingOverlay = document.getElementById('background-shop-overlay');
-  if (existingOverlay) {
-    existingOverlay.remove();
-  }
+  // CRITICAL: Force complete cleanup of ALL overlays before creating new shop
+  // This prevents stuck overlays and event listener buildup
+  const allOverlays = document.querySelectorAll('.popup-overlay, #background-shop-overlay, .background-shop-overlay');
+  allOverlays.forEach(overlay => {
+    // Don't remove settings overlay
+    if (!overlay.classList.contains('settings-overlay')) {
+      overlay.remove();
+    }
+  });
   
+  // Force reset body overflow
+  document.body.style.overflow = '';
+  
+  // Small delay to ensure DOM is clean before creating new overlay
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
@@ -4313,10 +4342,15 @@ function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'stan
  * Close the background shop popup
  */
 function closeBackgroundShopPopup() {
+  // Remove the overlay by ID first
   const overlay = document.getElementById('background-shop-overlay');
   if (overlay) {
     overlay.remove();
   }
+  
+  // Also remove any stray overlays with the class (safety check)
+  const overlaysByClass = document.querySelectorAll('.background-shop-overlay');
+  overlaysByClass.forEach(el => el.remove());
   
   // Re-enable body scrolling when shop closes
   document.body.style.overflow = '';
@@ -4547,11 +4581,11 @@ function handlePackUnlock(packId, overlay) {
     showNotEnoughStreakStonesPopup(result.required, result.current);
   } else if (result.success) {
     // Refresh shop to show unlocked pack
-    // Use setTimeout to ensure DOM updates complete before reopening
+    // Use longer timeout to ensure complete DOM cleanup before reopening
     closeBackgroundShopPopup();
     setTimeout(() => {
       showBackgroundShopPopup(null, 'packs');
-    }, 100);
+    }, 200);
   }
 }
 
@@ -4619,7 +4653,7 @@ function handlePackBackgroundTileClick(bgId) {
     closeBackgroundShopPopup();
     setTimeout(() => {
       showBackgroundShopPopup(null, 'packs');
-    }, 100);
+    }, 200);
   } else if (targetBg.hasEnoughTasks) {
     // Background is purchasable - show unlock confirmation
     showPackBackgroundUnlockConfirmPopup(targetBg);
@@ -4683,7 +4717,7 @@ function showPackBackgroundUnlockConfirmPopup(background) {
           closeBackgroundShopPopup();
           setTimeout(() => {
             showBackgroundShopPopup(null, 'packs');
-          }, 100);
+          }, 200);
         }
       });
     }
