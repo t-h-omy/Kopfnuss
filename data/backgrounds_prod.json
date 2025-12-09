@@ -288,9 +288,9 @@
       "active": true
     },
     {
-      "id": "oceanWave",
-      "name": "Ozeanwelle",
-      "file": "backgrounds/02_standard/bg_standard_1.webp",
+      "id": "kingfisher",
+      "name": "Eisvogel",
+      "file": "backgrounds/winter/kingfisher_background_optimized.webp",
       "category": "pack",
       "cost": 3,
       "currency": "diamonds",
@@ -300,13 +300,13 @@
         "minTasksSincePackUnlock": 150
       },
       "event": null,
-      "pack": "ocean_pack",
+      "pack": "winter_pack",
       "active": true
     },
     {
-      "id": "oceanDeep",
-      "name": "Tiefsee",
-      "file": "backgrounds/02_standard/bg_standard_2.webp",
+      "id": "snowLeopard",
+      "name": "Schneeleopard",
+      "file": "backgrounds/winter/snow_leopard_papercut_optimized.webp",
       "category": "pack",
       "cost": 4,
       "currency": "diamonds",
@@ -316,71 +316,39 @@
         "minTasksSincePackUnlock": 300
       },
       "event": null,
-      "pack": "ocean_pack",
+      "pack": "winter_pack",
       "active": true
     },
     {
-      "id": "spaceStars",
-      "name": "Sternenfeld",
-      "file": "backgrounds/02_standard/bg_standard_3.webp",
-      "category": "pack",
-      "cost": 5,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": null,
-        "minTasksSinceEventStart": null,
-        "minTasksSincePackUnlock": 150
-      },
-      "event": null,
-      "pack": "space_pack",
-      "active": true
-    },
-    {
-      "id": "spacePlanet",
-      "name": "Planet",
-      "file": "backgrounds/02_standard/bg_standard_4.webp",
-      "category": "pack",
-      "cost": 5,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": null,
-        "minTasksSinceEventStart": null,
-        "minTasksSincePackUnlock": 300
-      },
-      "event": null,
-      "pack": "space_pack",
-      "active": true
-    },
-    {
-      "id": "natureForest",
-      "name": "Wald",
-      "file": "backgrounds/02_standard/bg_standard_5.webp",
-      "category": "pack",
-      "cost": 3,
-      "currency": "diamonds",
-      "requirements": {
-        "minTasksSinceStart": null,
-        "minTasksSinceEventStart": null,
-        "minTasksSincePackUnlock": 150
-      },
-      "event": null,
-      "pack": "nature_pack",
-      "active": true
-    },
-    {
-      "id": "natureMountain",
-      "name": "Berge",
-      "file": "backgrounds/02_standard/bg_standard_6.webp",
+      "id": "snowflakePattern",
+      "name": "Schneeflocken-Muster",
+      "file": "backgrounds/winter/snowflake_pattern_optimized.webp",
       "category": "pack",
       "cost": 4,
       "currency": "diamonds",
       "requirements": {
         "minTasksSinceStart": null,
         "minTasksSinceEventStart": null,
-        "minTasksSincePackUnlock": 300
+        "minTasksSincePackUnlock": 450
       },
       "event": null,
-      "pack": "nature_pack",
+      "pack": "winter_pack",
+      "active": true
+    },
+    {
+      "id": "winterMarmot",
+      "name": "Winter-Murmeltier",
+      "file": "backgrounds/winter/winter_marmot_graffiti_optimized.webp",
+      "category": "pack",
+      "cost": 5,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null,
+        "minTasksSincePackUnlock": 600
+      },
+      "event": null,
+      "pack": "winter_pack",
       "active": true
     },
     {

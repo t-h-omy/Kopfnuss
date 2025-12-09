@@ -214,19 +214,9 @@
     }
   },
   "BACKGROUND_PACKS": {
-    "ocean_pack": {
-      "id": "ocean_pack",
-      "name": "Ozean-Paket",
-      "costStreakStones": 1
-    },
-    "space_pack": {
-      "id": "space_pack",
-      "name": "Weltraum-Paket",
-      "costStreakStones": 1
-    },
-    "nature_pack": {
-      "id": "nature_pack",
-      "name": "Natur-Paket",
+    "winter_pack": {
+      "id": "winter_pack",
+      "name": "Winter-Paket",
       "costStreakStones": 1
     }
   }
