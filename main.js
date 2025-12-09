@@ -3706,19 +3706,40 @@ function setupDevSettingsListeners() {
   
   if (fixShopBtn) {
     fixShopBtn.addEventListener('click', () => {
-      // Remove all shop overlays
-      const shopOverlay = document.getElementById('background-shop-overlay');
-      if (shopOverlay) {
-        shopOverlay.remove();
-        showDevFeedback('🛠️ Shop-Overlay entfernt');
-      } else {
-        showDevFeedback('✅ Kein Shop-Overlay gefunden');
-      }
+      let overlaysRemoved = 0;
+      
+      // Remove all shop overlays (in case multiple exist)
+      const shopOverlays = document.querySelectorAll('#background-shop-overlay');
+      shopOverlays.forEach(overlay => {
+        overlay.remove();
+        overlaysRemoved++;
+      });
+      
+      // Also remove any popup overlays that might be blocking
+      const popupOverlays = document.querySelectorAll('.popup-overlay');
+      popupOverlays.forEach(overlay => {
+        // Don't remove the settings overlay itself
+        if (!overlay.classList.contains('settings-overlay')) {
+          overlay.remove();
+          overlaysRemoved++;
+        }
+      });
+      
+      // Also remove any overlays with the background-shop-overlay class
+      const bgShopOverlays = document.querySelectorAll('.background-shop-overlay');
+      bgShopOverlays.forEach(overlay => {
+        overlay.remove();
+        overlaysRemoved++;
+      });
       
       // Restore body overflow
       document.body.style.overflow = '';
       
-      showDevFeedback('🛠️ Shop repariert');
+      if (overlaysRemoved > 0) {
+        showDevFeedback(`🛠️ ${overlaysRemoved} Overlay(s) entfernt`);
+      } else {
+        showDevFeedback('✅ Keine Overlays gefunden');
+      }
     });
   }
 }
@@ -4526,8 +4547,11 @@ function handlePackUnlock(packId, overlay) {
     showNotEnoughStreakStonesPopup(result.required, result.current);
   } else if (result.success) {
     // Refresh shop to show unlocked pack
+    // Use setTimeout to ensure DOM updates complete before reopening
     closeBackgroundShopPopup();
-    showBackgroundShopPopup(null, 'packs');
+    setTimeout(() => {
+      showBackgroundShopPopup(null, 'packs');
+    }, 100);
   }
 }
 
@@ -4593,7 +4617,9 @@ function handlePackBackgroundTileClick(bgId) {
     // Background is unlocked - select it
     selectBackground(bgId);
     closeBackgroundShopPopup();
-    showBackgroundShopPopup(null, 'packs');
+    setTimeout(() => {
+      showBackgroundShopPopup(null, 'packs');
+    }, 100);
   } else if (targetBg.hasEnoughTasks) {
     // Background is purchasable - show unlock confirmation
     showPackBackgroundUnlockConfirmPopup(targetBg);
@@ -4655,7 +4681,9 @@ function showPackBackgroundUnlockConfirmPopup(background) {
           playBackgroundPurchased();
           overlay.remove();
           closeBackgroundShopPopup();
-          showBackgroundShopPopup(null, 'packs');
+          setTimeout(() => {
+            showBackgroundShopPopup(null, 'packs');
+          }, 100);
         }
       });
     }
