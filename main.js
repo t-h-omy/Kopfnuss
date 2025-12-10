@@ -4156,18 +4156,19 @@ function createSeasonalTab(seasonalBackgrounds, selectedBg, activeEvent) {
  * @param {string} initialTab - Initial tab to show ('standard', 'packs', or 'seasonal')
  */
 function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'standard') {
-  // CRITICAL: Force complete cleanup of ALL overlays before creating new shop
-  // This prevents stuck overlays and event listener buildup
-  const allOverlays = document.querySelectorAll('.popup-overlay, #background-shop-overlay, .background-shop-overlay');
-  allOverlays.forEach(overlay => {
-    // Don't remove settings overlay
-    if (!overlay.classList.contains('settings-overlay')) {
-      overlay.remove();
-    }
-  });
-  
-  // Force reset body overflow
-  document.body.style.overflow = '';
+  try {
+    // CRITICAL: Force complete cleanup of ALL overlays before creating new shop
+    // This prevents stuck overlays and event listener buildup
+    const allOverlays = document.querySelectorAll('.popup-overlay, #background-shop-overlay, .background-shop-overlay');
+    allOverlays.forEach(overlay => {
+      // Don't remove settings overlay
+      if (!overlay.classList.contains('settings-overlay')) {
+        overlay.remove();
+      }
+    });
+    
+    // Force reset body overflow
+    document.body.style.overflow = '';
   
   // Small delay to ensure DOM is clean before creating new overlay
   const backgrounds = getAllBackgrounds();
@@ -4334,6 +4335,11 @@ function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = 'stan
   const closeBtn = document.getElementById('close-background-shop');
   if (closeBtn) {
     closeBtn.addEventListener('click', closeBackgroundShopPopup);
+  }
+  } catch (e) {
+    console.error('SHOP CRASH:', e);
+    console.error('Stack trace:', e.stack);
+    alert('The shop crashed. Check the console for details.');
   }
 }
 
