@@ -84,6 +84,15 @@ import {
   playDiamondEarn,
   playButtonTap
 } from './logic/audioBootstrap.js';
+import { 
+  showScreen, 
+  notifyStreakUnfrozen, 
+  notifyStreakIncremented, 
+  notifySuperChallengeResult,
+  initializeUIBridge,
+  getScreenState,
+  setScreenState
+} from './logic/uiBridge.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -208,17 +217,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Global state for current screen and data
-let currentScreen = null;
-let currentChallengeIndex = null;
-let returningFromTaskScreen = false;
-let returningFromKopfnussScreen = false; // Track if returning from Kopfnuss Challenge
-let returningFromZeitChallengeScreen = false; // Track if returning from Zeit-Challenge
-let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
-let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+// Global state for current screen and data (state managed by uiBridge for screen navigation)
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
-let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean, seasonalCurrencyAwarded: object|null}
 let kopfnussChallengeResult = null; // Track Kopfnuss Challenge result {success: boolean, reward: object|null}
 let zeitChallengeResult = null; // Track Zeit-Challenge result {success: boolean, reward: object|null}
 
@@ -295,78 +296,6 @@ function findCurrentUnlockedChallengeIndex(challenges) {
 }
 
 /**
- * Show a screen by name
- * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats', 'kopfnussTaskScreen', 'zeitChallengeTaskScreen')
- * @param {*} data - Optional data to pass to screen (e.g., challengeIndex)
- */
-export function showScreen(screenName, data = null) {
-  const mainContent = document.getElementById('main-content');
-  
-  if (!mainContent) {
-    console.error('Main content element not found');
-    return;
-  }
-  
-  // Track if we're returning from task screen to challenges
-  if (currentScreen === 'taskScreen' && screenName === 'challenges') {
-    returningFromTaskScreen = true;
-  }
-  
-  // Track if we're returning from Kopfnuss task screen to challenges
-  if (currentScreen === 'kopfnussTaskScreen' && screenName === 'challenges') {
-    returningFromKopfnussScreen = true;
-  }
-  
-  // Track if we're returning from Zeit-Challenge task screen to challenges
-  if (currentScreen === 'zeitChallengeTaskScreen' && screenName === 'challenges') {
-    returningFromZeitChallengeScreen = true;
-    // Cleanup Zeit challenge when leaving
-    import('./logic/zeitChallengeTaskController.js').then(module => {
-      if (module.cleanupZeitChallengeTaskScreen) {
-        module.cleanupZeitChallengeTaskScreen();
-      }
-    }).catch(() => {
-      // Silently ignore if module not loaded
-    });
-  }
-  
-  // Store current screen
-  currentScreen = screenName;
-  
-  // Clear current content
-  mainContent.innerHTML = '';
-  
-  // Manage body class for task screen keyboard stability
-  if (screenName === 'taskScreen' || screenName === 'kopfnussTaskScreen' || screenName === 'zeitChallengeTaskScreen') {
-    document.body.classList.add('task-screen-active');
-  } else {
-    document.body.classList.remove('task-screen-active');
-  }
-  
-  // Route to appropriate screen
-  switch (screenName) {
-    case 'challenges':
-      loadChallengesScreen(mainContent);
-      break;
-    case 'taskScreen':
-      currentChallengeIndex = data;
-      loadTaskScreen(mainContent, data);
-      break;
-    case 'kopfnussTaskScreen':
-      loadKopfnussTaskScreen(mainContent);
-      break;
-    case 'zeitChallengeTaskScreen':
-      loadZeitChallengeTaskScreen(mainContent);
-      break;
-    case 'stats':
-      loadStatsScreen(mainContent);
-      break;
-    default:
-      console.error('Unknown screen:', screenName);
-  }
-}
-
-/**
  * Load challenges screen
  * @param {HTMLElement} container - Container element
  */
@@ -381,27 +310,30 @@ function loadChallengesScreen(container) {
   const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
   
+  // Get screen state from uiBridge
+  const screenState = getScreenState();
+  
   // Store flag value and challenge index for animation before resetting
-  const shouldAnimateBackground = returningFromTaskScreen;
-  const justCompletedChallengeIndex = currentChallengeIndex;
+  const shouldAnimateBackground = screenState.returningFromTaskScreen;
+  const justCompletedChallengeIndex = screenState.currentChallengeIndex;
   
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first super challenge result, then diamond, then streak, then background unlock
   // After all popups close, scroll to the current unlocked challenge or reward button
-  if (returningFromTaskScreen) {
-    returningFromTaskScreen = false;
+  if (screenState.returningFromTaskScreen) {
+    setScreenState({ returningFromTaskScreen: false });
     
     // Check for super challenge result
-    const showSuperChallengeSuccess = superChallengeResult && superChallengeResult.success;
-    const showSuperChallengeFailure = superChallengeResult && !superChallengeResult.success;
-    const storedSuperChallengeResult = superChallengeResult;
-    superChallengeResult = null; // Reset the flag
+    const showSuperChallengeSuccess = screenState.superChallengeResult && screenState.superChallengeResult.success;
+    const showSuperChallengeFailure = screenState.superChallengeResult && !screenState.superChallengeResult.success;
+    const storedSuperChallengeResult = screenState.superChallengeResult;
+    setScreenState({ superChallengeResult: null }); // Reset the flag
     
     const showDiamond = diamondResult.awarded > 0;
     // Check if streak was unfrozen during challenge (streakWasUnfrozen is the new streak value or false)
-    const showUnfrozen = typeof streakWasUnfrozen === 'number' && streakWasUnfrozen > 0;
+    const showUnfrozen = typeof screenState.streakWasUnfrozen === 'number' && screenState.streakWasUnfrozen > 0;
     // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
-    const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
+    const showStreakIncremented = typeof screenState.streakWasIncremented === 'number' && screenState.streakWasIncremented > 0 && !showUnfrozen;
     
     // Check for newly purchasable backgrounds (regular)
     const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
@@ -414,10 +346,9 @@ function loadChallengesScreen(container) {
     const newlyPurchasableSeasonalBackground = seasonalBackgroundUnlockResult.firstNewBackground;
     
     // Reset the flags
-    const unfrozenStreakValue = streakWasUnfrozen;
-    const incrementedStreakValue = streakWasIncremented;
-    streakWasUnfrozen = false;
-    streakWasIncremented = false;
+    const unfrozenStreakValue = screenState.streakWasUnfrozen;
+    const incrementedStreakValue = screenState.streakWasIncremented;
+    setScreenState({ streakWasUnfrozen: false, streakWasIncremented: false });
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
@@ -473,8 +404,8 @@ function loadChallengesScreen(container) {
   }
   
   // Handle popup display when returning from Kopfnuss task screen
-  if (returningFromKopfnussScreen) {
-    returningFromKopfnussScreen = false;
+  if (screenState.returningFromKopfnussScreen) {
+    setScreenState({ returningFromKopfnussScreen: false });
     
     // Check for Kopfnuss Challenge result
     const showKopfnussSuccess = kopfnussChallengeResult && kopfnussChallengeResult.success;
@@ -490,8 +421,8 @@ function loadChallengesScreen(container) {
   }
   
   // Handle popup display when returning from Zeit-Challenge task screen
-  if (returningFromZeitChallengeScreen) {
-    returningFromZeitChallengeScreen = false;
+  if (screenState.returningFromZeitChallengeScreen) {
+    setScreenState({ returningFromZeitChallengeScreen: false });
     
     // Check for Zeit-Challenge result
     const showZeitSuccess = zeitChallengeResult && zeitChallengeResult.success;
@@ -1865,35 +1796,6 @@ function checkAndShowStreakPopups(onAllPopupsClosed = null) {
   
   const streakStatus = checkStreakStatusOnLoad();
   showStreakPopupForStatus(streakStatus, onAllPopupsClosed);
-}
-
-/**
- * Notify that streak was unfrozen by completing a challenge
- * This sets a flag that will trigger the unfreeze popup when returning to challenges screen
- * @param {number} newStreak - New streak count after unfreezing
- */
-export function notifyStreakUnfrozen(newStreak) {
-  streakWasUnfrozen = newStreak;
-}
-
-/**
- * Notify that streak was incremented by completing a challenge
- * This sets a flag that will trigger the streak celebration popup when returning to challenges screen
- * @param {number} newStreak - New streak count after incrementing
- */
-export function notifyStreakIncremented(newStreak) {
-  streakWasIncremented = newStreak;
-}
-
-/**
- * Notify super challenge result
- * This sets a flag that will trigger the appropriate popup when returning to challenges screen
- * @param {boolean} success - Whether the super challenge was completed without errors
- * @param {boolean} awardedDiamond - Whether a diamond was awarded
- * @param {Object|null} seasonalCurrencyAwarded - Seasonal currency info if awarded
- */
-export function notifySuperChallengeResult(success, awardedDiamond, seasonalCurrencyAwarded = null) {
-  superChallengeResult = { success, awardedDiamond, seasonalCurrencyAwarded };
 }
 
 /**
@@ -4386,6 +4288,15 @@ class KopfnussApp {
   }
   
   init() {
+    // Initialize UI bridge with references to screen loading functions
+    initializeUIBridge({
+      loadChallengesScreen,
+      loadTaskScreen,
+      loadKopfnussTaskScreen,
+      loadZeitChallengeTaskScreen,
+      loadStatsScreen
+    });
+    
     this.setupRoutes();
     this.setupEventListeners();
     this.loadInitialRoute();

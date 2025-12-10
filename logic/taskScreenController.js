@@ -11,7 +11,7 @@ import {
   getTaskFlowState
 } from './taskFlow.js';
 import { startChallenge } from './challengeStateManager.js';
-import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult } from '../main.js';
+import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult } from './uiBridge.js';
 import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
 import { getChallenge } from './challengeGenerator.js';
 import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
