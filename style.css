@@ -2968,6 +2968,69 @@ button,
   margin: var(--spacing-sm) 0;
 }
 
+/* Shop Tab Structure */
+.shop-tab-header {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--color-gray);
+}
+
+.shop-tab-button {
+  flex: 1;
+  padding: var(--spacing-md) var(--spacing-sm);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-color-light);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  bottom: -2px;
+}
+
+.shop-tab-button:hover {
+  color: var(--text-color);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.shop-tab-button.active {
+  color: var(--color-blue);
+  border-bottom-color: var(--color-blue);
+  font-weight: 600;
+}
+
+.shop-tab-content {
+  display: none;
+  overflow-y: auto;
+  max-height: 55vh;
+  padding-right: var(--spacing-xs);
+}
+
+.shop-tab-content.active {
+  display: block;
+}
+
+.shop-tab-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.shop-tab-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shop-tab-content::-webkit-scrollbar-thumb {
+  background: var(--color-gray);
+  border-radius: 3px;
+}
+
+.shop-tab-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-hover);
+}
+
 .super-success-display.seasonal-reward {
   background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
 }

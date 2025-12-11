@@ -80,6 +80,11 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
     <div class="background-shop-header">
       ${currencyDisplayHtml}
     </div>
+    <div class="shop-tab-header">
+      <button class="shop-tab-button active" data-tab="standard">Standard</button>
+      <button class="shop-tab-button" data-tab="packs">Pakete</button>
+      <button class="shop-tab-button" data-tab="seasonal">Event</button>
+    </div>
   `;
   
   // Create seasonal section if event is active
@@ -207,11 +212,32 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   
   tilesHtml += '</div></div>';
   
+  // Build tab content HTML
+  const tabStandardHtml = `
+    <div class="shop-tab-content active" id="shopTabStandard">
+      ${seasonalSectionHtml}
+      ${tilesHtml}
+    </div>
+  `;
+  
+  const tabPacksHtml = `
+    <div class="shop-tab-content" id="shopTabPacks">
+      <!-- Packs content will be added here in future -->
+    </div>
+  `;
+  
+  const tabSeasonalHtml = `
+    <div class="shop-tab-content" id="shopTabSeasonal">
+      <!-- Seasonal content will be added here in future -->
+    </div>
+  `;
+  
   popupCard.innerHTML = `
     <div class="background-shop-content">
       ${headerHtml}
-      ${seasonalSectionHtml}
-      ${tilesHtml}
+      ${tabStandardHtml}
+      ${tabPacksHtml}
+      ${tabSeasonalHtml}
     </div>
     <button id="close-background-shop" class="btn-secondary background-shop-close">Schließen</button>
   `;
@@ -245,6 +271,26 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
         handleSeasonalBackgroundTileClick(bgId);
       });
     }
+  });
+  
+  // Add tab switching handlers
+  const tabButtons = popupCard.querySelectorAll('.shop-tab-button');
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.dataset.tab;
+      
+      // Remove active class from all buttons and tabs
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      const allTabs = popupCard.querySelectorAll('.shop-tab-content');
+      allTabs.forEach(tab => tab.classList.remove('active'));
+      
+      // Add active class to clicked button and corresponding tab
+      button.classList.add('active');
+      const targetTabElement = popupCard.querySelector(`#shopTab${capitalizeFirstLetter(targetTab)}`);
+      if (targetTabElement) {
+        targetTabElement.classList.add('active');
+      }
+    });
   });
   
   // Add close button handler
@@ -686,4 +732,13 @@ function showNotEnoughSeasonalCurrencyHint() {
   setTimeout(() => {
     hint.remove();
   }, 3000);
+}
+
+/**
+ * Capitalize the first letter of a string
+ * @param {string} str - The string to capitalize
+ * @returns {string} - The capitalized string
+ */
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
