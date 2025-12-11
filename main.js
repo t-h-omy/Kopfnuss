@@ -1072,40 +1072,21 @@ async function loadTaskScreen(container, challengeIndex) {
   // Update app height when entering task screen to ensure proper sizing
   setAppHeight();
   
-  container.innerHTML = `
-    <div class="task-screen" id="task-screen-content">
-      <div class="task-screen-main">
-        <div class="task-header">
-          <button id="back-button" aria-label="Zurück">←</button>
-          <h2>Challenge ${challengeIndex + 1}</h2>
-          <div class="task-header-spacer"></div>
-        </div>
-        <div class="task-progress" id="task-progress"></div>
-        <div class="task-content">
-          <div class="task-question" id="task-question"></div>
-          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
-          <button id="submit-answer">Prüfen</button>
-        </div>
-        <div class="task-feedback" id="task-feedback"></div>
-      </div>
-      <div class="task-screen-footer">v${VERSION.string}</div>
-    </div>
-  `;
-  
-  // Add event listener for back button with confirmation
-  const backButton = document.getElementById('back-button');
-  backButton.addEventListener('click', () => {
-    showTaskExitConfirmationPopup(() => {
-      // Stop super challenge sparkles if running
-      stopSuperChallengeSparkles();
-      showScreen('challenges');
-    }, 'standard');
-  });
-  
-  // Initialize task screen controller
+  // Load task screen controller and show task screen
   try {
-    const { initTaskScreen } = await import('./logic/taskScreenController.js');
-    initTaskScreen(challengeIndex);
+    const { showTaskScreenForChallenge } = await import('./logic/taskScreenController.js');
+    
+    // Define back button callback with confirmation
+    const handleBackClick = () => {
+      showTaskExitConfirmationPopup(() => {
+        // Stop super challenge sparkles if running
+        stopSuperChallengeSparkles();
+        showScreen('challenges');
+      }, 'standard');
+    };
+    
+    // Task screen controller now owns all DOM operations
+    showTaskScreenForChallenge(container, challengeIndex, handleBackClick);
   } catch (error) {
     console.error('Error loading task screen controller:', error);
   }
@@ -3435,6 +3416,13 @@ class KopfnussApp {
     // Initialize UI modules
     initHeaderUI();
     initShopUI();
+    
+    // Initialize task screen controller
+    import('./logic/taskScreenController.js').then(module => {
+      module.initTaskScreenController();
+    }).catch(error => {
+      console.error('Error initializing task screen controller:', error);
+    });
     
     this.setupRoutes();
     this.setupEventListeners();

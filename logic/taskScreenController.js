@@ -1,5 +1,6 @@
 // Kopfnuss - Task Screen Controller
-// Handles UI for task screen and integrates with task flow logic
+// Single owner of all task screen UI operations
+// Handles DOM manipulation, user interactions, and visual feedback
 
 import { 
   initializeTaskFlow, 
@@ -15,8 +16,11 @@ import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperC
 import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
 import { getChallenge } from './challengeGenerator.js';
 import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
+import { VERSION } from '../version.js';
 
+// Module state
 let taskFlowState = null;
+let isInitialized = false;
 
 /**
  * Motivation phrases for perfect completion (0 errors)
@@ -51,14 +55,56 @@ function getRandomPhrase(pool) {
 }
 
 /**
- * Initialize task screen for a challenge
- * @param {number} challengeIndex - Index of challenge
+ * Initialize the task screen controller
+ * Call once when the app starts to prepare the controller
  */
-export function initTaskScreen(challengeIndex) {
+export function initTaskScreenController() {
+  // No initialization needed currently
+  // This function is provided for future extensibility
+  isInitialized = true;
+}
+
+/**
+ * Show task screen for a specific challenge
+ * Builds the task screen UI and initializes the task flow
+ * This is the main entry point for displaying a task screen
+ * 
+ * @param {HTMLElement} container - Container element to render task screen into
+ * @param {number} challengeIndex - Index of challenge to display
+ * @param {Function} onBackClick - Callback when back button is clicked
+ */
+export function showTaskScreenForChallenge(container, challengeIndex, onBackClick) {
+  // Build task screen HTML
+  container.innerHTML = `
+    <div class="task-screen" id="task-screen-content">
+      <div class="task-screen-main">
+        <div class="task-header">
+          <button id="back-button" aria-label="Zurück">←</button>
+          <h2>Challenge ${challengeIndex + 1}</h2>
+          <div class="task-header-spacer"></div>
+        </div>
+        <div class="task-progress" id="task-progress"></div>
+        <div class="task-content">
+          <div class="task-question" id="task-question"></div>
+          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
+          <button id="submit-answer">Prüfen</button>
+        </div>
+        <div class="task-feedback" id="task-feedback"></div>
+      </div>
+      <div class="task-screen-footer">v${VERSION.string}</div>
+    </div>
+  `;
+  
+  // Add back button event listener
+  const backButton = document.getElementById('back-button');
+  if (backButton && onBackClick) {
+    backButton.addEventListener('click', onBackClick);
+  }
+  
   // Start the challenge
   startChallenge(challengeIndex);
   
-  // Initialize task flow
+  // Initialize task flow logic
   taskFlowState = initializeTaskFlow(challengeIndex);
   
   if (!taskFlowState) {
@@ -78,6 +124,17 @@ export function initTaskScreen(challengeIndex) {
   
   // Setup event listeners
   setupTaskScreenEventListeners();
+}
+
+/**
+ * Legacy function for backwards compatibility
+ * @deprecated Use showTaskScreenForChallenge instead
+ * @param {number} challengeIndex - Index of challenge
+ */
+export function initTaskScreen(challengeIndex) {
+  console.warn('initTaskScreen is deprecated. This should not be called directly.');
+  // This function is kept for backwards compatibility but shouldn't be used
+  // The container and back button handling should come from showTaskScreenForChallenge
 }
 
 /**
