@@ -100,6 +100,7 @@ import {
   initHeaderUI,
   updateHeaderStreakDisplay, 
   updateHeaderDiamondsDisplay,
+  updateHeaderStreakStonesDisplay,
   updateDiamondProgressText,
   updateHeaderSeasonalDisplay
 } from './ui/headerUI.js';
@@ -463,6 +464,9 @@ function loadChallengesScreen(container) {
   const daysUntilEventEnd = getDaysUntilEventEnd();
   const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
   
+  // Load Streak Stones
+  const streakStones = loadStreakStones();
+  
   // Build event countdown HTML for row 2
   let eventCountdownHtml = '';
   if (activeEvent && daysUntilEventEnd !== null) {
@@ -503,6 +507,10 @@ function loadChallengesScreen(container) {
           <div class="${streakClass}">
             <span class="stat-icon">${streakIcon}</span>
             <span class="stat-value">${streakInfo.currentStreak}</span>
+          </div>
+          <div class="stat-capsule">
+            <span class="stat-icon">💠</span>
+            <span class="stat-value">${streakStones}</span>
           </div>
           <div class="stat-capsule">
             <span class="stat-icon">💎</span>
@@ -1448,6 +1456,7 @@ function showMilestoneRewardPopup(onClose = null) {
     // Update header display
     updateHeaderStreakDisplay();
     updateHeaderDiamondsDisplay();
+    updateHeaderStreakStonesDisplay();
     
     // Play diamond earn sound (reuse for reward)
     playDiamondEarn();
@@ -1468,6 +1477,7 @@ function showMilestoneRewardPopup(onClose = null) {
     // Update header display
     updateHeaderStreakDisplay();
     updateHeaderDiamondsDisplay();
+    updateHeaderStreakStonesDisplay();
     
     // Play diamond earn sound
     playDiamondEarn();
