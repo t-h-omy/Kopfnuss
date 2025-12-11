@@ -23,6 +23,21 @@ import {
 } from './storageManager.js';
 
 /**
+ * @typedef {Object} SeasonalEvent
+ * @property {string} id - Unique identifier for the event (e.g., "christmas", "newYear")
+ * @property {string} name - Display name of the event (e.g., "Weihnachten")
+ * @property {string} emoticon - Emoji representing the event (e.g., "❄️")
+ * @property {string} currencyName - Name of the seasonal currency in plural (e.g., "Schneeflocken")
+ * @property {string} currencyNameSingular - Name of the seasonal currency in singular (e.g., "Schneeflocke")
+ * @property {number} startMonth - Start month (1-12)
+ * @property {number} startDay - Start day (1-31)
+ * @property {number} endMonth - End month (1-12)
+ * @property {number} endDay - End day (1-31)
+ * @property {string} popupTitle - Title for the event popup
+ * @property {string} popupDescription - Description text for the event popup
+ */
+
+/**
  * Get seasonal backgrounds from unified structure
  * Returns backgrounds in legacy format for compatibility
  * @returns {Object} Object with background IDs as keys
@@ -108,7 +123,7 @@ function isDateInEventRange(date, event) {
 /**
  * Get the currently active seasonal event
  * Returns the event based on current date
- * @returns {Object|null} Active event configuration or null if no event is active
+ * @returns {SeasonalEvent|null} Active event configuration or null if no event is active
  */
 export function getActiveEvent() {
   const currentDate = getCurrentDate();

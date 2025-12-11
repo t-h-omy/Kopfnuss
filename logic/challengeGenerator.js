@@ -6,6 +6,23 @@ import { CONFIG, CHALLENGE_TYPES } from '../data/balancingLoader.js';
 import { saveChallenges, loadChallenges, getTodayDate, saveKopfnussChallenge, loadKopfnussChallenge, saveZeitChallenge, loadZeitChallenge } from './storageManager.js';
 
 /**
+ * @typedef {Object} Challenge
+ * @property {string} id - Unique identifier (e.g., "challenge_0_addition")
+ * @property {string} type - Operation type (addition, subtraction, multiplication, division, squared)
+ * @property {string} name - Display name of the challenge
+ * @property {string} icon - Emoji icon for the challenge
+ * @property {string} difficulty - Difficulty level (easy, medium, hard)
+ * @property {Task[]} tasks - Array of task objects
+ * @property {string} state - Current state (locked, available, in_progress, completed, failed, super_locked, super_available, super_in_progress, super_completed, super_failed)
+ * @property {number} errors - Number of errors made in this challenge
+ * @property {number} currentTaskIndex - Index of the current task (0-based)
+ * @property {string|null} completedAt - ISO timestamp when completed, or null
+ * @property {string|null} startedAt - ISO timestamp when started, or null
+ * @property {boolean} isSuperChallenge - Whether this is a super challenge
+ * @property {string|null} superChallengeResult - Result of super challenge: 'success', 'failed', or null
+ */
+
+/**
  * Challenge states
  */
 export const CHALLENGE_STATE = {
@@ -63,7 +80,7 @@ function generateTasksForChallenge(operationType, count = CONFIG.TASKS_PER_CHALL
  * @param {string} operationType - Type of operation
  * @param {number} index - Challenge index (0-4)
  * @param {boolean} isSuperChallenge - Whether this is a super challenge
- * @returns {Object} Challenge object
+ * @returns {Challenge} Challenge object
  */
 function createChallenge(operationType, index, isSuperChallenge = false) {
   // Determine initial state based on index and super challenge status
@@ -109,7 +126,7 @@ function shuffleArray(array) {
  * Challenges are randomly selected from all available types (max one of each type)
  * and shuffled so order varies each day
  * Has a configurable chance (CONFIG.SUPER_CHALLENGE_SPAWN_CHANCE) to include one Super Challenge
- * @returns {Array} Array of 5 challenge objects
+ * @returns {Challenge[]} Array of 5 challenge objects
  */
 export function generateDailyChallenges() {
   const allChallengeTypes = [
@@ -141,7 +158,7 @@ export function generateDailyChallenges() {
 /**
  * Get or create today's challenges
  * If challenges exist for today, load them. Otherwise, generate new ones.
- * @returns {Array} Array of challenge objects
+ * @returns {Challenge[]} Array of challenge objects
  */
 export function getTodaysChallenges() {
   const today = getTodayDate();
@@ -182,7 +199,7 @@ export function updateChallenge(challengeIndex, updates) {
 /**
  * Get a specific challenge by index
  * @param {number} challengeIndex - Index of challenge
- * @returns {Object|null} Challenge object or null
+ * @returns {Challenge|null} Challenge object or null
  */
 export function getChallenge(challengeIndex) {
   const challenges = getTodaysChallenges();
@@ -198,7 +215,7 @@ export function getChallenge(challengeIndex) {
 /**
  * Reset all challenges (generate new ones for today)
  * Also regenerates premium challenges (Zeit-Challenge or Kopfnuss-Challenge) with mutually exclusive spawn
- * @returns {Array} New array of challenges
+ * @returns {Challenge[]} New array of challenges
  */
 export function resetChallenges() {
   const challenges = generateDailyChallenges();
