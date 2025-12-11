@@ -252,6 +252,7 @@ export function completeCurrentChallenge() {
   // Handle streak progression
   let streakUnfrozenResult = null;
   let streakIncrementedResult = null;
+  let milestoneReached = false;
   const streak = loadStreak();
   
   if (streak.isFrozen) {
@@ -259,10 +260,14 @@ export function completeCurrentChallenge() {
     streakUnfrozenResult = unfreezeStreakByChallenge();
     if (streakUnfrozenResult.wasUnfrozen) {
       streakUnfrozenDuringChallenge = true;
+      milestoneReached = streakUnfrozenResult.milestoneReached || false;
     }
   } else if (!streak.lossReason) {
     // If not frozen and no loss reason, increment streak by challenge completion
     streakIncrementedResult = incrementStreakByChallenge();
+    if (streakIncrementedResult.wasIncremented) {
+      milestoneReached = streakIncrementedResult.milestoneReached || false;
+    }
   }
   // Note: If there's a loss reason (expired streak), don't auto-increment
   // The player needs to handle this via the popup first
@@ -279,6 +284,7 @@ export function completeCurrentChallenge() {
     progress: progress,
     streakUnfrozen: streakUnfrozenResult && streakUnfrozenResult.wasUnfrozen ? streakUnfrozenResult.newStreak : null,
     streakIncremented: streakIncrementedResult && streakIncrementedResult.wasIncremented ? streakIncrementedResult.newStreak : null,
+    milestoneReached: milestoneReached,
     // Super challenge specific results
     isSuperChallenge: challenge?.isSuperChallenge || false,
     superChallengeSuccess: superChallengeSuccess,
