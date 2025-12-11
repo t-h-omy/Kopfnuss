@@ -17,6 +17,7 @@ import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visua
 import { getChallenge } from './challengeGenerator.js';
 import { playAnswerFeedback, playChallengeComplete } from './audioBootstrap.js';
 import { VERSION } from '../version.js';
+import { logError, logWarn } from './logging.js';
 
 // Module state
 let taskFlowState = null;
@@ -108,7 +109,7 @@ export function showTaskScreenForChallenge(container, challengeIndex, onBackClic
   taskFlowState = initializeTaskFlow(challengeIndex);
   
   if (!taskFlowState) {
-    console.error('Failed to initialize task flow');
+    logError('Failed to initialize task flow');
     showScreen('challenges');
     return;
   }
@@ -132,7 +133,7 @@ export function showTaskScreenForChallenge(container, challengeIndex, onBackClic
  * @param {number} challengeIndex - Index of challenge
  */
 export function initTaskScreen(challengeIndex) {
-  console.warn('initTaskScreen is deprecated. This should not be called directly.');
+  logWarn('initTaskScreen is deprecated. This should not be called directly.');
   // This function is kept for backwards compatibility but shouldn't be used
   // The container and back button handling should come from showTaskScreenForChallenge
 }
@@ -267,7 +268,7 @@ function handleChallengeCompletion() {
   const results = completeCurrentChallenge();
   
   if (!results) {
-    console.error('Failed to complete challenge');
+    logError('Failed to complete challenge');
     return;
   }
   

@@ -2,6 +2,8 @@
 // Bridge module for communication between logic modules and main UI
 // This decouples logic modules from directly importing main.js
 
+import { logError } from './logging.js';
+
 // Module-level state (moved from main.js)
 let currentScreen = null;
 let currentChallengeIndex = null;
@@ -77,7 +79,7 @@ export function showScreen(screenName, data = null) {
   const mainContent = document.getElementById('main-content');
   
   if (!mainContent) {
-    console.error('Main content element not found');
+    logError('Main content element not found');
     return;
   }
   
@@ -136,7 +138,7 @@ export function showScreen(screenName, data = null) {
       if (loadStatsScreenFn) loadStatsScreenFn(mainContent);
       break;
     default:
-      console.error('Unknown screen:', screenName);
+      logError('Unknown screen:', screenName);
   }
 }
 

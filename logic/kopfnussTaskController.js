@@ -16,6 +16,7 @@ import {
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { playAnswerFeedback, playChallengeComplete, playDiamondEarn, playChallengeFailed } from './audioBootstrap.js';
+import { logError } from './logging.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -61,7 +62,7 @@ export function initKopfnussTaskScreen() {
   kopfnussState = getTodaysKopfnussChallenge();
   
   if (!kopfnussState || !kopfnussState.spawned || kopfnussState.state !== KOPFNUSS_STATE.IN_PROGRESS) {
-    console.error('Kopfnuss Challenge not in progress');
+    logError('Kopfnuss Challenge not in progress');
     showScreen('challenges');
     return;
   }

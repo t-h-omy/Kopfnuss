@@ -18,6 +18,7 @@ import {
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
 import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed, playDiamondEarn } from './audioBootstrap.js';
+import { logError } from './logging.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -80,7 +81,7 @@ export function initZeitChallengeTaskScreen() {
   zeitState = getTodaysZeitChallenge();
   
   if (!zeitState || !zeitState.spawned || zeitState.state !== ZEIT_CHALLENGE_STATE.IN_PROGRESS) {
-    console.error('Zeit-Challenge not in progress, state:', zeitState?.state);
+    logError('Zeit-Challenge not in progress, state:', zeitState?.state);
     showScreen('challenges');
     return;
   }
@@ -570,7 +571,7 @@ export function cleanupZeitChallengeTaskScreen() {
   try {
     stopZeitChallengeMusic();
   } catch (e) {
-    console.error('Error stopping Zeit challenge music:', e);
+    logError('Error stopping Zeit challenge music:', e);
   }
   
   // Reset all module-level variables to prevent state leakage
