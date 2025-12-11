@@ -8,7 +8,8 @@ import {
   KOPFNUSS_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
-import { showScreen, notifyKopfnussChallengeResult } from '../main.js';
+import { showScreen } from './uiBridge.js';
+import { notifyKopfnussChallengeResult } from '../main.js';
 import { 
   isEventActive, 
   getActiveEvent, 

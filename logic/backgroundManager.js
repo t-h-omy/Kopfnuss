@@ -2,6 +2,7 @@
 // Manages background unlocking, selection, and display
 
 import { BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
+import { logWarn } from './logging.js';
 import { 
   loadUnlockedBackgrounds, 
   saveUnlockedBackgrounds,
@@ -17,6 +18,31 @@ import {
 } from './storageManager.js';
 
 /**
+ * @typedef {Object} BackgroundRequirements
+ * @property {number} [minTasksSinceStart] - Minimum tasks since app start (for standard backgrounds)
+ * @property {number} [minTasksSinceEventStart] - Minimum tasks since event start (for seasonal backgrounds)
+ */
+
+/**
+ * @typedef {Object} Background
+ * @property {string} id - Unique identifier for the background
+ * @property {string} name - Display name of the background
+ * @property {string} file - File path to the background image
+ * @property {string} category - Category: 'standard' or 'seasonal'
+ * @property {number} cost - Cost in diamonds or seasonal currency
+ * @property {string} currency - Currency type: 'diamonds' or 'seasonal'
+ * @property {BackgroundRequirements} requirements - Unlock requirements
+ * @property {boolean} active - Whether this background is currently active in the game
+ * @property {boolean} [isDefault] - Whether this is the default background
+ * @property {string} [event] - Event ID for seasonal backgrounds
+ * @property {boolean} [isSeasonal] - Whether this is a seasonal background (legacy format)
+ * @property {number} [tasksRequired] - Number of tasks required (legacy format)
+ * @property {string} state - Current state (locked, purchasable, unlocked, active) - computed field
+ * @property {number} [tasksRemaining] - Tasks remaining to unlock (computed field)
+ * @property {boolean} [isNewlyPurchasable] - Whether this is newly purchasable (computed field)
+ */
+
+/**
  * Background states for shop display
  */
 export const BACKGROUND_STATE = {
@@ -29,7 +55,7 @@ export const BACKGROUND_STATE = {
 /**
  * Convert unified background schema to legacy format for backward compatibility
  * @param {Object} unifiedBg - Background in new unified schema
- * @returns {Object} Background in legacy format
+ * @returns {Background} Background in legacy format
  */
 function convertToLegacyFormat(unifiedBg) {
   const legacy = {
@@ -66,7 +92,7 @@ function getBackgroundsSource() {
   
   // Safety check: ensure BACKGROUNDS_UNIFIED is an array
   if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
-    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    logWarn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
     return backgrounds;
   }
   
@@ -90,7 +116,7 @@ function getSeasonalBackgroundsSource() {
   
   // Safety check: ensure BACKGROUNDS_UNIFIED is an array
   if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
-    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    logWarn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
     return backgrounds;
   }
   
@@ -151,7 +177,7 @@ export function getTasksRemaining(background) {
 /**
  * Get all available backgrounds with their unlock status and state
  * Backgrounds are sorted by tasksRequired (lowest first)
- * @returns {Array<Object>} Array of background objects with unlock status and state
+ * @returns {Background[]} Array of background objects with unlock status and state
  */
 export function getAllBackgrounds() {
   const unlockedIds = loadUnlockedBackgrounds();
@@ -243,7 +269,7 @@ export function updateKnownPurchasableBackgrounds() {
 
 /**
  * Get the currently selected background
- * @returns {Object} The selected background object
+ * @returns {Background} The selected background object
  */
 export function getSelectedBackground() {
   const selectedId = loadSelectedBackground();
@@ -424,7 +450,7 @@ export function applySelectedBackground() {
 /**
  * Get background info for display
  * @param {string} backgroundId - The ID of the background
- * @returns {Object|null} Background info or null if not found
+ * @returns {Background|null} Background info or null if not found
  */
 export function getBackgroundInfo(backgroundId) {
   const backgroundsSource = getBackgroundsSource();

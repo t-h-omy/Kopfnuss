@@ -84,6 +84,35 @@ import {
   playDiamondEarn,
   playButtonTap
 } from './logic/audioBootstrap.js';
+import { 
+  showScreen, 
+  notifyStreakUnfrozen, 
+  notifyStreakIncremented, 
+  notifySuperChallengeResult,
+  initializeUIBridge,
+  getScreenState,
+  setScreenState
+} from './logic/uiBridge.js';
+import { 
+  initHeaderUI,
+  updateHeaderStreakDisplay, 
+  updateHeaderDiamondsDisplay,
+  updateDiamondProgressText,
+  updateHeaderSeasonalDisplay
+} from './ui/headerUI.js';
+import { 
+  initShopUI,
+  showBackgroundShopPopup, 
+  closeBackgroundShopPopup,
+  refreshShopUI,
+  updateShopNewBadgeState
+} from './ui/shopUI.js';
+import { 
+  showEventStartPopup, 
+  showEventInfoPopup, 
+  showEventEndPopup
+} from './ui/eventPopupUI.js';
+import { logDebug, logInfo, logError } from './logic/logging.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -158,8 +187,8 @@ if ('serviceWorker' in navigator) {
     // Register SW with updateViaCache: 'none' to bypass HTTP cache for SW file
     navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
       .then((registration) => {
-        console.log('ServiceWorker registriert:', registration.scope);
-        console.log('App Version:', VERSION.string);
+        logDebug('ServiceWorker registriert:', registration.scope);
+        logDebug('App Version:', VERSION.string);
         
         // Force update check immediately
         registration.update();
@@ -167,16 +196,16 @@ if ('serviceWorker' in navigator) {
         // Prüfe auf Updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
-          console.log('Neuer ServiceWorker gefunden, installiere...');
+          logDebug('Neuer ServiceWorker gefunden, installiere...');
           
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Neue Version verfügbar! Cache wird geleert und Seite neu geladen...');
+              logDebug('Neue Version verfügbar! Cache wird geleert und Seite neu geladen...');
               // Clear all caches before reloading
               caches.keys().then((cacheNames) => {
                 return Promise.all(
                   cacheNames.map((cacheName) => {
-                    console.log('Lösche Cache:', cacheName);
+                    logDebug('Lösche Cache:', cacheName);
                     return caches.delete(cacheName);
                   })
                 );
@@ -184,7 +213,7 @@ if ('serviceWorker' in navigator) {
                 // Tell SW to skip waiting
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
               }).catch((error) => {
-                console.error('Cache löschen fehlgeschlagen:', error);
+                logError('Cache löschen fehlgeschlagen:', error);
                 // Still try to skip waiting even if cache deletion failed
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
               });
@@ -193,7 +222,7 @@ if ('serviceWorker' in navigator) {
         });
       })
       .catch((error) => {
-        console.error('ServiceWorker Registrierung fehlgeschlagen:', error);
+        logError('ServiceWorker Registrierung fehlgeschlagen:', error);
       });
   });
   
@@ -203,22 +232,14 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return;
     refreshing = true;
-    console.log('ServiceWorker Controller gewechselt, lade Seite neu...');
+    logDebug('ServiceWorker Controller gewechselt, lade Seite neu...');
     window.location.reload();
   });
 }
 
-// Global state for current screen and data
-let currentScreen = null;
-let currentChallengeIndex = null;
-let returningFromTaskScreen = false;
-let returningFromKopfnussScreen = false; // Track if returning from Kopfnuss Challenge
-let returningFromZeitChallengeScreen = false; // Track if returning from Zeit-Challenge
-let streakWasUnfrozen = false; // Track if streak was unfrozen during challenge completion
-let streakWasIncremented = false; // Track if streak was incremented during challenge completion
+// Global state for current screen and data (state managed by uiBridge for screen navigation)
 let devDiamondsEarned = 0; // Track diamonds earned from dev settings to show popup when settings close
 let lastUsedGraphicIndex = -1; // Track last used background graphic for variety
-let superChallengeResult = null; // Track super challenge result {success: boolean, awardedDiamond: boolean, seasonalCurrencyAwarded: object|null}
 let kopfnussChallengeResult = null; // Track Kopfnuss Challenge result {success: boolean, reward: object|null}
 let zeitChallengeResult = null; // Track Zeit-Challenge result {success: boolean, reward: object|null}
 
@@ -243,30 +264,7 @@ function preloadCelebrationImages() {
 // Preload images on module load
 preloadCelebrationImages();
 
-/**
- * Update the header streak display with new values
- * @param {number} streakCount - The new streak count
- * @param {boolean} isFrozen - Whether the streak is frozen
- */
-function updateHeaderStreakDisplay(streakCount, isFrozen = false) {
-  const streakCapsule = document.querySelector('.header-stats .stat-capsule:first-child');
-  const streakIcon = streakCapsule?.querySelector('.stat-icon');
-  const streakValue = streakCapsule?.querySelector('.stat-value');
-  
-  if (streakValue) {
-    streakValue.textContent = streakCount;
-  }
-  
-  if (streakCapsule && streakIcon) {
-    if (isFrozen) {
-      streakCapsule.classList.add('streak-frozen');
-      streakIcon.textContent = '🧊';
-    } else {
-      streakCapsule.classList.remove('streak-frozen');
-      streakIcon.textContent = '🔥';
-    }
-  }
-}
+
 
 /**
  * Find the index of the currently unlocked (available or in_progress) challenge
@@ -295,78 +293,6 @@ function findCurrentUnlockedChallengeIndex(challenges) {
 }
 
 /**
- * Show a screen by name
- * @param {string} screenName - Name of screen to show ('challenges', 'taskScreen', 'stats', 'kopfnussTaskScreen', 'zeitChallengeTaskScreen')
- * @param {*} data - Optional data to pass to screen (e.g., challengeIndex)
- */
-export function showScreen(screenName, data = null) {
-  const mainContent = document.getElementById('main-content');
-  
-  if (!mainContent) {
-    console.error('Main content element not found');
-    return;
-  }
-  
-  // Track if we're returning from task screen to challenges
-  if (currentScreen === 'taskScreen' && screenName === 'challenges') {
-    returningFromTaskScreen = true;
-  }
-  
-  // Track if we're returning from Kopfnuss task screen to challenges
-  if (currentScreen === 'kopfnussTaskScreen' && screenName === 'challenges') {
-    returningFromKopfnussScreen = true;
-  }
-  
-  // Track if we're returning from Zeit-Challenge task screen to challenges
-  if (currentScreen === 'zeitChallengeTaskScreen' && screenName === 'challenges') {
-    returningFromZeitChallengeScreen = true;
-    // Cleanup Zeit challenge when leaving
-    import('./logic/zeitChallengeTaskController.js').then(module => {
-      if (module.cleanupZeitChallengeTaskScreen) {
-        module.cleanupZeitChallengeTaskScreen();
-      }
-    }).catch(() => {
-      // Silently ignore if module not loaded
-    });
-  }
-  
-  // Store current screen
-  currentScreen = screenName;
-  
-  // Clear current content
-  mainContent.innerHTML = '';
-  
-  // Manage body class for task screen keyboard stability
-  if (screenName === 'taskScreen' || screenName === 'kopfnussTaskScreen' || screenName === 'zeitChallengeTaskScreen') {
-    document.body.classList.add('task-screen-active');
-  } else {
-    document.body.classList.remove('task-screen-active');
-  }
-  
-  // Route to appropriate screen
-  switch (screenName) {
-    case 'challenges':
-      loadChallengesScreen(mainContent);
-      break;
-    case 'taskScreen':
-      currentChallengeIndex = data;
-      loadTaskScreen(mainContent, data);
-      break;
-    case 'kopfnussTaskScreen':
-      loadKopfnussTaskScreen(mainContent);
-      break;
-    case 'zeitChallengeTaskScreen':
-      loadZeitChallengeTaskScreen(mainContent);
-      break;
-    case 'stats':
-      loadStatsScreen(mainContent);
-      break;
-    default:
-      console.error('Unknown screen:', screenName);
-  }
-}
-
-/**
  * Load challenges screen
  * @param {HTMLElement} container - Container element
  */
@@ -381,27 +307,30 @@ function loadChallengesScreen(container) {
   const diamondResult = updateDiamonds();
   const diamondInfo = getDiamondInfo();
   
+  // Get screen state from uiBridge
+  const screenState = getScreenState();
+  
   // Store flag value and challenge index for animation before resetting
-  const shouldAnimateBackground = returningFromTaskScreen;
-  const justCompletedChallengeIndex = currentChallengeIndex;
+  const shouldAnimateBackground = screenState.returningFromTaskScreen;
+  const justCompletedChallengeIndex = screenState.currentChallengeIndex;
   
   // Handle popup display when returning from task screen
   // Queue popups to show sequentially: first super challenge result, then diamond, then streak, then background unlock
   // After all popups close, scroll to the current unlocked challenge or reward button
-  if (returningFromTaskScreen) {
-    returningFromTaskScreen = false;
+  if (screenState.returningFromTaskScreen) {
+    setScreenState({ returningFromTaskScreen: false });
     
     // Check for super challenge result
-    const showSuperChallengeSuccess = superChallengeResult && superChallengeResult.success;
-    const showSuperChallengeFailure = superChallengeResult && !superChallengeResult.success;
-    const storedSuperChallengeResult = superChallengeResult;
-    superChallengeResult = null; // Reset the flag
+    const showSuperChallengeSuccess = screenState.superChallengeResult && screenState.superChallengeResult.success;
+    const showSuperChallengeFailure = screenState.superChallengeResult && !screenState.superChallengeResult.success;
+    const storedSuperChallengeResult = screenState.superChallengeResult;
+    setScreenState({ superChallengeResult: null }); // Reset the flag
     
     const showDiamond = diamondResult.awarded > 0;
     // Check if streak was unfrozen during challenge (streakWasUnfrozen is the new streak value or false)
-    const showUnfrozen = typeof streakWasUnfrozen === 'number' && streakWasUnfrozen > 0;
+    const showUnfrozen = typeof screenState.streakWasUnfrozen === 'number' && screenState.streakWasUnfrozen > 0;
     // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
-    const showStreakIncremented = typeof streakWasIncremented === 'number' && streakWasIncremented > 0 && !showUnfrozen;
+    const showStreakIncremented = typeof screenState.streakWasIncremented === 'number' && screenState.streakWasIncremented > 0 && !showUnfrozen;
     
     // Check for newly purchasable backgrounds (regular)
     const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
@@ -414,10 +343,9 @@ function loadChallengesScreen(container) {
     const newlyPurchasableSeasonalBackground = seasonalBackgroundUnlockResult.firstNewBackground;
     
     // Reset the flags
-    const unfrozenStreakValue = streakWasUnfrozen;
-    const incrementedStreakValue = streakWasIncremented;
-    streakWasUnfrozen = false;
-    streakWasIncremented = false;
+    const unfrozenStreakValue = screenState.streakWasUnfrozen;
+    const incrementedStreakValue = screenState.streakWasIncremented;
+    setScreenState({ streakWasUnfrozen: false, streakWasIncremented: false });
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
@@ -473,8 +401,8 @@ function loadChallengesScreen(container) {
   }
   
   // Handle popup display when returning from Kopfnuss task screen
-  if (returningFromKopfnussScreen) {
-    returningFromKopfnussScreen = false;
+  if (screenState.returningFromKopfnussScreen) {
+    setScreenState({ returningFromKopfnussScreen: false });
     
     // Check for Kopfnuss Challenge result
     const showKopfnussSuccess = kopfnussChallengeResult && kopfnussChallengeResult.success;
@@ -490,8 +418,8 @@ function loadChallengesScreen(container) {
   }
   
   // Handle popup display when returning from Zeit-Challenge task screen
-  if (returningFromZeitChallengeScreen) {
-    returningFromZeitChallengeScreen = false;
+  if (screenState.returningFromZeitChallengeScreen) {
+    setScreenState({ returningFromZeitChallengeScreen: false });
     
     // Check for Zeit-Challenge result
     const showZeitSuccess = zeitChallengeResult && zeitChallengeResult.success;
@@ -1132,7 +1060,7 @@ function drawConnectionPaths(svg, challengesList, nodePositions) {
       svg.appendChild(path);
     }
   } catch (error) {
-    console.error('Error drawing connection paths:', error);
+    logError('Error drawing connection paths:', error);
   }
 }
 
@@ -1145,42 +1073,23 @@ async function loadTaskScreen(container, challengeIndex) {
   // Update app height when entering task screen to ensure proper sizing
   setAppHeight();
   
-  container.innerHTML = `
-    <div class="task-screen" id="task-screen-content">
-      <div class="task-screen-main">
-        <div class="task-header">
-          <button id="back-button" aria-label="Zurück">←</button>
-          <h2>Challenge ${challengeIndex + 1}</h2>
-          <div class="task-header-spacer"></div>
-        </div>
-        <div class="task-progress" id="task-progress"></div>
-        <div class="task-content">
-          <div class="task-question" id="task-question"></div>
-          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
-          <button id="submit-answer">Prüfen</button>
-        </div>
-        <div class="task-feedback" id="task-feedback"></div>
-      </div>
-      <div class="task-screen-footer">v${VERSION.string}</div>
-    </div>
-  `;
-  
-  // Add event listener for back button with confirmation
-  const backButton = document.getElementById('back-button');
-  backButton.addEventListener('click', () => {
-    showTaskExitConfirmationPopup(() => {
-      // Stop super challenge sparkles if running
-      stopSuperChallengeSparkles();
-      showScreen('challenges');
-    }, 'standard');
-  });
-  
-  // Initialize task screen controller
+  // Load task screen controller and show task screen
   try {
-    const { initTaskScreen } = await import('./logic/taskScreenController.js');
-    initTaskScreen(challengeIndex);
+    const { showTaskScreenForChallenge } = await import('./logic/taskScreenController.js');
+    
+    // Define back button callback with confirmation
+    const handleBackClick = () => {
+      showTaskExitConfirmationPopup(() => {
+        // Stop super challenge sparkles if running
+        stopSuperChallengeSparkles();
+        showScreen('challenges');
+      }, 'standard');
+    };
+    
+    // Task screen controller now owns all DOM operations
+    showTaskScreenForChallenge(container, challengeIndex, handleBackClick);
   } catch (error) {
-    console.error('Error loading task screen controller:', error);
+    logError('Error loading task screen controller:', error);
   }
 }
 
@@ -1225,7 +1134,7 @@ async function loadKopfnussTaskScreen(container) {
     const { initKopfnussTaskScreen } = await import('./logic/kopfnussTaskController.js');
     initKopfnussTaskScreen();
   } catch (error) {
-    console.error('Error loading Kopfnuss task screen controller:', error);
+    logError('Error loading Kopfnuss task screen controller:', error);
   }
 }
 
@@ -1283,7 +1192,7 @@ async function loadZeitChallengeTaskScreen(container) {
     const { initZeitChallengeTaskScreen } = await import('./logic/zeitChallengeTaskController.js');
     initZeitChallengeTaskScreen();
   } catch (error) {
-    console.error('Error loading Zeit-Challenge task screen controller:', error);
+    logError('Error loading Zeit-Challenge task screen controller:', error);
   }
 }
 
@@ -1865,35 +1774,6 @@ function checkAndShowStreakPopups(onAllPopupsClosed = null) {
   
   const streakStatus = checkStreakStatusOnLoad();
   showStreakPopupForStatus(streakStatus, onAllPopupsClosed);
-}
-
-/**
- * Notify that streak was unfrozen by completing a challenge
- * This sets a flag that will trigger the unfreeze popup when returning to challenges screen
- * @param {number} newStreak - New streak count after unfreezing
- */
-export function notifyStreakUnfrozen(newStreak) {
-  streakWasUnfrozen = newStreak;
-}
-
-/**
- * Notify that streak was incremented by completing a challenge
- * This sets a flag that will trigger the streak celebration popup when returning to challenges screen
- * @param {number} newStreak - New streak count after incrementing
- */
-export function notifyStreakIncremented(newStreak) {
-  streakWasIncremented = newStreak;
-}
-
-/**
- * Notify super challenge result
- * This sets a flag that will trigger the appropriate popup when returning to challenges screen
- * @param {boolean} success - Whether the super challenge was completed without errors
- * @param {boolean} awardedDiamond - Whether a diamond was awarded
- * @param {Object|null} seasonalCurrencyAwarded - Seasonal currency info if awarded
- */
-export function notifySuperChallengeResult(success, awardedDiamond, seasonalCurrencyAwarded = null) {
-  superChallengeResult = { success, awardedDiamond, seasonalCurrencyAwarded };
 }
 
 /**
@@ -2623,173 +2503,7 @@ export function notifyZeitChallengeResult(success, reward = null) {
   zeitChallengeResult = { success, reward };
 }
 
-/**
- * Show seasonal event start popup
- * Displayed on first app launch during an active event
- * @param {Function} onClose - Callback when popup closes
- */
-function showEventStartPopup(onClose = null) {
-  const activeEvent = getActiveEvent();
-  if (!activeEvent) {
-    if (onClose) onClose();
-    return;
-  }
-  
-  const daysRemaining = getDaysUntilEventEnd();
-  const dayText = daysRemaining === 1 ? 'Tag' : 'Tage';
-  
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay event-popup-overlay';
-  overlay.id = 'event-start-popup-overlay';
-  
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card event-popup-card event-start-card';
-  
-  popupCard.innerHTML = `
-    <div class="event-emoticon-large">${activeEvent.emoticon}</div>
-    <h2>${activeEvent.popupTitle}</h2>
-    <p class="event-description">${activeEvent.popupDescription}</p>
-    <div class="event-info-section">
-      <p class="event-how-to">Schließe Super Challenges ab, um <strong>${activeEvent.currencyName}</strong> zu sammeln!</p>
-      <p class="event-unlock-info">Schalte besondere saisonale Hintergründe frei!</p>
-    </div>
-    <div class="event-end-date">
-      <span>⏰ Noch <strong>${daysRemaining} ${dayText}</strong></span>
-    </div>
-    <button id="event-start-close-button" class="btn-primary btn-event">${activeEvent.emoticon} Hol ich mir!</button>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  createConfettiEffect();
-  
-  const closeButton = document.getElementById('event-start-close-button');
-  closeButton.addEventListener('click', () => {
-    markEventStartPopupShown();
-    overlay.remove();
-    removeConfettiPieces();
-    if (onClose && typeof onClose === 'function') {
-      onClose();
-    }
-    processPopupQueue();
-  });
-}
 
-/**
- * Show event info popup when countdown capsule is tapped
- * Similar to event start popup but doesn't mark as shown (can be viewed multiple times)
- * Uses popup queue system for sequential display
- */
-function showEventInfoPopup() {
-  const activeEvent = getActiveEvent();
-  if (!activeEvent) {
-    processPopupQueue();
-    return;
-  }
-  
-  const daysRemaining = getDaysUntilEventEnd();
-  const dayText = daysRemaining === 1 ? 'Tag' : 'Tage';
-  const seasonalCurrency = getSeasonalCurrency();
-  const seasonalTasks = getSeasonalTaskCount();
-  
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay event-popup-overlay';
-  overlay.id = 'event-info-popup-overlay';
-  
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card event-popup-card event-info-card';
-  
-  popupCard.innerHTML = `
-    <div class="event-emoticon-large">${activeEvent.emoticon}</div>
-    <h2>${activeEvent.popupTitle}</h2>
-    <p class="event-description">${activeEvent.popupDescription}</p>
-    <div class="event-info-section">
-      <div class="event-stats">
-        <div class="event-stat">
-          <span class="event-stat-icon">${activeEvent.emoticon}</span>
-          <span class="event-stat-value">${seasonalCurrency}</span>
-          <span class="event-stat-label">${activeEvent.currencyName}</span>
-        </div>
-        <div class="event-stat">
-          <span class="event-stat-icon">✅</span>
-          <span class="event-stat-value">${seasonalTasks}</span>
-          <span class="event-stat-label">Aufgaben</span>
-        </div>
-      </div>
-      <p class="event-how-to">Schließe Super Challenges ab, um <strong>${activeEvent.currencyName}</strong> zu sammeln!</p>
-    </div>
-    <div class="event-end-date">
-      <span>⏰ Noch <strong>${daysRemaining} ${dayText}</strong></span>
-    </div>
-    <button id="event-info-close-button" class="btn-primary btn-event">${activeEvent.emoticon} Weiter!</button>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  const closeButton = document.getElementById('event-info-close-button');
-  closeButton.addEventListener('click', () => {
-    overlay.remove();
-    processPopupQueue();
-  });
-}
-
-/**
- * Show seasonal event end popup
- * Displayed on first app launch after an event ends
- * @param {Object} event - The event that ended
- * @param {boolean} backgroundWasReset - Whether a seasonal background was reset
- * @param {Function} onClose - Callback when popup closes
- */
-function showEventEndPopup(event, backgroundWasReset = false, onClose = null) {
-  if (!event) {
-    if (onClose) onClose();
-    return;
-  }
-  
-  // Clear all seasonal data for this event (currency, tasks, unlocked backgrounds)
-  // This ensures the player must earn everything again next time the event occurs
-  clearEventData(event.id);
-  
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay event-popup-overlay';
-  overlay.id = 'event-end-popup-overlay';
-  
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card event-popup-card event-end-card';
-  
-  let backgroundResetText = '';
-  if (backgroundWasReset) {
-    backgroundResetText = '<p class="event-background-reset">Dein saisonaler Hintergrund wurde auf den Standard zurückgesetzt.</p>';
-  }
-  
-  popupCard.innerHTML = `
-    <div class="event-emoticon-large">${event.emoticon}</div>
-    <h2>${event.name}-Event beendet</h2>
-    <p class="event-end-info">Das ${event.name}-Event ist vorbei!</p>
-    <div class="event-end-details">
-      <p>• Deine ${event.currencyName} wurden entfernt</p>
-      <p>• Saisonale Hintergründe sind nicht mehr verfügbar</p>
-      ${backgroundResetText}
-    </div>
-    <p class="event-next-time">Bis zum nächsten Mal!</p>
-    <button id="event-end-close-button" class="btn-primary">OK</button>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  const closeButton = document.getElementById('event-end-close-button');
-  closeButton.addEventListener('click', () => {
-    markEventEndPopupShown(event.id);
-    overlay.remove();
-    if (onClose && typeof onClose === 'function') {
-      onClose();
-    }
-    processPopupQueue();
-  });
-}
 
 /**
  * Show settings popup with options to reset data or generate new challenges
@@ -3528,17 +3242,6 @@ function setupDevSettingsListeners() {
  * Update the diamond progress text in the main UI
  * @param {number} totalTasksCompleted - Total tasks completed
  */
-function updateDiamondProgressText(totalTasksCompleted) {
-  const progressElement = document.querySelector('.diamond-progress-info');
-  if (progressElement) {
-    const tasksUntilNext = CONFIG.TASKS_PER_DIAMOND - (totalTasksCompleted % CONFIG.TASKS_PER_DIAMOND);
-    const progressText = tasksUntilNext === 1 
-      ? 'Noch 1 Aufgabe bis +1 💎' 
-      : `Noch ${tasksUntilNext} Aufgaben bis +1 💎`;
-    progressElement.textContent = progressText;
-  }
-}
-
 /**
  * Show brief dev feedback message
  * @param {string} message - Message to display
@@ -3668,690 +3371,6 @@ function executeFullReset() {
   showScreen('challenges');
 }
 
-/**
- * Show background shop popup with all available backgrounds
- * Supports four states: locked, purchasable, unlocked, active
- * Includes seasonal backgrounds section when an event is active
- * @param {string|null} scrollToBackgroundId - Optional background ID to scroll to and highlight
- */
-function showBackgroundShopPopup(scrollToBackgroundId = null) {
-  const backgrounds = getAllBackgrounds();
-  const selectedBg = getSelectedBackground();
-  const diamonds = loadDiamonds();
-  
-  // Get seasonal event info
-  const activeEvent = getActiveEvent();
-  const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
-  const seasonalBackgrounds = activeEvent ? getAllActiveSeasonalBackgrounds() : [];
-  
-  // Create popup overlay
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay background-shop-overlay';
-  overlay.id = 'background-shop-overlay';
-  
-  // Create popup card
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card background-shop-card';
-  
-  // Create header with diamond count and seasonal currency if active
-  let currencyDisplayHtml = `
-    <div class="background-shop-diamonds">
-      <span>💎</span>
-      <span id="shop-diamond-count">${diamonds}</span>
-    </div>
-  `;
-  
-  if (activeEvent) {
-    currencyDisplayHtml += `
-      <div class="background-shop-seasonal-currency">
-        <span>${activeEvent.emoticon}</span>
-        <span id="shop-seasonal-count">${seasonalCurrency}</span>
-      </div>
-    `;
-  }
-  
-  let headerHtml = `
-    <h2>🎨 Hintergründe</h2>
-    <div class="background-shop-header">
-      ${currencyDisplayHtml}
-    </div>
-  `;
-  
-  // Create seasonal section if event is active
-  let seasonalSectionHtml = '';
-  if (activeEvent && seasonalBackgrounds.length > 0) {
-    seasonalSectionHtml = `
-      <div class="seasonal-backgrounds-section">
-        <h3 class="seasonal-section-title">${activeEvent.emoticon} ${activeEvent.name}-Event</h3>
-        <div class="seasonal-backgrounds-grid">
-    `;
-    
-    seasonalBackgrounds.forEach(bg => {
-      const isUnlocked = bg.isUnlocked;
-      const canAfford = bg.canAfford;
-      const hasEnoughTasks = bg.hasEnoughTasks;
-      const isActive = selectedBg.id === bg.id;
-      
-      let tileClass = 'background-tile seasonal-tile';
-      let costHtml = '';
-      let statusHtml = '';
-      let lockIcon = '';
-      let newBadge = '';
-      
-      if (isActive) {
-        tileClass += ' state-active selected';
-        costHtml = '<span class="background-cost">✓ Aktiv</span>';
-        statusHtml = '<div class="background-selected-badge">Aktiv</div>';
-      } else if (isUnlocked) {
-        tileClass += ' state-unlocked unlocked';
-        costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
-      } else if (!hasEnoughTasks) {
-        tileClass += ' state-locked locked';
-        const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
-        costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
-        lockIcon = '<div class="background-lock-icon">🔒</div>';
-      } else {
-        tileClass += ' state-purchasable purchasable seasonal-purchasable';
-        costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
-        // Add NEW badge for newly purchasable seasonal backgrounds
-        if (bg.isNewlyPurchasable) {
-          newBadge = '<div class="background-new-badge">NEU</div>';
-        }
-      }
-      
-      seasonalSectionHtml += `
-        <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="true">
-          <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
-          ${lockIcon}
-          ${statusHtml}
-          ${newBadge}
-          <div class="background-info">
-            <div class="background-name">${bg.name}</div>
-            ${costHtml}
-          </div>
-        </div>
-      `;
-    });
-    
-    seasonalSectionHtml += `
-        </div>
-      </div>
-    `;
-  }
-  
-  // Create grid of regular background tiles
-  let tilesHtml = '<div class="regular-backgrounds-section">';
-  if (activeEvent) {
-    tilesHtml += '<h3 class="regular-section-title">🎨 Hintergründe</h3>';
-  }
-  tilesHtml += '<div class="backgrounds-grid" id="backgrounds-grid">';
-  
-  backgrounds.forEach(bg => {
-    const state = bg.state;
-    const isDefault = bg.isDefault;
-    
-    // Build tile class based on state
-    let tileClass = 'background-tile';
-    tileClass += ` state-${state}`;
-    
-    // Add legacy classes for compatibility
-    if (state === BACKGROUND_STATE.UNLOCKED || state === BACKGROUND_STATE.ACTIVE) {
-      tileClass += ' unlocked';
-    }
-    if (state === BACKGROUND_STATE.LOCKED) {
-      tileClass += ' locked';
-    }
-    if (state === BACKGROUND_STATE.ACTIVE) {
-      tileClass += ' selected';
-    }
-    if (state === BACKGROUND_STATE.PURCHASABLE) {
-      tileClass += ' purchasable';
-    }
-    
-    // Build cost/status HTML based on state
-    let costHtml = '';
-    if (isDefault) {
-      costHtml = '<span class="background-cost">✓ Gratis</span>';
-    } else if (state === BACKGROUND_STATE.ACTIVE || state === BACKGROUND_STATE.UNLOCKED) {
-      costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
-    } else if (state === BACKGROUND_STATE.PURCHASABLE) {
-      costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
-    } else if (state === BACKGROUND_STATE.LOCKED) {
-      const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
-      costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
-    }
-    
-    // Build badges and icons
-    let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
-    let lockIcon = state === BACKGROUND_STATE.LOCKED ? '<div class="background-lock-icon">🔒</div>' : '';
-    let newBadge = (state === BACKGROUND_STATE.PURCHASABLE && bg.isNewlyPurchasable) ? '<div class="background-new-badge">NEU</div>' : '';
-    
-    tilesHtml += `
-      <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="false">
-        <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
-        ${lockIcon}
-        ${activeBadge}
-        ${newBadge}
-        <div class="background-info">
-          <div class="background-name">${bg.name}</div>
-          ${costHtml}
-        </div>
-      </div>
-    `;
-  });
-  
-  tilesHtml += '</div></div>';
-  
-  popupCard.innerHTML = `
-    <div class="background-shop-content">
-      ${headerHtml}
-      ${seasonalSectionHtml}
-      ${tilesHtml}
-    </div>
-    <button id="close-background-shop" class="btn-secondary background-shop-close">Schließen</button>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  // Add click handlers for tiles (regular backgrounds)
-  const regularTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="false"]');
-  regularTiles.forEach(tile => {
-    const bgId = tile.dataset.bgId;
-    const bg = backgrounds.find(b => b.id === bgId);
-    
-    // Only make tiles clickable if they are purchasable, unlocked, or active
-    if (bg && bg.state !== BACKGROUND_STATE.LOCKED) {
-      tile.addEventListener('click', () => {
-        handleBackgroundTileClick(bgId);
-      });
-    }
-  });
-  
-  // Add click handlers for seasonal tiles
-  const seasonalTiles = popupCard.querySelectorAll('.background-tile[data-is-seasonal="true"]');
-  seasonalTiles.forEach(tile => {
-    const bgId = tile.dataset.bgId;
-    const bg = seasonalBackgrounds.find(b => b.id === bgId);
-    
-    // Only make tiles clickable if they are purchasable, unlocked, or active
-    if (bg && (bg.isUnlocked || bg.hasEnoughTasks)) {
-      tile.addEventListener('click', () => {
-        handleSeasonalBackgroundTileClick(bgId);
-      });
-    }
-  });
-  
-  // Add close button handler
-  const closeBtn = document.getElementById('close-background-shop');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closeBackgroundShopPopup);
-  }
-  
-  // Scroll to and highlight specific background if requested
-  if (scrollToBackgroundId) {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const targetTile = popupCard.querySelector(`.background-tile[data-bg-id="${scrollToBackgroundId}"]`);
-        if (targetTile) {
-          // Scroll tile into view
-          targetTile.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-          
-          // Apply highlight effect (same as reward button effect)
-          setTimeout(() => {
-            targetTile.classList.add('background-newly-purchasable-highlight');
-            
-            // Remove highlight after animation
-            setTimeout(() => {
-              targetTile.classList.remove('background-newly-purchasable-highlight');
-            }, ANIMATION_TIMING.REWARD_HIGHLIGHT_DURATION);
-          }, ANIMATION_TIMING.SCROLL_SETTLE_DELAY);
-        }
-      }, ANIMATION_TIMING.DOM_RENDER_DELAY);
-    });
-  }
-}
-
-/**
- * Close the background shop popup
- */
-function closeBackgroundShopPopup() {
-  const overlay = document.getElementById('background-shop-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-  // Mark shop as opened to hide NEW badge after closing
-  markShopOpenedWithNewBackgrounds();
-  // Update the list of known purchasable backgrounds (marks them as "seen")
-  updateKnownPurchasableBackgrounds();
-  updateKnownSeasonalPurchasableBackgrounds();
-  
-  // Update shop button to remove NEW badge class
-  const shopButton = document.getElementById('shop-button');
-  if (shopButton) {
-    shopButton.classList.remove('has-new-badge');
-    // Also remove the badge HTML
-    const badgeElement = shopButton.querySelector('.shop-new-badge');
-    if (badgeElement) {
-      badgeElement.remove();
-    }
-  }
-}
-
-/**
- * Handle click on a background tile
- * Only called for non-locked backgrounds (purchasable, unlocked, or active)
- * @param {string} bgId - The ID of the clicked background
- */
-function handleBackgroundTileClick(bgId) {
-  const backgrounds = getAllBackgrounds();
-  const bg = backgrounds.find(b => b.id === bgId);
-  if (!bg) return;
-  
-  const state = bg.state;
-  
-  if (state === BACKGROUND_STATE.ACTIVE) {
-    // Already active, do nothing
-    return;
-  }
-  
-  if (state === BACKGROUND_STATE.UNLOCKED) {
-    // Background is unlocked - show selection confirmation
-    showBackgroundSelectConfirmPopup(bg);
-  } else if (state === BACKGROUND_STATE.PURCHASABLE) {
-    // Background is purchasable - show unlock/purchase confirmation
-    showBackgroundUnlockConfirmPopup(bg);
-  }
-  // Note: LOCKED state tiles are not clickable, so no handler needed
-}
-
-/**
- * Handle click on a seasonal background tile
- * @param {string} bgId - The ID of the seasonal background
- */
-function handleSeasonalBackgroundTileClick(bgId) {
-  const seasonalBackgrounds = getAllActiveSeasonalBackgrounds();
-  const bg = seasonalBackgrounds.find(b => b.id === bgId);
-  if (!bg) return;
-  
-  const selectedBg = getSelectedBackground();
-  const isActive = selectedBg.id === bgId;
-  
-  if (isActive) {
-    // Already active, do nothing
-    return;
-  }
-  
-  if (bg.isUnlocked) {
-    // Seasonal background is unlocked - show selection confirmation
-    showSeasonalBackgroundSelectConfirmPopup(bg);
-  } else if (bg.hasEnoughTasks && bg.canAfford) {
-    // Seasonal background is purchasable - show unlock confirmation
-    showSeasonalBackgroundUnlockConfirmPopup(bg);
-  } else if (bg.hasEnoughTasks) {
-    // Has enough tasks but not enough currency
-    showNotEnoughSeasonalCurrencyHint();
-  }
-}
-
-/**
- * Show popup to confirm selecting a seasonal background
- * @param {Object} background - The seasonal background object
- */
-function showSeasonalBackgroundSelectConfirmPopup(background) {
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay background-confirm-overlay';
-  overlay.id = 'seasonal-background-select-confirm-overlay';
-  
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card background-confirm-card';
-  
-  popupCard.innerHTML = `
-    <h2>Hintergrund wählen?</h2>
-    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
-    <p><strong>${background.name}</strong></p>
-    <p class="seasonal-warning">⚠️ Dieser Hintergrund ist nur während des Events verfügbar.</p>
-    <div class="background-confirm-buttons">
-      <button id="confirm-seasonal-select-button" class="btn-primary">Ja</button>
-      <button id="cancel-seasonal-select-button" class="btn-secondary">Nein</button>
-    </div>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  const confirmBtn = document.getElementById('confirm-seasonal-select-button');
-  const cancelBtn = document.getElementById('cancel-seasonal-select-button');
-  
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      // Select the seasonal background
-      saveSelectedBackgroundToStorage(background.id);
-      applySeasonalBackground(background);
-      
-      overlay.remove();
-      closeBackgroundShopPopup();
-      showBackgroundShopPopup();
-    });
-  }
-  
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
-      overlay.remove();
-    });
-  }
-}
-
-/**
- * Show popup to confirm unlocking a seasonal background
- * @param {Object} background - The seasonal background object
- */
-function showSeasonalBackgroundUnlockConfirmPopup(background) {
-  const activeEvent = getActiveEvent();
-  if (!activeEvent) return;
-  
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay background-confirm-overlay';
-  overlay.id = 'seasonal-background-unlock-confirm-overlay';
-  
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card background-confirm-card';
-  
-  popupCard.innerHTML = `
-    <h2>Hintergrund freischalten?</h2>
-    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
-    <p><strong>${background.name}</strong></p>
-    <div class="background-confirm-cost seasonal-cost">
-      <span>${activeEvent.emoticon}</span>
-      <span>${background.cost} ${activeEvent.currencyName}</span>
-    </div>
-    <p class="seasonal-warning">⚠️ Dieser Hintergrund ist nur während des Events verfügbar.</p>
-    <div class="background-confirm-buttons">
-      <button id="confirm-seasonal-unlock-button" class="btn-primary">Freischalten</button>
-      <button id="cancel-seasonal-unlock-button" class="btn-secondary">Abbrechen</button>
-    </div>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  const confirmBtn = document.getElementById('confirm-seasonal-unlock-button');
-  const cancelBtn = document.getElementById('cancel-seasonal-unlock-button');
-  
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      const result = unlockSeasonalBackground(background.id);
-      
-      overlay.remove();
-      
-      if (result.success) {
-        closeBackgroundShopPopup();
-        showBackgroundShopPopup();
-        createConfettiEffect();
-      }
-    });
-  }
-  
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
-      overlay.remove();
-    });
-  }
-}
-
-/**
- * Apply a seasonal background
- * @param {Object} background - The seasonal background object
- */
-function applySeasonalBackground(background) {
-  const backgroundPath = `./assets/${background.file}`;
-  document.documentElement.style.setProperty('--selected-background', `url('${backgroundPath}')`);
-}
-
-/**
- * Show a hint when player doesn't have enough seasonal currency
- */
-function showNotEnoughSeasonalCurrencyHint() {
-  const activeEvent = getActiveEvent();
-  if (!activeEvent) return;
-  
-  // Remove any existing hint
-  const existingHint = document.querySelector('.not-enough-currency-hint');
-  if (existingHint) {
-    existingHint.remove();
-  }
-  
-  // Create hint element
-  const hint = document.createElement('div');
-  hint.className = 'not-enough-currency-hint not-enough-diamonds-hint';
-  hint.textContent = `${activeEvent.emoticon} Nicht genug ${activeEvent.currencyName}!`;
-  
-  document.body.appendChild(hint);
-  
-  // Remove after animation completes (3 seconds)
-  setTimeout(() => {
-    hint.remove();
-  }, 3000);
-}
-
-/**
- * Show popup to confirm unlocking a background
- * @param {Object} background - The background object to unlock
- */
-function showBackgroundUnlockConfirmPopup(background) {
-  const diamonds = loadDiamonds();
-  const canAfford = diamonds >= background.cost;
-  
-  // Create popup overlay
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay background-confirm-overlay';
-  overlay.id = 'background-unlock-confirm-overlay';
-  
-  // Create popup card
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card background-confirm-card';
-  
-  let buttonHtml;
-  let messageHtml = '';
-  
-  if (canAfford) {
-    buttonHtml = `
-      <button id="confirm-unlock-button" class="btn-primary">Freischalten</button>
-      <button id="cancel-unlock-button" class="btn-secondary">Abbrechen</button>
-    `;
-  } else {
-    buttonHtml = `
-      <button id="cancel-unlock-button" class="btn-secondary">OK</button>
-    `;
-    messageHtml = `<p class="no-diamond-text">Du brauchst ${background.cost - diamonds} weitere 💎</p>`;
-  }
-  
-  popupCard.innerHTML = `
-    <h2>Hintergrund freischalten?</h2>
-    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
-    <p><strong>${background.name}</strong></p>
-    <div class="background-confirm-cost">
-      <span>💎</span>
-      <span>${background.cost} Diamanten</span>
-    </div>
-    ${messageHtml}
-    <div class="background-confirm-buttons">
-      ${buttonHtml}
-    </div>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  // Add event listeners
-  const confirmBtn = document.getElementById('confirm-unlock-button');
-  const cancelBtn = document.getElementById('cancel-unlock-button');
-  
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      executeBackgroundUnlock(background.id);
-    });
-  }
-  
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeBackgroundUnlockConfirmPopup);
-  }
-}
-
-/**
- * Close the background unlock confirmation popup
- */
-function closeBackgroundUnlockConfirmPopup() {
-  const overlay = document.getElementById('background-unlock-confirm-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-}
-
-/**
- * Execute background unlock
- * @param {string} bgId - The ID of the background to unlock
- */
-function executeBackgroundUnlock(bgId) {
-  const result = unlockBackground(bgId);
-  
-  // Close the confirmation popup
-  closeBackgroundUnlockConfirmPopup();
-  
-  if (result.success) {
-    // Play purchase sound
-    playBackgroundPurchased();
-    
-    // Update the shop display
-    closeBackgroundShopPopup();
-    showBackgroundShopPopup();
-    
-    // Update diamond count in challenges header if visible
-    updateDiamondDisplayInHeader();
-    
-    // Show unlock animation on the tile
-    const tile = document.querySelector(`.background-tile[data-bg-id="${bgId}"]`);
-    if (tile) {
-      tile.classList.add('background-unlock-animation');
-    }
-    
-    // Add confetti celebration
-    createConfettiEffect();
-  } else if (result.notEnoughDiamonds) {
-    showNotEnoughDiamondsHint();
-  }
-}
-
-/**
- * Show popup to confirm selecting a background
- * @param {Object} background - The background object to select
- */
-function showBackgroundSelectConfirmPopup(background) {
-  // Create popup overlay
-  const overlay = document.createElement('div');
-  overlay.className = 'popup-overlay background-confirm-overlay';
-  overlay.id = 'background-select-confirm-overlay';
-  
-  // Create popup card
-  const popupCard = document.createElement('div');
-  popupCard.className = 'popup-card background-confirm-card';
-  
-  popupCard.innerHTML = `
-    <h2>Hintergrund wählen?</h2>
-    <img src="./assets/${background.file}" alt="${background.name}" class="background-confirm-preview">
-    <p><strong>${background.name}</strong></p>
-    <p>Möchtest du diesen Hintergrund verwenden?</p>
-    <div class="background-confirm-buttons">
-      <button id="confirm-select-button" class="btn-primary">Ja</button>
-      <button id="cancel-select-button" class="btn-secondary">Nein</button>
-    </div>
-  `;
-  
-  overlay.appendChild(popupCard);
-  document.body.appendChild(overlay);
-  
-  // Add event listeners
-  const confirmBtn = document.getElementById('confirm-select-button');
-  const cancelBtn = document.getElementById('cancel-select-button');
-  
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      executeBackgroundSelect(background.id);
-    });
-  }
-  
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeBackgroundSelectConfirmPopup);
-  }
-}
-
-/**
- * Close the background select confirmation popup
- */
-function closeBackgroundSelectConfirmPopup() {
-  const overlay = document.getElementById('background-select-confirm-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
-}
-
-/**
- * Execute background selection
- * @param {string} bgId - The ID of the background to select
- */
-function executeBackgroundSelect(bgId) {
-  const result = selectBackground(bgId);
-  
-  // Close the confirmation popup
-  closeBackgroundSelectConfirmPopup();
-  
-  if (result.success) {
-    // Apply the new background immediately
-    applySelectedBackground();
-    
-    // Update the shop display
-    closeBackgroundShopPopup();
-    showBackgroundShopPopup();
-  }
-}
-
-/**
- * Show a hint when player doesn't have enough diamonds
- */
-function showNotEnoughDiamondsHint() {
-  // Remove any existing hint
-  const existingHint = document.querySelector('.not-enough-diamonds-hint');
-  if (existingHint) {
-    existingHint.remove();
-  }
-  
-  // Create hint element
-  const hint = document.createElement('div');
-  hint.className = 'not-enough-diamonds-hint';
-  hint.textContent = '💎 Nicht genug Diamanten!';
-  
-  document.body.appendChild(hint);
-  
-  // Remove after animation completes (3 seconds)
-  setTimeout(() => {
-    hint.remove();
-  }, 3000);
-}
-
-/**
- * Update the diamond display in the challenges header
- */
-function updateDiamondDisplayInHeader() {
-  const diamondInfo = getDiamondInfo();
-  const diamondValueElement = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
-  if (diamondValueElement) {
-    diamondValueElement.textContent = diamondInfo.current;
-  }
-}
-
 // Router Skeleton (kept for future use)
 class Router {
   constructor() {
@@ -4386,6 +3405,26 @@ class KopfnussApp {
   }
   
   init() {
+    // Initialize UI bridge with references to screen loading functions
+    initializeUIBridge({
+      loadChallengesScreen,
+      loadTaskScreen,
+      loadKopfnussTaskScreen,
+      loadZeitChallengeTaskScreen,
+      loadStatsScreen
+    });
+    
+    // Initialize UI modules
+    initHeaderUI();
+    initShopUI();
+    
+    // Initialize task screen controller
+    import('./logic/taskScreenController.js').then(module => {
+      module.initTaskScreenController();
+    }).catch(error => {
+      logError('Error initializing task screen controller:', error);
+    });
+    
     this.setupRoutes();
     this.setupEventListeners();
     this.loadInitialRoute();
@@ -4477,6 +3516,27 @@ class KopfnussApp {
 
 // App initialisieren wenn DOM bereit ist
 // Note: With top-level await in balancingLoader.js, DOMContentLoaded may have already fired
+// Set up global error handler for diagnostics
+window.addEventListener('error', (event) => {
+  // Log the error
+  logError('Uncaught error:', event.error || event.message);
+  
+  // Store a short error summary in localStorage for diagnostics
+  try {
+    const errorSummary = {
+      message: event.error?.message || event.message || 'Unknown error',
+      timestamp: new Date().toISOString(),
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno
+    };
+    localStorage.setItem('kopfnuss_last_error', JSON.stringify(errorSummary));
+  } catch (storageError) {
+    // If localStorage fails, just log it
+    logError('Failed to store error summary:', storageError);
+  }
+});
+
 // by the time this module executes. We need to check readyState to handle both cases.
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {

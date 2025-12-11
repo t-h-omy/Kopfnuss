@@ -4,6 +4,19 @@
 import { BALANCING, KOPFNUSS_DIFFICULTY } from '../data/balancingLoader.js';
 
 /**
+ * @typedef {Object} TaskMetadata
+ * @property {string} operation - Operation type (addition, subtraction, multiplication, division, squared)
+ * @property {number[]} operands - Array of operands used in the task
+ */
+
+/**
+ * @typedef {Object} Task
+ * @property {string} question - The mathematical question to display (e.g., "5 + 3")
+ * @property {number} answer - The correct answer to the question
+ * @property {TaskMetadata} metadata - Additional information about the task
+ */
+
+/**
  * Helper function to generate random integer between min and max (inclusive)
  * @param {number} min - Minimum value
  * @param {number} max - Maximum value
@@ -15,7 +28,7 @@ function randomInt(min, max) {
 
 /**
  * Generate an addition task
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateAddition() {
   const a = randomInt(BALANCING.addition.min, BALANCING.addition.max);
@@ -35,7 +48,7 @@ export function generateAddition() {
 /**
  * Generate a subtraction task
  * Ensures result is positive by making first number larger
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateSubtraction() {
   const a = randomInt(BALANCING.subtraction.min, BALANCING.subtraction.max);
@@ -58,7 +71,7 @@ export function generateSubtraction() {
 
 /**
  * Generate a multiplication task
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateMultiplication() {
   const a = randomInt(
@@ -84,7 +97,7 @@ export function generateMultiplication() {
 /**
  * Generate a division task
  * Ensures result is a whole number
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateDivision() {
   const divisor = randomInt(
@@ -112,7 +125,7 @@ export function generateDivision() {
 
 /**
  * Generate a squared task
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateSquared() {
   const base = randomInt(
@@ -134,7 +147,7 @@ export function generateSquared() {
 /**
  * Generate a mixed (random operation) task
  * Includes all operation types for variety
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateMixed() {
   const generators = [
@@ -158,7 +171,7 @@ export function generateMixed() {
 /**
  * Generate a task based on operation type
  * @param {string} operationType - Type of operation (addition, subtraction, etc.)
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateTask(operationType) {
   switch (operationType) {
@@ -186,7 +199,7 @@ export function generateTask(operationType) {
 
 /**
  * Generate a high-difficulty addition task for Kopfnuss Challenge
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 function generateKopfnussAddition() {
   const a = randomInt(KOPFNUSS_DIFFICULTY.addition.minA, KOPFNUSS_DIFFICULTY.addition.maxA);
@@ -206,7 +219,7 @@ function generateKopfnussAddition() {
 
 /**
  * Generate a high-difficulty subtraction task for Kopfnuss Challenge
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 function generateKopfnussSubtraction() {
   const a = randomInt(KOPFNUSS_DIFFICULTY.subtraction.minA, KOPFNUSS_DIFFICULTY.subtraction.maxA);
@@ -230,7 +243,7 @@ function generateKopfnussSubtraction() {
 
 /**
  * Generate a high-difficulty multiplication task for Kopfnuss Challenge
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 function generateKopfnussMultiplication() {
   const a = randomInt(
@@ -256,7 +269,7 @@ function generateKopfnussMultiplication() {
 
 /**
  * Generate a high-difficulty division task for Kopfnuss Challenge
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 function generateKopfnussDivision() {
   const divisor = randomInt(
@@ -285,7 +298,7 @@ function generateKopfnussDivision() {
 
 /**
  * Generate a high-difficulty squared task for Kopfnuss Challenge
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 function generateKopfnussSquared() {
   const base = randomInt(
@@ -307,7 +320,7 @@ function generateKopfnussSquared() {
 
 /**
  * Generate a mixed Kopfnuss task (randomly selects from all operation types)
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 function generateKopfnussMixed() {
   const generators = [
@@ -335,7 +348,7 @@ function generateKopfnussMixed() {
 
 /**
  * Generate a Kopfnuss Challenge task (always mixed, high-difficulty)
- * @returns {Object} Task object with question, answer, and metadata
+ * @returns {Task} Task object with question, answer, and metadata
  */
 export function generateKopfnussTask() {
   return generateKopfnussMixed();

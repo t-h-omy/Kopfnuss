@@ -7,6 +7,7 @@ import {
   CHALLENGE_STATE,
   isSuperChallengeState 
 } from './challengeGenerator.js';
+import { logError } from './logging.js';
 
 /**
  * Start a challenge
@@ -18,14 +19,14 @@ export function startChallenge(challengeIndex) {
   const challenge = challenges[challengeIndex];
   
   if (!challenge) {
-    console.error('Challenge not found:', challengeIndex);
+    logError('Challenge not found:', challengeIndex);
     return false;
   }
   
   // Only allow starting if challenge is available (regular or super)
   if (challenge.state !== CHALLENGE_STATE.AVAILABLE && 
       challenge.state !== CHALLENGE_STATE.SUPER_AVAILABLE) {
-    console.error('Challenge not available:', challenge.state);
+    logError('Challenge not available:', challenge.state);
     return false;
   }
   
