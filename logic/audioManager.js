@@ -2,6 +2,8 @@
 // Minimal, safe audio subsystem with WebAudio for SFX playback
 // Falls back to synthesized beeps when audio files are missing
 
+import { logWarn } from './logging.js';
+
 /**
  * Sound effect definitions with their synthesized fallback parameters
  * Each SFX has: freq (Hz or array for chords), duration (seconds), type (oscillator), gain (0-1)
@@ -102,7 +104,7 @@ class AudioManager {
           this.audioContext = new AudioContextClass();
         }
       } catch (e) {
-        console.warn('AudioManager: Failed to create AudioContext', e);
+        logWarn('AudioManager: Failed to create AudioContext', e);
       }
     }
     return this.audioContext;

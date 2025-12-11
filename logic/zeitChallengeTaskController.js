@@ -9,8 +9,7 @@ import {
   ZEIT_CHALLENGE_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
-import { showScreen } from './uiBridge.js';
-import { notifyZeitChallengeResult } from '../main.js';
+import { showScreen, notifyZeitChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
@@ -19,6 +18,7 @@ import {
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
 import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed, playDiamondEarn } from './audioBootstrap.js';
+import { logError } from './logging.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -81,7 +81,7 @@ export function initZeitChallengeTaskScreen() {
   zeitState = getTodaysZeitChallenge();
   
   if (!zeitState || !zeitState.spawned || zeitState.state !== ZEIT_CHALLENGE_STATE.IN_PROGRESS) {
-    console.error('Zeit-Challenge not in progress, state:', zeitState?.state);
+    logError('Zeit-Challenge not in progress, state:', zeitState?.state);
     showScreen('challenges');
     return;
   }
@@ -420,7 +420,7 @@ function handleZeitChallengeCompletion() {
   }
   
   // Notify main.js about the result so popup shows when returning to challenges
-  notifyZeitChallengeResult(true, rewardInfo);
+  notifyZeitChallengeResultBridge(true, rewardInfo);
   
   // Get success phrase
   const motivationPhrase = getRandomPhrase(ZEIT_SUCCESS_PHRASES);
@@ -511,7 +511,7 @@ function handleZeitChallengeCompletion() {
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
-          notifyZeitChallengeResult(true, rewardInfo);
+          notifyZeitChallengeResultBridge(true, rewardInfo);
           showScreen('challenges');
         });
       }
@@ -524,7 +524,7 @@ function handleZeitChallengeCompletion() {
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
-          notifyZeitChallengeResult(true, rewardInfo);
+          notifyZeitChallengeResultBridge(true, rewardInfo);
           showScreen('challenges');
         });
       }
@@ -571,7 +571,7 @@ export function cleanupZeitChallengeTaskScreen() {
   try {
     stopZeitChallengeMusic();
   } catch (e) {
-    console.error('Error stopping Zeit challenge music:', e);
+    logError('Error stopping Zeit challenge music:', e);
   }
   
   // Reset all module-level variables to prevent state leakage

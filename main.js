@@ -91,7 +91,8 @@ import {
   notifySuperChallengeResult,
   initializeUIBridge,
   getScreenState,
-  setScreenState
+  setScreenState,
+  registerChallengeResultHandlers
 } from './logic/uiBridge.js';
 import { 
   initHeaderUI,
@@ -2208,14 +2209,7 @@ function showKopfnussFailurePopup(onClose = null) {
   });
 }
 
-/**
- * Notify that Kopfnuss Challenge was completed
- * @param {boolean} success - Whether the challenge was completed without errors
- * @param {Object|null} reward - Reward info if successful
- */
-export function notifyKopfnussChallengeResult(success, reward = null) {
-  kopfnussChallengeResult = { success, reward };
-}
+
 
 // ============================================
 // ZEIT-CHALLENGE POPUP FUNCTIONS
@@ -2494,14 +2488,7 @@ function showTaskExitConfirmationPopup(onConfirm, challengeType = 'standard') {
   });
 }
 
-/**
- * Notify that Zeit-Challenge was completed
- * @param {boolean} success - Whether the challenge was completed in time
- * @param {Object|null} reward - Reward info if successful
- */
-export function notifyZeitChallengeResult(success, reward = null) {
-  zeitChallengeResult = { success, reward };
-}
+
 
 
 
@@ -3412,6 +3399,16 @@ class KopfnussApp {
       loadKopfnussTaskScreen,
       loadZeitChallengeTaskScreen,
       loadStatsScreen
+    });
+    
+    // Register challenge result handlers
+    registerChallengeResultHandlers({
+      notifyKopfnussChallengeResult: (success, reward = null) => {
+        kopfnussChallengeResult = { success, reward };
+      },
+      notifyZeitChallengeResult: (success, reward = null) => {
+        zeitChallengeResult = { success, reward };
+      }
     });
     
     // Initialize UI modules
