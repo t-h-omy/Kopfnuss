@@ -1,7 +1,7 @@
 // Kopfnuss - Background Manager
 // Manages background unlocking, selection, and display
 
-import { BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
+import { BACKGROUNDS_UNIFIED, BACKGROUND_PACKS } from '../data/balancingLoader.js';
 import { logWarn } from './logging.js';
 import { 
   loadUnlockedBackgrounds, 
@@ -14,7 +14,11 @@ import {
   loadLastKnownPurchasableBackgrounds,
   saveLastKnownPurchasableBackgrounds,
   wasShopOpenedWithNewBackgrounds,
-  clearShopOpenedFlag
+  clearShopOpenedFlag,
+  loadUnlockedPacks,
+  saveUnlockedPacks,
+  loadPackTasksSinceUnlock,
+  savePackTasksSinceUnlock
 } from './storageManager.js';
 
 /**
@@ -49,7 +53,9 @@ export const BACKGROUND_STATE = {
   LOCKED: 'locked',       // Not enough tasks completed
   PURCHASABLE: 'purchasable', // Requirement fulfilled, can buy with diamonds
   UNLOCKED: 'unlocked',   // Already purchased
-  ACTIVE: 'active'        // Currently selected
+  ACTIVE: 'active',        // Currently selected
+  LOCKED_BY_PACK: 'lockedByPack',  // Pack not unlocked yet
+  REQUIREMENTS_NOT_MET: 'requirementsNotMet'  // Pack unlocked but not enough tasks since unlock
 };
 
 /**
@@ -132,7 +138,7 @@ function getSeasonalBackgroundsSource() {
 
 /**
  * Get the state of a background for shop display
- * @param {Object} background - Background object from BACKGROUNDS config
+ * @param {Object} background - Background object (either unified or legacy format)
  * @returns {string} One of BACKGROUND_STATE values
  */
 export function getBackgroundState(background) {
@@ -151,8 +157,37 @@ export function getBackgroundState(background) {
     return BACKGROUND_STATE.UNLOCKED;
   }
   
-  // Check if requirement is fulfilled
-  const tasksRequired = background.tasksRequired || 0;
+  // Handle pack-based backgrounds (unified schema)
+  if (background.pack !== null && background.pack !== undefined) {
+    const unlockedPacks = loadUnlockedPacks();
+    const packTasksSinceUnlock = loadPackTasksSinceUnlock();
+    
+    // Check if pack is unlocked
+    if (!unlockedPacks.includes(background.pack)) {
+      return BACKGROUND_STATE.LOCKED_BY_PACK;
+    }
+    
+    // Pack is unlocked, check tasks since pack unlock
+    const tasksSinceUnlock = packTasksSinceUnlock[background.pack] || 0;
+    const minTasksRequired = background.minTasksSincePackUnlock || 0;
+    
+    if (tasksSinceUnlock < minTasksRequired) {
+      return BACKGROUND_STATE.REQUIREMENTS_NOT_MET;
+    }
+    
+    // Pack is unlocked and requirements met, can be purchased
+    return BACKGROUND_STATE.PURCHASABLE;
+  }
+  
+  // Non-pack background: Check if requirement is fulfilled
+  // Support both unified and legacy format
+  let tasksRequired = 0;
+  if (background.requirements && background.category === 'standard') {
+    tasksRequired = background.requirements.minTasksSinceStart || 0;
+  } else if (background.tasksRequired !== undefined) {
+    tasksRequired = background.tasksRequired;
+  }
+  
   if (totalTasksCompleted >= tasksRequired) {
     return BACKGROUND_STATE.PURCHASABLE;
   }
@@ -470,4 +505,118 @@ export function shouldShowNewBadge() {
   
   // Check if shop was already opened with these backgrounds
   return !wasShopOpenedWithNewBackgrounds();
+}
+
+/**
+ * Unlock a background pack with streak stones
+ * @param {string} packId - Pack ID to unlock
+ * @param {number} currentStreakStones - Current streak stones balance
+ * @returns {Object} Result with success status and message
+ */
+export function unlockPack(packId, currentStreakStones) {
+  const pack = BACKGROUND_PACKS.find(p => p.id === packId);
+  
+  if (!pack) {
+    return {
+      success: false,
+      message: 'Pack nicht gefunden'
+    };
+  }
+  
+  const unlockedPacks = loadUnlockedPacks();
+  
+  if (unlockedPacks.includes(packId)) {
+    return {
+      success: false,
+      message: 'Pack bereits freigeschaltet'
+    };
+  }
+  
+  if (currentStreakStones < pack.costStreakStones) {
+    return {
+      success: false,
+      message: `Nicht genug Streak-Steine. Benötigt: ${pack.costStreakStones}, Vorhanden: ${currentStreakStones}`,
+      needsMoreStones: true
+    };
+  }
+  
+  // Unlock the pack
+  unlockedPacks.push(packId);
+  saveUnlockedPacks(unlockedPacks);
+  
+  // Initialize tasks since unlock to 0
+  const packTasks = loadPackTasksSinceUnlock();
+  packTasks[packId] = 0;
+  savePackTasksSinceUnlock(packTasks);
+  
+  return {
+    success: true,
+    message: 'Pack freigeschaltet!',
+    pack: pack
+  };
+}
+
+/**
+ * Increment tasks since unlock for all unlocked packs
+ * Called when a task is completed
+ */
+export function incrementPackTasks() {
+  const unlockedPacks = loadUnlockedPacks();
+  
+  if (unlockedPacks.length === 0) {
+    return; // No packs unlocked, nothing to do
+  }
+  
+  const packTasks = loadPackTasksSinceUnlock();
+  
+  // Increment for every unlocked pack
+  for (const packId of unlockedPacks) {
+    packTasks[packId] = (packTasks[packId] || 0) + 1;
+  }
+  
+  savePackTasksSinceUnlock(packTasks);
+}
+
+/**
+ * Get backgrounds belonging to a specific pack
+ * @param {string} packId - Pack ID
+ * @returns {Array} Array of background objects from unified schema
+ */
+export function getBackgroundsByPack(packId) {
+  if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
+    return [];
+  }
+  
+  return BACKGROUNDS_UNIFIED.filter(bg => bg.pack === packId && bg.active);
+}
+
+/**
+ * Get all packs with their state and backgrounds
+ * @returns {Array} Array of pack objects with state information
+ */
+export function getBackgroundPacksWithState() {
+  const unlockedPacks = loadUnlockedPacks();
+  const packTasks = loadPackTasksSinceUnlock();
+  
+  return BACKGROUND_PACKS.map(pack => {
+    const unlocked = unlockedPacks.includes(pack.id);
+    const tasksSinceUnlock = unlocked ? (packTasks[pack.id] || 0) : 0;
+    const backgrounds = getBackgroundsByPack(pack.id);
+    
+    // Add state to each background
+    const backgroundsWithState = backgrounds.map(bg => ({
+      ...bg,
+      state: getBackgroundState(bg),
+      tasksRemaining: unlocked ? Math.max(0, (bg.minTasksSincePackUnlock || 0) - tasksSinceUnlock) : 0
+    }));
+    
+    return {
+      id: pack.id,
+      name: pack.name,
+      costStreakStones: pack.costStreakStones,
+      unlocked: unlocked,
+      tasksSinceUnlock: tasksSinceUnlock,
+      backgrounds: backgroundsWithState
+    };
+  });
 }

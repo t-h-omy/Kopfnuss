@@ -16,6 +16,7 @@ import {
   addSeasonalCurrency, 
   incrementSeasonalTasks 
 } from './eventManager.js';
+import { incrementPackTasks } from './backgroundManager.js';
 
 /**
  * Task flow state
@@ -172,6 +173,9 @@ export function nextTask() {
   if (isEventActive()) {
     incrementSeasonalTasks(1);
   }
+  
+  // Increment tasks for all unlocked background packs
+  incrementPackTasks();
   
   const hasNext = currentTaskIndex < challenge.tasks.length;
   
