@@ -2,6 +2,7 @@
 // Manages background unlocking, selection, and display
 
 import { BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
+import { logWarn } from './logging.js';
 import { 
   loadUnlockedBackgrounds, 
   saveUnlockedBackgrounds,
@@ -91,7 +92,7 @@ function getBackgroundsSource() {
   
   // Safety check: ensure BACKGROUNDS_UNIFIED is an array
   if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
-    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    logWarn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
     return backgrounds;
   }
   
@@ -115,7 +116,7 @@ function getSeasonalBackgroundsSource() {
   
   // Safety check: ensure BACKGROUNDS_UNIFIED is an array
   if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
-    console.warn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    logWarn('[BackgroundManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
     return backgrounds;
   }
   

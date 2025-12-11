@@ -2,6 +2,7 @@
 // Manages seasonal events, seasonal currency, and event-based backgrounds
 
 import { SEASONAL_EVENTS, BACKGROUNDS_UNIFIED } from '../data/balancingLoader.js';
+import { logWarn } from './logging.js';
 import {
   loadSeasonalCurrency,
   saveSeasonalCurrency,
@@ -47,7 +48,7 @@ function getSeasonalBackgroundsSource() {
   
   // Safety check: ensure BACKGROUNDS_UNIFIED is an array
   if (!Array.isArray(BACKGROUNDS_UNIFIED)) {
-    console.warn('[EventManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
+    logWarn('[EventManager] BACKGROUNDS_UNIFIED is not an array, returning empty object');
     return backgrounds;
   }
   

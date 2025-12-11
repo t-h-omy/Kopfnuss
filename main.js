@@ -112,6 +112,7 @@ import {
   showEventInfoPopup, 
   showEventEndPopup
 } from './ui/eventPopupUI.js';
+import { logDebug, logInfo, logError } from './logic/logging.js';
 
 /**
  * Set the --app-height CSS custom property for mobile keyboard stability
@@ -186,8 +187,8 @@ if ('serviceWorker' in navigator) {
     // Register SW with updateViaCache: 'none' to bypass HTTP cache for SW file
     navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
       .then((registration) => {
-        console.log('ServiceWorker registriert:', registration.scope);
-        console.log('App Version:', VERSION.string);
+        logDebug('ServiceWorker registriert:', registration.scope);
+        logDebug('App Version:', VERSION.string);
         
         // Force update check immediately
         registration.update();
@@ -195,16 +196,16 @@ if ('serviceWorker' in navigator) {
         // Prüfe auf Updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
-          console.log('Neuer ServiceWorker gefunden, installiere...');
+          logDebug('Neuer ServiceWorker gefunden, installiere...');
           
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Neue Version verfügbar! Cache wird geleert und Seite neu geladen...');
+              logDebug('Neue Version verfügbar! Cache wird geleert und Seite neu geladen...');
               // Clear all caches before reloading
               caches.keys().then((cacheNames) => {
                 return Promise.all(
                   cacheNames.map((cacheName) => {
-                    console.log('Lösche Cache:', cacheName);
+                    logDebug('Lösche Cache:', cacheName);
                     return caches.delete(cacheName);
                   })
                 );
@@ -212,7 +213,7 @@ if ('serviceWorker' in navigator) {
                 // Tell SW to skip waiting
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
               }).catch((error) => {
-                console.error('Cache löschen fehlgeschlagen:', error);
+                logError('Cache löschen fehlgeschlagen:', error);
                 // Still try to skip waiting even if cache deletion failed
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
               });
@@ -221,7 +222,7 @@ if ('serviceWorker' in navigator) {
         });
       })
       .catch((error) => {
-        console.error('ServiceWorker Registrierung fehlgeschlagen:', error);
+        logError('ServiceWorker Registrierung fehlgeschlagen:', error);
       });
   });
   
@@ -231,7 +232,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return;
     refreshing = true;
-    console.log('ServiceWorker Controller gewechselt, lade Seite neu...');
+    logDebug('ServiceWorker Controller gewechselt, lade Seite neu...');
     window.location.reload();
   });
 }
@@ -1059,7 +1060,7 @@ function drawConnectionPaths(svg, challengesList, nodePositions) {
       svg.appendChild(path);
     }
   } catch (error) {
-    console.error('Error drawing connection paths:', error);
+    logError('Error drawing connection paths:', error);
   }
 }
 
@@ -1088,7 +1089,7 @@ async function loadTaskScreen(container, challengeIndex) {
     // Task screen controller now owns all DOM operations
     showTaskScreenForChallenge(container, challengeIndex, handleBackClick);
   } catch (error) {
-    console.error('Error loading task screen controller:', error);
+    logError('Error loading task screen controller:', error);
   }
 }
 
@@ -1133,7 +1134,7 @@ async function loadKopfnussTaskScreen(container) {
     const { initKopfnussTaskScreen } = await import('./logic/kopfnussTaskController.js');
     initKopfnussTaskScreen();
   } catch (error) {
-    console.error('Error loading Kopfnuss task screen controller:', error);
+    logError('Error loading Kopfnuss task screen controller:', error);
   }
 }
 
@@ -1191,7 +1192,7 @@ async function loadZeitChallengeTaskScreen(container) {
     const { initZeitChallengeTaskScreen } = await import('./logic/zeitChallengeTaskController.js');
     initZeitChallengeTaskScreen();
   } catch (error) {
-    console.error('Error loading Zeit-Challenge task screen controller:', error);
+    logError('Error loading Zeit-Challenge task screen controller:', error);
   }
 }
 
@@ -3421,7 +3422,7 @@ class KopfnussApp {
     import('./logic/taskScreenController.js').then(module => {
       module.initTaskScreenController();
     }).catch(error => {
-      console.error('Error initializing task screen controller:', error);
+      logError('Error initializing task screen controller:', error);
     });
     
     this.setupRoutes();
@@ -3515,6 +3516,27 @@ class KopfnussApp {
 
 // App initialisieren wenn DOM bereit ist
 // Note: With top-level await in balancingLoader.js, DOMContentLoaded may have already fired
+// Set up global error handler for diagnostics
+window.addEventListener('error', (event) => {
+  // Log the error
+  logError('Uncaught error:', event.error || event.message);
+  
+  // Store a short error summary in localStorage for diagnostics
+  try {
+    const errorSummary = {
+      message: event.error?.message || event.message || 'Unknown error',
+      timestamp: new Date().toISOString(),
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno
+    };
+    localStorage.setItem('kopfnuss_last_error', JSON.stringify(errorSummary));
+  } catch (storageError) {
+    // If localStorage fails, just log it
+    logError('Failed to store error summary:', storageError);
+  }
+});
+
 // by the time this module executes. We need to check readyState to handle both cases.
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {

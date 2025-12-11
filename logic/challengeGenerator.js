@@ -4,6 +4,7 @@
 import { generateTask, generateKopfnussTask } from './taskGenerators.js';
 import { CONFIG, CHALLENGE_TYPES } from '../data/balancingLoader.js';
 import { saveChallenges, loadChallenges, getTodayDate, saveKopfnussChallenge, loadKopfnussChallenge, saveZeitChallenge, loadZeitChallenge } from './storageManager.js';
+import { logError } from './logging.js';
 
 /**
  * @typedef {Object} Challenge
@@ -185,7 +186,7 @@ export function updateChallenge(challengeIndex, updates) {
   const challenges = getTodaysChallenges();
   
   if (challengeIndex < 0 || challengeIndex >= challenges.length) {
-    console.error('Invalid challenge index:', challengeIndex);
+    logError('Invalid challenge index:', challengeIndex);
     return false;
   }
   
@@ -205,7 +206,7 @@ export function getChallenge(challengeIndex) {
   const challenges = getTodaysChallenges();
   
   if (challengeIndex < 0 || challengeIndex >= challenges.length) {
-    console.error('Invalid challenge index:', challengeIndex);
+    logError('Invalid challenge index:', challengeIndex);
     return null;
   }
   
@@ -428,7 +429,7 @@ export function updateKopfnussChallenge(updates) {
   let kopfnuss = loadKopfnussChallenge(today);
   
   if (!kopfnuss) {
-    console.error('No Kopfnuss Challenge found for today');
+    logError('No Kopfnuss Challenge found for today');
     return false;
   }
   
@@ -447,12 +448,12 @@ export function startKopfnussChallenge() {
   const kopfnuss = getTodaysKopfnussChallenge();
   
   if (!kopfnuss || !kopfnuss.spawned) {
-    console.error('No Kopfnuss Challenge available');
+    logError('No Kopfnuss Challenge available');
     return false;
   }
   
   if (kopfnuss.state !== KOPFNUSS_STATE.AVAILABLE) {
-    console.error('Kopfnuss Challenge not in available state:', kopfnuss.state);
+    logError('Kopfnuss Challenge not in available state:', kopfnuss.state);
     return false;
   }
   
@@ -637,7 +638,7 @@ export function updateZeitChallenge(updates) {
   let zeit = loadZeitChallenge(today);
   
   if (!zeit) {
-    console.error('No Zeit-Challenge found for today');
+    logError('No Zeit-Challenge found for today');
     return false;
   }
   
@@ -656,12 +657,12 @@ export function startZeitChallenge() {
   const zeit = getTodaysZeitChallenge();
   
   if (!zeit || !zeit.spawned) {
-    console.error('No Zeit-Challenge available');
+    logError('No Zeit-Challenge available');
     return false;
   }
   
   if (zeit.state !== ZEIT_CHALLENGE_STATE.AVAILABLE) {
-    console.error('Zeit-Challenge not in available state:', zeit.state);
+    logError('Zeit-Challenge not in available state:', zeit.state);
     return false;
   }
   

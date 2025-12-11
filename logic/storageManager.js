@@ -1,6 +1,8 @@
 // Kopfnuss - Storage Manager
 // Handles all localStorage operations with error handling
 
+import { logError } from './logging.js';
+
 /**
  * Dev mode setting key (stored separately, never has dev prefix)
  */
@@ -38,7 +40,7 @@ export function loadDevModeSetting() {
     cachedDevModeState = JSON.parse(item) === true;
     return cachedDevModeState;
   } catch (error) {
-    console.error('Error loading dev mode setting:', error);
+    logError('Error loading dev mode setting:', error);
     cachedDevModeState = false;
     return false;
   }
@@ -57,7 +59,7 @@ export function saveDevModeSetting(useDevBalancing) {
     cachedDevModeState = useDevBalancing;
     return true;
   } catch (error) {
-    console.error('Error saving dev mode setting:', error);
+    logError('Error saving dev mode setting:', error);
     return false;
   }
 }
@@ -74,7 +76,7 @@ export function loadAudioMutedSetting() {
     }
     return JSON.parse(item) === true;
   } catch (error) {
-    console.error('Error loading audio muted setting:', error);
+    logError('Error loading audio muted setting:', error);
     return false;
   }
 }
@@ -89,7 +91,7 @@ export function saveAudioMutedSetting(muted) {
     localStorage.setItem(AUDIO_MUTED_KEY, JSON.stringify(muted));
     return true;
   } catch (error) {
-    console.error('Error saving audio muted setting:', error);
+    logError('Error saving audio muted setting:', error);
     return false;
   }
 }
@@ -183,7 +185,7 @@ export function saveToStorage(key, data) {
     localStorage.setItem(key, JSON.stringify(data));
     return true;
   } catch (error) {
-    console.error('Error saving to localStorage:', error);
+    logError('Error saving to localStorage:', error);
     return false;
   }
 }
@@ -202,7 +204,7 @@ export function loadFromStorage(key, defaultValue = null) {
     }
     return JSON.parse(item);
   } catch (error) {
-    console.error('Error loading from localStorage:', error);
+    logError('Error loading from localStorage:', error);
     return defaultValue;
   }
 }
@@ -217,7 +219,7 @@ export function removeFromStorage(key) {
     localStorage.removeItem(key);
     return true;
   } catch (error) {
-    console.error('Error removing from localStorage:', error);
+    logError('Error removing from localStorage:', error);
     return false;
   }
 }
@@ -409,7 +411,7 @@ export function clearAllData() {
     
     return true;
   } catch (error) {
-    console.error('Error clearing data:', error);
+    logError('Error clearing data:', error);
     return false;
   }
 }
@@ -435,7 +437,7 @@ export function getStorageInfo() {
       totalSizeKB: (totalSize / 1024).toFixed(2)
     };
   } catch (error) {
-    console.error('Error getting storage info:', error);
+    logError('Error getting storage info:', error);
     return null;
   }
 }
