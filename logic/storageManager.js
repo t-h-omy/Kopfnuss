@@ -97,27 +97,6 @@ export function saveAudioMutedSetting(muted) {
 }
 
 /**
- * Base storage keys for localStorage (without dev prefix)
- */
-const BASE_STORAGE_KEYS = {
-  CHALLENGES: 'kopfnuss_challenges_', // Will be appended with date
-  PROGRESS: 'kopfnuss_progress',
-  STREAK: 'kopfnuss_streak',
-  DIAMONDS: 'kopfnuss_diamonds',
-  DIAMONDS_EARNED: 'kopfnuss_diamonds_earned',
-  UNLOCKED_BACKGROUNDS: 'kopfnuss_unlocked_backgrounds',
-  SELECTED_BACKGROUND: 'kopfnuss_selected_background',
-  LAST_KNOWN_PURCHASABLE_BACKGROUNDS: 'kopfnuss_last_known_purchasable_backgrounds',
-  SHOP_OPENED_WITH_NEW_BACKGROUNDS: 'kopfnuss_shop_opened_with_new',
-  // Seasonal event storage keys (appended with event ID)
-  SEASONAL_CURRENCY: 'kopfnuss_seasonal_currency_',
-  SEASONAL_TASK_COUNT: 'kopfnuss_seasonal_tasks_',
-  SEASONAL_UNLOCKED_BACKGROUNDS: 'kopfnuss_seasonal_backgrounds_',
-  EVENT_POPUP_SHOWN: 'kopfnuss_event_popup_shown_',
-  EVENT_END_POPUP_SHOWN: 'kopfnuss_event_end_popup_shown_'
-};
-
-/**
  * Get the dev mode prefix based on current dev mode state
  * Uses cached dev mode state for performance
  * @returns {string} Prefix for storage keys ('kopfnuss_dev_' or 'kopfnuss_')
