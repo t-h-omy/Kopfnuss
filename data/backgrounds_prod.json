@@ -12,7 +12,9 @@
       },
       "event": null,
       "active": true,
-      "isDefault": true
+      "isDefault": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "sunset",
@@ -25,7 +27,9 @@
         "minTasksSinceStart": 16
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "unicorn",
@@ -38,7 +42,9 @@
         "minTasksSinceStart": 70
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "candy",
@@ -51,7 +57,9 @@
         "minTasksSinceStart": 140
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "snakeJungle",
@@ -64,7 +72,9 @@
         "minTasksSinceStart": 230
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "maineCoon",
@@ -77,7 +87,9 @@
         "minTasksSinceStart": 350
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "elephant",
@@ -90,7 +102,9 @@
         "minTasksSinceStart": 530
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "pomeranian",
@@ -103,7 +117,9 @@
         "minTasksSinceStart": 710
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "capybara",
@@ -116,7 +132,9 @@
         "minTasksSinceStart": 850
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "dino",
@@ -129,7 +147,9 @@
         "minTasksSinceStart": 1000
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "instruments",
@@ -142,7 +162,9 @@
         "minTasksSinceStart": 1180
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "orca",
@@ -155,7 +177,9 @@
         "minTasksSinceStart": 1350
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "gecko",
@@ -168,7 +192,9 @@
         "minTasksSinceStart": 1500
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "owl",
@@ -181,7 +207,9 @@
         "minTasksSinceStart": 1650
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "platypus",
@@ -194,7 +222,9 @@
         "minTasksSinceStart": 1800
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "seahorse",
@@ -207,7 +237,9 @@
         "minTasksSinceStart": 1950
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "toyHorses",
@@ -220,7 +252,9 @@
         "minTasksSinceStart": 2100
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "dolphinPattern",
@@ -233,7 +267,9 @@
         "minTasksSinceStart": 2250
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "greyCat",
@@ -246,7 +282,9 @@
         "minTasksSinceStart": 2400
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "leekPattern",
@@ -259,7 +297,9 @@
         "minTasksSinceStart": 2550
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "leekSleeping",
@@ -272,7 +312,9 @@
         "minTasksSinceStart": 2700
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "boeserHase",
@@ -285,7 +327,9 @@
         "minTasksSinceStart": 2850
       },
       "event": null,
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "gingerbreadman",
@@ -298,7 +342,9 @@
         "minTasksSinceEventStart": 40
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "christmasTree",
@@ -311,7 +357,9 @@
         "minTasksSinceEventStart": 100
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "christmasCookies",
@@ -324,7 +372,9 @@
         "minTasksSinceEventStart": 160
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "snowyWinter",
@@ -337,7 +387,9 @@
         "minTasksSinceEventStart": 220
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "snowyOwl",
@@ -350,7 +402,9 @@
         "minTasksSinceEventStart": 280
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "gnome",
@@ -363,7 +417,9 @@
         "minTasksSinceEventStart": 340
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "iceCrystal",
@@ -376,7 +432,9 @@
         "minTasksSinceEventStart": 400
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "northernLights",
@@ -389,7 +447,9 @@
         "minTasksSinceEventStart": 460
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "origamiCrane",
@@ -402,7 +462,9 @@
         "minTasksSinceEventStart": 520
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "penguin",
@@ -415,7 +477,9 @@
         "minTasksSinceEventStart": 580
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "reindeerCalf",
@@ -428,7 +492,9 @@
         "minTasksSinceEventStart": 640
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "reindeer",
@@ -441,7 +507,9 @@
         "minTasksSinceEventStart": 700
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "santaHut",
@@ -454,7 +522,9 @@
         "minTasksSinceEventStart": 760
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "snowSquirrel",
@@ -467,7 +537,9 @@
         "minTasksSinceEventStart": 820
       },
       "event": "christmas",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "newYearFireworks",
@@ -480,7 +552,9 @@
         "minTasksSinceEventStart": 16
       },
       "event": "newYear",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "confetti",
@@ -493,7 +567,9 @@
         "minTasksSinceEventStart": 50
       },
       "event": "newYear",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "luckySymbols",
@@ -506,7 +582,9 @@
         "minTasksSinceEventStart": 90
       },
       "event": "newYear",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "neonHearts",
@@ -519,7 +597,9 @@
         "minTasksSinceEventStart": 16
       },
       "event": "valentines",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "sunsetHearts",
@@ -532,7 +612,9 @@
         "minTasksSinceEventStart": 50
       },
       "event": "valentines",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "rosePond",
@@ -545,7 +627,9 @@
         "minTasksSinceEventStart": 90
       },
       "event": "valentines",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "pixelatedHearts",
@@ -558,7 +642,9 @@
         "minTasksSinceEventStart": 150
       },
       "event": "valentines",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "origamiHeart",
@@ -571,7 +657,9 @@
         "minTasksSinceEventStart": 250
       },
       "event": "valentines",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "pixelHeartsMobile",
@@ -584,7 +672,9 @@
         "minTasksSinceEventStart": 350
       },
       "event": "valentines",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterBunnies",
@@ -597,7 +687,9 @@
         "minTasksSinceEventStart": 16
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterEggs",
@@ -610,7 +702,9 @@
         "minTasksSinceEventStart": 50
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterCutout",
@@ -623,7 +717,9 @@
         "minTasksSinceEventStart": 90
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterForest",
@@ -636,7 +732,9 @@
         "minTasksSinceEventStart": 160
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterPaperCutout",
@@ -649,7 +747,9 @@
         "minTasksSinceEventStart": 250
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterSoftClay",
@@ -662,7 +762,9 @@
         "minTasksSinceEventStart": 350
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterGradientShapes",
@@ -675,7 +777,9 @@
         "minTasksSinceEventStart": 450
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "easterWatercolor",
@@ -688,7 +792,9 @@
         "minTasksSinceEventStart": 550
       },
       "event": "easter",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "butterflies",
@@ -701,7 +807,9 @@
         "minTasksSinceEventStart": 16
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "icecreamPattern",
@@ -714,7 +822,9 @@
         "minTasksSinceEventStart": 50
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "watermelonPattern",
@@ -727,7 +837,9 @@
         "minTasksSinceEventStart": 110
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "summerFruitsGlass",
@@ -740,7 +852,9 @@
         "minTasksSinceEventStart": 180
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "poolscene",
@@ -753,7 +867,9 @@
         "minTasksSinceEventStart": 260
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "flamingo",
@@ -766,7 +882,9 @@
         "minTasksSinceEventStart": 360
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "streetChalk",
@@ -779,7 +897,9 @@
         "minTasksSinceEventStart": 460
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "cat",
@@ -792,7 +912,9 @@
         "minTasksSinceEventStart": 560
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "ladybug",
@@ -805,7 +927,9 @@
         "minTasksSinceEventStart": 660
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "pumaSleeping",
@@ -818,7 +942,9 @@
         "minTasksSinceEventStart": 760
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "savanna",
@@ -831,7 +957,9 @@
         "minTasksSinceEventStart": 860
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "cartoonOutline",
@@ -844,7 +972,9 @@
         "minTasksSinceEventStart": 960
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "softGradientShapes",
@@ -857,7 +987,9 @@
         "minTasksSinceEventStart": 1060
       },
       "event": "summer",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     },
     {
       "id": "halloweenSpooky",
@@ -870,7 +1002,9 @@
         "minTasksSinceEventStart": 11
       },
       "event": "halloween",
-      "active": true
+      "active": true,
+      "pack": null,
+      "minTasksSincePackUnlock": 0
     }
   ]
 }

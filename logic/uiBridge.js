@@ -13,6 +13,7 @@ let returningFromZeitChallengeScreen = false;
 let streakWasUnfrozen = false;
 let streakWasIncremented = false;
 let superChallengeResult = null;
+let milestoneWasReached = false;
 
 // Function references (will be set by main.js via initialize)
 let loadChallengesScreenFn = null;
@@ -51,7 +52,8 @@ export function getScreenState() {
     returningFromZeitChallengeScreen,
     streakWasUnfrozen,
     streakWasIncremented,
-    superChallengeResult
+    superChallengeResult,
+    milestoneWasReached
   };
 }
 
@@ -68,6 +70,7 @@ export function setScreenState(state) {
   if (state.hasOwnProperty('streakWasUnfrozen')) streakWasUnfrozen = state.streakWasUnfrozen;
   if (state.hasOwnProperty('streakWasIncremented')) streakWasIncremented = state.streakWasIncremented;
   if (state.hasOwnProperty('superChallengeResult')) superChallengeResult = state.superChallengeResult;
+  if (state.hasOwnProperty('milestoneWasReached')) milestoneWasReached = state.milestoneWasReached;
 }
 
 /**
@@ -158,6 +161,14 @@ export function notifyStreakUnfrozen(newStreak) {
  */
 export function notifyStreakIncremented(newStreak) {
   streakWasIncremented = newStreak;
+}
+
+/**
+ * Notify that a milestone was reached
+ * This sets a flag that will trigger the milestone reward popup when returning to challenges screen
+ */
+export function notifyMilestoneReached() {
+  milestoneWasReached = true;
 }
 
 /**

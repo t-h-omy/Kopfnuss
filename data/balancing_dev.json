@@ -58,7 +58,8 @@
     "SHADOW_SPREAD_SMALL": "0px",
     "SHADOW_SPREAD_LARGE": "2px",
     "SHADOW_OFFSET_Y_SMALL": "4px",
-    "SHADOW_OFFSET_Y_LARGE": "6px"
+    "SHADOW_OFFSET_Y_LARGE": "6px",
+    "STREAK_MILESTONE_INTERVAL": 7
   },
   "KOPFNUSS_DIFFICULTY": {
     "addition": {
@@ -209,5 +210,12 @@
       "popupTitle": "Halloween-Event",
       "popupDescription": "Sammle Kürbislaternen und schalte gruselige Hintergründe frei!"
     }
-  }
+  },
+  "backgroundPacks": [
+    {
+      "id": "example_pack",
+      "name": "Beispiel-Pack",
+      "costStreakStones": 1
+    }
+  ]
 }

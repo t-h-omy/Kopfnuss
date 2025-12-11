@@ -26,7 +26,9 @@ import {
   saveSelectedBackground as saveSelectedBackgroundToStorage,
   loadAudioMutedSetting,
   saveAudioMutedSetting,
-  markShopOpenedWithNewBackgrounds
+  markShopOpenedWithNewBackgrounds,
+  loadStreakStones,
+  saveStreakStones
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancingLoader.js';
@@ -98,6 +100,7 @@ import {
   initHeaderUI,
   updateHeaderStreakDisplay, 
   updateHeaderDiamondsDisplay,
+  updateHeaderStreakStonesDisplay,
   updateDiamondProgressText,
   updateHeaderSeasonalDisplay
 } from './ui/headerUI.js';
@@ -333,6 +336,9 @@ function loadChallengesScreen(container) {
     // Check if streak was incremented during challenge (only show if not unfrozen to avoid duplicate celebration)
     const showStreakIncremented = typeof screenState.streakWasIncremented === 'number' && screenState.streakWasIncremented > 0 && !showUnfrozen;
     
+    // Check if milestone was reached
+    const showMilestone = screenState.milestoneWasReached === true;
+    
     // Check for newly purchasable backgrounds (regular)
     const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
     const showBackgroundUnlock = backgroundUnlockResult.hasNew;
@@ -346,7 +352,7 @@ function loadChallengesScreen(container) {
     // Reset the flags
     const unfrozenStreakValue = screenState.streakWasUnfrozen;
     const incrementedStreakValue = screenState.streakWasIncremented;
-    setScreenState({ streakWasUnfrozen: false, streakWasIncremented: false });
+    setScreenState({ streakWasUnfrozen: false, streakWasIncremented: false, milestoneWasReached: false });
     
     // Create a scroll callback that will be called after the last popup closes
     const scrollAfterPopups = () => {
@@ -379,6 +385,10 @@ function loadChallengesScreen(container) {
     if (showStreakIncremented) {
       // Show streak celebration popup when streak was incremented by challenge completion
       popupsToShow.push((next) => showStreakCelebrationPopup(incrementedStreakValue, next));
+    }
+    if (showMilestone) {
+      // Show milestone reward popup when a streak milestone is reached
+      popupsToShow.push((next) => showMilestoneRewardPopup(next));
     }
     if (showBackgroundUnlock && newlyPurchasableBackground) {
       // Show background unlock celebration popup when a new background becomes purchasable
@@ -454,6 +464,9 @@ function loadChallengesScreen(container) {
   const daysUntilEventEnd = getDaysUntilEventEnd();
   const seasonalCurrency = activeEvent ? getSeasonalCurrency() : 0;
   
+  // Load Streak Stones
+  const streakStones = loadStreakStones();
+  
   // Build event countdown HTML for row 2
   let eventCountdownHtml = '';
   if (activeEvent && daysUntilEventEnd !== null) {
@@ -494,6 +507,10 @@ function loadChallengesScreen(container) {
           <div class="${streakClass}">
             <span class="stat-icon">${streakIcon}</span>
             <span class="stat-value">${streakInfo.currentStreak}</span>
+          </div>
+          <div class="stat-capsule">
+            <span class="stat-icon">♦️</span>
+            <span class="stat-value">${streakStones}</span>
           </div>
           <div class="stat-capsule">
             <span class="stat-icon">💎</span>
@@ -1390,6 +1407,94 @@ function showStreakCelebrationPopup(streakCount, onClose = null) {
  */
 function closeStreakCelebrationPopup() {
   closePopup('streak-celebration-popup-overlay', true);
+}
+
+/**
+ * Show milestone reward popup when player reaches a streak milestone
+ * Allows player to choose between +1 Streak Stone or +1 Diamond
+ * @param {Function} onClose - Optional callback to run after popup closes
+ */
+function showMilestoneRewardPopup(onClose = null) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay reward-popup-overlay';
+  overlay.id = 'milestone-reward-popup-overlay';
+  
+  // Create popup card
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card reward-popup-card';
+  
+  popupCard.innerHTML = `
+    <div class="reward-celebration">🎖️</div>
+    <h2>Streak Milestone erreicht!</h2>
+    <p>Du hast einen Streak-Meilenstein erreicht. Wähle deine Belohnung:</p>
+    <div class="milestone-reward-buttons">
+      <button id="milestone-reward-stone-button" class="btn-primary milestone-reward-btn">
+        <span class="milestone-reward-icon">⭐</span>
+        <span class="milestone-reward-text">1 Streak-Stein</span>
+      </button>
+      <button id="milestone-reward-diamond-button" class="btn-primary milestone-reward-btn">
+        <span class="milestone-reward-icon">💎</span>
+        <span class="milestone-reward-text">1 Diamant</span>
+      </button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Add confetti effect
+  createConfettiEffect();
+  
+  // Add event listener for Streak Stone button
+  const stoneButton = document.getElementById('milestone-reward-stone-button');
+  stoneButton.addEventListener('click', () => {
+    // Award Streak Stone
+    const currentStones = loadStreakStones();
+    saveStreakStones(currentStones + 1);
+    
+    // Update header display
+    updateHeaderStreakDisplay();
+    updateHeaderDiamondsDisplay();
+    updateHeaderStreakStonesDisplay();
+    
+    // Play diamond earn sound (reuse for reward)
+    playDiamondEarn();
+    
+    closeMilestoneRewardPopup();
+    // Call onClose callback if provided (for sequential popups)
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+  });
+  
+  // Add event listener for Diamond button
+  const diamondButton = document.getElementById('milestone-reward-diamond-button');
+  diamondButton.addEventListener('click', () => {
+    // Award Diamond
+    addDiamonds(1);
+    
+    // Update header display
+    updateHeaderStreakDisplay();
+    updateHeaderDiamondsDisplay();
+    updateHeaderStreakStonesDisplay();
+    
+    // Play diamond earn sound
+    playDiamondEarn();
+    
+    closeMilestoneRewardPopup();
+    // Call onClose callback if provided (for sequential popups)
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+  });
+}
+
+/**
+ * Close the milestone reward popup
+ */
+function closeMilestoneRewardPopup() {
+  closePopup('milestone-reward-popup-overlay', true);
 }
 
 /**

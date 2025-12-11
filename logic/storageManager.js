@@ -131,6 +131,11 @@ const STORAGE_KEYS = {
   get SELECTED_BACKGROUND() { return getStorageKey('kopfnuss_selected_background'); },
   get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); },
   get SHOP_OPENED_WITH_NEW_BACKGROUNDS() { return getStorageKey('kopfnuss_shop_opened_with_new'); },
+  // Streak Milestone & Background Packs storage keys
+  get STREAK_STONES() { return getStorageKey('kopfnuss_streak_stones'); },
+  get MILESTONE_PROGRESS() { return getStorageKey('kopfnuss_milestone_progress'); },
+  get UNLOCKED_PACKS() { return getStorageKey('kopfnuss_unlocked_packs'); },
+  get PACK_TASKS_SINCE_UNLOCK() { return getStorageKey('kopfnuss_pack_tasks_since_unlock'); },
   // Seasonal event storage keys (appended with event ID)
   get SEASONAL_CURRENCY() { return getStorageKey('kopfnuss_seasonal_currency_'); },
   get SEASONAL_TASK_COUNT() { return getStorageKey('kopfnuss_seasonal_tasks_'); },
@@ -301,6 +306,74 @@ export function saveDiamondsEarned(count) {
  */
 export function loadDiamondsEarned() {
   return loadFromStorage(STORAGE_KEYS.DIAMONDS_EARNED, 0);
+}
+
+/**
+ * Save Streak Stones count
+ * @param {number} stones - Number of streak stones
+ * @returns {boolean} Success status
+ */
+export function saveStreakStones(stones) {
+  return saveToStorage(STORAGE_KEYS.STREAK_STONES, stones);
+}
+
+/**
+ * Load Streak Stones count
+ * @returns {number} Number of streak stones (defaults to 0)
+ */
+export function loadStreakStones() {
+  return loadFromStorage(STORAGE_KEYS.STREAK_STONES, 0);
+}
+
+/**
+ * Save milestone progress
+ * @param {number} progress - Current milestone progress count
+ * @returns {boolean} Success status
+ */
+export function saveMilestoneProgress(progress) {
+  return saveToStorage(STORAGE_KEYS.MILESTONE_PROGRESS, progress);
+}
+
+/**
+ * Load milestone progress
+ * @returns {number} Current milestone progress (defaults to 0)
+ */
+export function loadMilestoneProgress() {
+  return loadFromStorage(STORAGE_KEYS.MILESTONE_PROGRESS, 0);
+}
+
+/**
+ * Save unlocked background packs
+ * @param {Array<string>} packIds - Array of unlocked pack IDs
+ * @returns {boolean} Success status
+ */
+export function saveUnlockedPacks(packIds) {
+  return saveToStorage(STORAGE_KEYS.UNLOCKED_PACKS, packIds);
+}
+
+/**
+ * Load unlocked background packs
+ * @returns {Array<string>} Array of unlocked pack IDs (defaults to empty array)
+ */
+export function loadUnlockedPacks() {
+  return loadFromStorage(STORAGE_KEYS.UNLOCKED_PACKS, []);
+}
+
+/**
+ * Save pack tasks since unlock tracking
+ * @param {Object} packTasks - Object mapping pack IDs to task counts
+ * @returns {boolean} Success status
+ */
+export function savePackTasksSinceUnlock(packTasks) {
+  return saveToStorage(STORAGE_KEYS.PACK_TASKS_SINCE_UNLOCK, packTasks);
+}
+
+/**
+ * Load pack tasks since unlock tracking
+ * @returns {Object} Object mapping pack IDs to task counts (defaults to empty object)
+ */
+export function loadPackTasksSinceUnlock() {
+  return loadFromStorage(STORAGE_KEYS.PACK_TASKS_SINCE_UNLOCK, {});
 }
 
 /**

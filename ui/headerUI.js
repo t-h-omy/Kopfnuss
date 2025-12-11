@@ -2,6 +2,7 @@
 // Manages updates to header displays (streak, diamonds, seasonal currency, progress)
 
 import { getDiamondInfo } from '../logic/diamondManager.js';
+import { loadStreakStones } from '../logic/storageManager.js';
 import { CONFIG } from '../data/balancingLoader.js';
 
 /**
@@ -43,9 +44,22 @@ export function updateHeaderStreakDisplay(streakCount, isFrozen = false) {
  */
 export function updateHeaderDiamondsDisplay() {
   const diamondInfo = getDiamondInfo();
-  const diamondValueElement = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
+  // Select the third stat-capsule (streak, streak stones, diamonds)
+  const diamondValueElement = document.querySelector('.header-stats .stat-capsule:nth-child(3) .stat-value');
   if (diamondValueElement) {
     diamondValueElement.textContent = diamondInfo.current;
+  }
+}
+
+/**
+ * Update the streak stones display in the challenges header
+ */
+export function updateHeaderStreakStonesDisplay() {
+  const streakStones = loadStreakStones();
+  // Select the second stat-capsule (after streak, before diamonds)
+  const streakStonesValueElement = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+  if (streakStonesValueElement) {
+    streakStonesValueElement.textContent = streakStones;
   }
 }
 

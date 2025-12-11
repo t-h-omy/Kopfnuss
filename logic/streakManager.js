@@ -5,7 +5,9 @@ import { CONFIG } from '../data/balancingLoader.js';
 import { 
   loadStreak, 
   saveStreak, 
-  getTodayDate 
+  getTodayDate,
+  loadMilestoneProgress,
+  saveMilestoneProgress
 } from './storageManager.js';
 import { loadDiamonds, saveDiamonds } from './diamondManager.js';
 
@@ -210,7 +212,8 @@ export function incrementStreakByChallenge() {
     return {
       success: false,
       wasIncremented: false,
-      message: 'Streak is frozen, use unfreezeStreakByChallenge instead'
+      message: 'Streak is frozen, use unfreezeStreakByChallenge instead',
+      milestoneReached: false
     };
   }
   
@@ -220,7 +223,8 @@ export function incrementStreakByChallenge() {
     return {
       success: false,
       wasIncremented: false,
-      message: 'Streak has a loss reason, must be handled first'
+      message: 'Streak has a loss reason, must be handled first',
+      milestoneReached: false
     };
   }
   
@@ -230,7 +234,8 @@ export function incrementStreakByChallenge() {
       success: true,
       wasIncremented: false,
       message: 'Already completed a challenge today',
-      currentStreak: streak.currentStreak
+      currentStreak: streak.currentStreak,
+      milestoneReached: false
     };
   }
   
@@ -243,11 +248,16 @@ export function incrementStreakByChallenge() {
     streak.lossReason = null;
     saveStreak(streak);
     
+    // Start milestone progress at 1
+    let milestoneProgress = 1;
+    saveMilestoneProgress(milestoneProgress);
+    
     return {
       success: true,
       wasIncremented: true,
       message: 'First streak day started!',
-      newStreak: streak.currentStreak
+      newStreak: streak.currentStreak,
+      milestoneReached: false
     };
   }
   
@@ -267,11 +277,27 @@ export function incrementStreakByChallenge() {
     
     saveStreak(streak);
     
+    // Update milestone progress
+    let milestoneProgress = loadMilestoneProgress();
+    milestoneProgress += 1;
+    
+    // Check if milestone is reached
+    const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+    let milestoneReached = false;
+    
+    if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
+      milestoneReached = true;
+      milestoneProgress = 0; // Reset after milestone
+    }
+    
+    saveMilestoneProgress(milestoneProgress);
+    
     return {
       success: true,
       wasIncremented: true,
       message: 'Streak incremented!',
-      newStreak: streak.currentStreak
+      newStreak: streak.currentStreak,
+      milestoneReached: milestoneReached
     };
   }
   
@@ -284,18 +310,23 @@ export function incrementStreakByChallenge() {
     streak.lossReason = null;
     saveStreak(streak);
     
+    // Reset milestone progress when starting new streak after gap
+    saveMilestoneProgress(1);
+    
     return {
       success: true,
       wasIncremented: true,
       message: 'New streak started after gap',
-      newStreak: streak.currentStreak
+      newStreak: streak.currentStreak,
+      milestoneReached: false
     };
   }
   
   return {
     success: false,
     wasIncremented: false,
-    message: 'Unexpected state'
+    message: 'Unexpected state',
+    milestoneReached: false
   };
 }
 
@@ -344,7 +375,8 @@ export function unfreezeStreakByChallenge() {
     return {
       success: false,
       wasUnfrozen: false,
-      message: 'Streak is not frozen'
+      message: 'Streak is not frozen',
+      milestoneReached: false
     };
   }
   
@@ -358,7 +390,8 @@ export function unfreezeStreakByChallenge() {
     return {
       success: false,
       wasUnfrozen: false,
-      message: 'Streak can only be unfrozen on frozen day (2 day gap)'
+      message: 'Streak can only be unfrozen on frozen day (2 day gap)',
+      milestoneReached: false
     };
   }
   
@@ -375,11 +408,27 @@ export function unfreezeStreakByChallenge() {
   
   saveStreak(streak);
   
+  // Update milestone progress
+  let milestoneProgress = loadMilestoneProgress();
+  milestoneProgress += 1;
+  
+  // Check if milestone is reached
+  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+  let milestoneReached = false;
+  
+  if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
+    milestoneReached = true;
+    milestoneProgress = 0; // Reset after milestone
+  }
+  
+  saveMilestoneProgress(milestoneProgress);
+  
   return {
     success: true,
     wasUnfrozen: true,
     message: 'Streak unfrozen!',
-    newStreak: streak.currentStreak
+    newStreak: streak.currentStreak,
+    milestoneReached: milestoneReached
   };
 }
 
@@ -400,7 +449,8 @@ export function restoreExpiredStreak() {
   if (daysSinceLastActive !== 3) {
     return {
       success: false,
-      message: 'Streak can only be restored after exactly 3 days of inactivity'
+      message: 'Streak can only be restored after exactly 3 days of inactivity',
+      milestoneReached: false
     };
   }
   
@@ -409,7 +459,8 @@ export function restoreExpiredStreak() {
     return {
       success: false,
       message: `Not enough diamonds. Need ${CONFIG.STREAK_RESCUE_COST}, have ${diamonds}`,
-      needsDiamond: true
+      needsDiamond: true,
+      milestoneReached: false
     };
   }
   
@@ -430,11 +481,27 @@ export function restoreExpiredStreak() {
   
   saveStreak(streak);
   
+  // Update milestone progress (continue, not reset, since streak was restored)
+  let milestoneProgress = loadMilestoneProgress();
+  milestoneProgress += 1;
+  
+  // Check if milestone is reached
+  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+  let milestoneReached = false;
+  
+  if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
+    milestoneReached = true;
+    milestoneProgress = 0; // Reset after milestone
+  }
+  
+  saveMilestoneProgress(milestoneProgress);
+  
   return {
     success: true,
     message: 'Streak restored!',
     diamondsRemaining: diamonds - CONFIG.STREAK_RESCUE_COST,
-    newStreak: streak.currentStreak
+    newStreak: streak.currentStreak,
+    milestoneReached: milestoneReached
   };
 }
 
@@ -449,6 +516,9 @@ export function acceptStreakLoss() {
   streak.lossReason = null;
   // Don't clear lastActiveDate - keep it for future calculations
   saveStreak(streak);
+  
+  // Reset milestone progress when streak is lost
+  saveMilestoneProgress(0);
   
   return {
     success: true,
@@ -516,7 +586,12 @@ export function resetStreak() {
     isFrozen: false,
     lossReason: null
   };
-  return saveStreak(streak);
+  saveStreak(streak);
+  
+  // Reset milestone progress when streak is reset
+  saveMilestoneProgress(0);
+  
+  return true;
 }
 
 /**
