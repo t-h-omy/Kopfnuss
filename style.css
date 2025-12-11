@@ -38,6 +38,13 @@
 
   /* Text */
   --text-color: #333333;
+  --text-color-light: #666666;
+  --text-color-lighter: #999999;
+  
+  /* Neutral Colors */
+  --color-white: #FFFFFF;
+  --color-gray-light: #f5f5f5;
+  --color-gray-hover: #c0c0c0;
 
   /* Balancable Shadow Variables - Set via JS from CONFIG */
   /* These values can be tuned in data/balancing.js without touching CSS */
@@ -227,7 +234,7 @@ button,
 
 #back-button:hover,
 .btn-secondary:hover {
-  background: #c0c0c0;
+  background: var(--color-gray-hover);
   transform: translateY(-1px);
 }
 
@@ -447,7 +454,7 @@ button,
 
 .reward-button.disabled {
   background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
-  color: #666;
+  color: var(--text-color-light);
   cursor: not-allowed;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   border: 2px solid #9E9E9E;
@@ -865,7 +872,7 @@ button,
   display: flex;
   align-items: center;
   gap: 4px;
-  background: #FFFFFF;
+  background: var(--color-white);
   padding: 6px 10px;
   border-radius: 12px;
   box-shadow: 0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
@@ -981,7 +988,7 @@ button,
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: #FFFFFF;
+  background: var(--color-white);
   border: 5px solid var(--color-gray);
   display: flex;
   align-items: center;
@@ -1122,7 +1129,7 @@ button,
 /* Challenge Info Card */
 .challenge-info-card {
   --card-overlap: -25px;
-  background: #FFFFFF;
+  background: var(--color-white);
   border-radius: 16px;
   padding: 10px 16px;
   box-shadow: 0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
@@ -1147,7 +1154,7 @@ button,
   font-family: 'Fredoka', sans-serif;
   font-size: 21px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: var(--spacing-xs);
 }
 
@@ -1155,7 +1162,7 @@ button,
   font-family: 'Fredoka', sans-serif;
   font-size: 15px;
   font-weight: 400;
-  color: #666;
+  color: var(--text-color-light);
   margin: 0;
 }
 
@@ -1175,7 +1182,7 @@ button,
   font-family: 'Fredoka', sans-serif;
   font-size: 9px;
   font-weight: 400;
-  color: #999;
+  color: var(--text-color-lighter);
   background: transparent;
 }
 
@@ -1566,7 +1573,7 @@ button,
   font-family: 'Fredoka', sans-serif;
   font-size: 9px;
   font-weight: 400;
-  color: #999;
+  color: var(--text-color-lighter);
   background: transparent;
   z-index: 1;
 }
@@ -1733,7 +1740,7 @@ button,
 }
 
 #task-input::placeholder {
-  color: #999;
+  color: var(--text-color-lighter);
 }
 
 /* Task Feedback */
