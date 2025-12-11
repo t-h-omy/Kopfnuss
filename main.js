@@ -509,7 +509,7 @@ function loadChallengesScreen(container) {
             <span class="stat-value">${streakInfo.currentStreak}</span>
           </div>
           <div class="stat-capsule">
-            <span class="stat-icon">💠</span>
+            <span class="stat-icon">♦️</span>
             <span class="stat-value">${streakStones}</span>
           </div>
           <div class="stat-capsule">
