@@ -19,6 +19,10 @@ let loadKopfnussTaskScreenFn = null;
 let loadZeitChallengeTaskScreenFn = null;
 let loadStatsScreenFn = null;
 
+// Challenge result notification callbacks
+let notifyKopfnussChallengeResultCallback = null;
+let notifyZeitChallengeResultCallback = null;
+
 /**
  * Initialize the UI bridge with references to main.js screen loading functions
  * This must be called by main.js during initialization
@@ -163,4 +167,36 @@ export function notifyStreakIncremented(newStreak) {
  */
 export function notifySuperChallengeResult(success, awardedDiamond, seasonalCurrencyAwarded = null) {
   superChallengeResult = { success, awardedDiamond, seasonalCurrencyAwarded };
+}
+
+/**
+ * Register challenge result handler callbacks
+ * This allows main.js to provide handlers for challenge result notifications
+ * @param {Object} handlers - Object containing handler functions
+ */
+export function registerChallengeResultHandlers(handlers) {
+  notifyKopfnussChallengeResultCallback = handlers.notifyKopfnussChallengeResult;
+  notifyZeitChallengeResultCallback = handlers.notifyZeitChallengeResult;
+}
+
+/**
+ * Bridge function to notify Kopfnuss Challenge result
+ * @param {boolean} success - Whether the challenge was completed without errors
+ * @param {Object|null} reward - Reward info if successful
+ */
+export function notifyKopfnussChallengeResultBridge(success, reward = null) {
+  if (notifyKopfnussChallengeResultCallback) {
+    notifyKopfnussChallengeResultCallback(success, reward);
+  }
+}
+
+/**
+ * Bridge function to notify Zeit-Challenge result
+ * @param {boolean} success - Whether the challenge was completed in time
+ * @param {Object|null} reward - Reward info if successful
+ */
+export function notifyZeitChallengeResultBridge(success, reward = null) {
+  if (notifyZeitChallengeResultCallback) {
+    notifyZeitChallengeResultCallback(success, reward);
+  }
 }

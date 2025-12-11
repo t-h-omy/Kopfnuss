@@ -8,8 +8,7 @@ import {
   KOPFNUSS_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
-import { showScreen } from './uiBridge.js';
-import { notifyKopfnussChallengeResult } from '../main.js';
+import { showScreen, notifyKopfnussChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
@@ -239,10 +238,10 @@ function handleKopfnussChallengeCompletion() {
     }
     
     // Notify main.js about the result
-    notifyKopfnussChallengeResult(true, rewardInfo);
+    notifyKopfnussChallengeResultBridge(true, rewardInfo);
   } else {
     // Notify main.js about the failure
-    notifyKopfnussChallengeResult(false, null);
+    notifyKopfnussChallengeResultBridge(false, null);
   }
   
   // Get appropriate phrase
@@ -316,7 +315,7 @@ function handleKopfnussChallengeCompletion() {
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
-          notifyKopfnussChallengeResult(true, rewardInfo);
+          notifyKopfnussChallengeResultBridge(true, rewardInfo);
           showScreen('challenges');
         });
       }
@@ -329,7 +328,7 @@ function handleKopfnussChallengeCompletion() {
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
-          notifyKopfnussChallengeResult(true, rewardInfo);
+          notifyKopfnussChallengeResultBridge(true, rewardInfo);
           showScreen('challenges');
         });
       }

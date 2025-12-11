@@ -9,8 +9,7 @@ import {
   ZEIT_CHALLENGE_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
-import { showScreen } from './uiBridge.js';
-import { notifyZeitChallengeResult } from '../main.js';
+import { showScreen, notifyZeitChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
@@ -420,7 +419,7 @@ function handleZeitChallengeCompletion() {
   }
   
   // Notify main.js about the result so popup shows when returning to challenges
-  notifyZeitChallengeResult(true, rewardInfo);
+  notifyZeitChallengeResultBridge(true, rewardInfo);
   
   // Get success phrase
   const motivationPhrase = getRandomPhrase(ZEIT_SUCCESS_PHRASES);
@@ -511,7 +510,7 @@ function handleZeitChallengeCompletion() {
           addDiamonds(rewardInfo.amount);
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
-          notifyZeitChallengeResult(true, rewardInfo);
+          notifyZeitChallengeResultBridge(true, rewardInfo);
           showScreen('challenges');
         });
       }
@@ -524,7 +523,7 @@ function handleZeitChallengeCompletion() {
           addSeasonalCurrency(rewardInfo.amount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
-          notifyZeitChallengeResult(true, rewardInfo);
+          notifyZeitChallengeResultBridge(true, rewardInfo);
           showScreen('challenges');
         });
       }
