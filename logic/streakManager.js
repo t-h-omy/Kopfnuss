@@ -212,7 +212,8 @@ export function incrementStreakByChallenge() {
     return {
       success: false,
       wasIncremented: false,
-      message: 'Streak is frozen, use unfreezeStreakByChallenge instead'
+      message: 'Streak is frozen, use unfreezeStreakByChallenge instead',
+      milestoneReached: false
     };
   }
   
@@ -222,7 +223,8 @@ export function incrementStreakByChallenge() {
     return {
       success: false,
       wasIncremented: false,
-      message: 'Streak has a loss reason, must be handled first'
+      message: 'Streak has a loss reason, must be handled first',
+      milestoneReached: false
     };
   }
   
@@ -232,7 +234,8 @@ export function incrementStreakByChallenge() {
       success: true,
       wasIncremented: false,
       message: 'Already completed a challenge today',
-      currentStreak: streak.currentStreak
+      currentStreak: streak.currentStreak,
+      milestoneReached: false
     };
   }
   
@@ -372,7 +375,8 @@ export function unfreezeStreakByChallenge() {
     return {
       success: false,
       wasUnfrozen: false,
-      message: 'Streak is not frozen'
+      message: 'Streak is not frozen',
+      milestoneReached: false
     };
   }
   
@@ -386,7 +390,8 @@ export function unfreezeStreakByChallenge() {
     return {
       success: false,
       wasUnfrozen: false,
-      message: 'Streak can only be unfrozen on frozen day (2 day gap)'
+      message: 'Streak can only be unfrozen on frozen day (2 day gap)',
+      milestoneReached: false
     };
   }
   
@@ -444,7 +449,8 @@ export function restoreExpiredStreak() {
   if (daysSinceLastActive !== 3) {
     return {
       success: false,
-      message: 'Streak can only be restored after exactly 3 days of inactivity'
+      message: 'Streak can only be restored after exactly 3 days of inactivity',
+      milestoneReached: false
     };
   }
   
@@ -453,7 +459,8 @@ export function restoreExpiredStreak() {
     return {
       success: false,
       message: `Not enough diamonds. Need ${CONFIG.STREAK_RESCUE_COST}, have ${diamonds}`,
-      needsDiamond: true
+      needsDiamond: true,
+      milestoneReached: false
     };
   }
   
