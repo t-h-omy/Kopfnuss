@@ -233,8 +233,8 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   `;
   
   popupCard.innerHTML = `
+    ${headerHtml}
     <div class="background-shop-content">
-      ${headerHtml}
       ${tabStandardHtml}
       ${tabPacksHtml}
       ${tabSeasonalHtml}

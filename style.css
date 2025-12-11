@@ -1849,7 +1849,7 @@ button,
 
 .background-shop-content {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   padding-bottom: var(--spacing-sm);
 }
 
