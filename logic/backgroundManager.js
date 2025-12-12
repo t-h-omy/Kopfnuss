@@ -282,6 +282,15 @@ export function checkForNewlyPurchasableBackgrounds() {
   // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
     clearShopOpenedFlag();
+    
+    // Remove newly purchasable backgrounds from seen lists so they show as NEW
+    const seenStandard = loadSeenStandardBackgrounds();
+    const seenPacks = loadSeenPacksBackgrounds();
+    const updatedSeenStandard = seenStandard.filter(id => !newlyPurchasable.includes(id));
+    const updatedSeenPacks = seenPacks.filter(id => !newlyPurchasable.includes(id));
+    saveSeenStandardBackgrounds(updatedSeenStandard);
+    saveSeenPacksBackgrounds(updatedSeenPacks);
+    
     // Mark these backgrounds as "seen" in terms of the unlock popup
     // This prevents the popup from showing again on subsequent challenge completions
     const unlockedIds = loadUnlockedBackgrounds();

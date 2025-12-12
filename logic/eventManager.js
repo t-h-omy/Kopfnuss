@@ -734,6 +734,12 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
   // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
     clearShopOpenedFlag();
+    
+    // Remove newly purchasable backgrounds from seasonal seen list so they show as NEW
+    const seenSeasonal = loadSeenSeasonalBackgrounds();
+    const updatedSeenSeasonal = seenSeasonal.filter(id => !newlyPurchasable.includes(id));
+    saveSeenSeasonalBackgrounds(updatedSeenSeasonal);
+    
     // Mark these backgrounds as "seen" in terms of the unlock popup
     // This prevents the popup from showing again on subsequent challenge completions
     const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
