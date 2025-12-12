@@ -492,10 +492,32 @@ export function closeBackgroundShopPopup() {
 }
 
 /**
+ * Get the currently active tab in the shop
+ * @returns {string|null} The active tab name ('standard', 'packs', or 'seasonal'), or null if not found
+ */
+function getCurrentActiveTab() {
+  const overlay = document.getElementById('background-shop-overlay');
+  if (!overlay) return null;
+  
+  // Check which tab button is active
+  const activeButton = overlay.querySelector('.shop-tab-button.active');
+  if (activeButton) {
+    return activeButton.dataset.tab;
+  }
+  
+  return null;
+}
+
+/**
  * Refresh shop UI (re-opens shop with current state)
  * @param {string|null} activeTab - Optional tab to show after refresh
  */
 export function refreshShopUI(activeTab = null) {
+  // If no tab specified, try to preserve the current active tab
+  if (!activeTab) {
+    activeTab = getCurrentActiveTab();
+  }
+  
   closeBackgroundShopPopup();
   showBackgroundShopPopup(null, activeTab);
 }
