@@ -1849,16 +1849,18 @@ button,
 
 .background-shop-content {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   padding-bottom: var(--spacing-sm);
 }
 
 .background-shop-card h2 {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xs) 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
+  font-size: 20px;
 }
 
 .background-shop-header {
@@ -1866,20 +1868,21 @@ button,
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: linear-gradient(135deg, #E8F4FD 0%, #B8E6FF 100%);
-  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
 }
 
 .background-shop-diamonds {
   font-family: 'Fredoka', sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-blue);
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 4px;
+  background: rgba(76, 175, 220, 0.12);
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
 .backgrounds-grid {
@@ -2948,13 +2951,16 @@ button,
 
 .background-shop-seasonal-currency {
   font-family: 'Fredoka', sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: #388E3C;
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  margin-left: var(--spacing-md);
+  gap: 4px;
+  background: rgba(56, 142, 60, 0.12);
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-left: 0;
 }
 
 .seasonal-cost {
@@ -2966,6 +2972,69 @@ button,
   color: var(--color-orange);
   font-weight: 500;
   margin: var(--spacing-sm) 0;
+}
+
+/* Shop Tab Structure */
+.shop-tab-header {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-gray);
+}
+
+.shop-tab-button {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-xs);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color-light);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  bottom: -1px;
+}
+
+.shop-tab-button:hover {
+  color: var(--text-color);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.shop-tab-button.active {
+  color: var(--color-blue);
+  border-bottom-color: var(--color-blue);
+  font-weight: 600;
+}
+
+.shop-tab-content {
+  display: none;
+  overflow-y: auto;
+  max-height: 55vh;
+  padding-right: var(--spacing-xs);
+}
+
+.shop-tab-content.active {
+  display: block;
+}
+
+.shop-tab-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.shop-tab-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shop-tab-content::-webkit-scrollbar-thumb {
+  background: var(--color-gray);
+  border-radius: 3px;
+}
+
+.shop-tab-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-hover);
 }
 
 .super-success-display.seasonal-reward {
