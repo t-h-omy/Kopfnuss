@@ -536,7 +536,9 @@ export function unlockPack(packId, currentStreakStones) {
     return {
       success: false,
       message: `Nicht genug Streak-Steine. Benötigt: ${pack.costStreakStones}, Vorhanden: ${currentStreakStones}`,
-      needsMoreStones: true
+      needsMoreStones: true,
+      required: pack.costStreakStones,
+      current: currentStreakStones
     };
   }
   
@@ -552,7 +554,8 @@ export function unlockPack(packId, currentStreakStones) {
   return {
     success: true,
     message: 'Pack freigeschaltet!',
-    pack: pack
+    pack: pack,
+    costStreakStones: pack.costStreakStones
   };
 }
 

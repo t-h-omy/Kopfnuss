@@ -9,7 +9,8 @@ import {
   selectBackground,
   BACKGROUND_STATE,
   updateKnownPurchasableBackgrounds,
-  getBackgroundPacksWithState
+  getBackgroundPacksWithState,
+  unlockPack
 } from '../logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -21,12 +22,14 @@ import {
 import { loadDiamonds } from '../logic/diamondManager.js';
 import { 
   saveSelectedBackground as saveSelectedBackgroundToStorage,
-  markShopOpenedWithNewBackgrounds
+  markShopOpenedWithNewBackgrounds,
+  loadStreakStones,
+  saveStreakStones
 } from '../logic/storageManager.js';
 import { createConfettiEffect } from '../logic/popupManager.js';
 import { playBackgroundPurchased } from '../logic/audioBootstrap.js';
 import { ANIMATION_TIMING } from '../data/constants.js';
-import { updateHeaderDiamondsDisplay } from './headerUI.js';
+import { updateHeaderDiamondsDisplay, updateHeaderStreakStonesDisplay } from './headerUI.js';
 
 /**
  * Initialize shop UI
@@ -215,6 +218,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   
   // Create Packs tab content
   const packs = getBackgroundPacksWithState();
+  const streakStones = loadStreakStones();
   
   // Sort packs: unlocked first, locked second
   const sortedPacks = [...packs].sort((a, b) => {
@@ -227,6 +231,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   
   sortedPacks.forEach(pack => {
     const packClass = pack.unlocked ? 'pack-container unlocked' : 'pack-container locked';
+    const canAfford = streakStones >= pack.costStreakStones;
     
     packsContentHtml += `
       <div class="${packClass}" data-pack-id="${pack.id}">
@@ -236,9 +241,10 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
     
     // Add unlock button for locked packs
     if (!pack.unlocked) {
+      const buttonDisabled = !canAfford ? 'disabled' : '';
       packsContentHtml += `
-          <button class="btn-primary pack-unlock-button" disabled data-pack-id="${pack.id}">
-            Pack freischalten
+          <button class="btn-primary pack-unlock-button" ${buttonDisabled} data-pack-id="${pack.id}" data-cost="${pack.costStreakStones}">
+            🪨 ${pack.costStreakStones} freischalten
           </button>
       `;
     }
@@ -389,6 +395,17 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
         });
       }
     }
+  });
+  
+  // Add click handlers for pack unlock buttons
+  const packUnlockButtons = popupCard.querySelectorAll('.pack-unlock-button');
+  packUnlockButtons.forEach(button => {
+    const packId = button.dataset.packId;
+    const cost = parseInt(button.dataset.cost);
+    
+    button.addEventListener('click', () => {
+      handlePackUnlockClick(packId, cost);
+    });
   });
   
   // Add tab switching handlers
@@ -860,6 +877,184 @@ function showNotEnoughSeasonalCurrencyHint() {
   setTimeout(() => {
     hint.remove();
   }, 3000);
+}
+
+/**
+ * Handle click on a pack unlock button
+ * @param {string} packId - The ID of the pack to unlock
+ * @param {number} cost - Cost in streak stones
+ */
+function handlePackUnlockClick(packId, cost) {
+  const streakStones = loadStreakStones();
+  
+  // Check if player has enough streak stones
+  if (streakStones < cost) {
+    showInsufficientStreakStonesPopup(cost, streakStones);
+  } else {
+    showPackUnlockConfirmPopup(packId, cost);
+  }
+}
+
+/**
+ * Show popup when player doesn't have enough streak stones
+ * @param {number} required - Required amount of streak stones
+ * @param {number} current - Current amount of streak stones
+ */
+function showInsufficientStreakStonesPopup(required, current) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay insufficient-stones-overlay';
+  overlay.id = 'insufficient-stones-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card insufficient-stones-card';
+  
+  const missing = required - current;
+  
+  popupCard.innerHTML = `
+    <h2>Nicht genug Streak-Steine!</h2>
+    <div class="insufficient-stones-display">
+      <span class="insufficient-stones-icon">🪨</span>
+      <span class="insufficient-stones-text">${current} / ${required}</span>
+    </div>
+    <p>Du brauchst noch <strong>${missing} Streak-Steine</strong>, um dieses Pack freizuschalten.</p>
+    <p>Streak-Steine erhältst du durch tägliche Streaks!</p>
+    <button id="close-insufficient-stones" class="btn-secondary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const closeBtn = document.getElementById('close-insufficient-stones');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+  }
+}
+
+/**
+ * Show confirmation popup for pack unlock
+ * @param {string} packId - The ID of the pack to unlock
+ * @param {number} cost - Cost in streak stones
+ */
+function showPackUnlockConfirmPopup(packId, cost) {
+  const packs = getBackgroundPacksWithState();
+  const pack = packs.find(p => p.id === packId);
+  
+  if (!pack) return;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay background-confirm-overlay';
+  overlay.id = 'pack-unlock-confirm-overlay';
+  
+  const popupCard = document.createElement('div');
+  popupCard.className = 'popup-card background-confirm-card';
+  
+  popupCard.innerHTML = `
+    <h2>Pack freischalten?</h2>
+    <p><strong>${pack.name}</strong></p>
+    <div class="background-confirm-cost">
+      <span>🪨</span>
+      <span>${cost} Streak-Steine</span>
+    </div>
+    <p>Dieses Pack enthält ${pack.backgrounds.length} exklusive Hintergründe!</p>
+    <div class="background-confirm-buttons">
+      <button id="confirm-pack-unlock-button" class="btn-primary">Freischalten</button>
+      <button id="cancel-pack-unlock-button" class="btn-secondary">Abbrechen</button>
+    </div>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  const confirmBtn = document.getElementById('confirm-pack-unlock-button');
+  const cancelBtn = document.getElementById('cancel-pack-unlock-button');
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      executePackUnlock(packId);
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+  }
+}
+
+/**
+ * Execute pack unlock
+ * @param {string} packId - The ID of the pack to unlock
+ */
+function executePackUnlock(packId) {
+  const currentStreakStones = loadStreakStones();
+  const result = unlockPack(packId, currentStreakStones);
+  
+  // Close confirmation popup
+  const confirmOverlay = document.getElementById('pack-unlock-confirm-overlay');
+  if (confirmOverlay) {
+    confirmOverlay.remove();
+  }
+  
+  if (result.success) {
+    // Deduct streak stones
+    const newStreakStones = currentStreakStones - result.costStreakStones;
+    saveStreakStones(newStreakStones);
+    
+    // Update header display
+    updateHeaderStreakStonesDisplay();
+    
+    // Play success sound
+    playBackgroundPurchased();
+    
+    // Show confetti
+    createConfettiEffect();
+    
+    // Refresh shop UI (this will re-render with the pack unlocked and moved to top)
+    refreshShopUI();
+    
+    // After refresh, scroll to the unlocked pack
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        scrollToPackAfterUnlock(packId);
+      }, ANIMATION_TIMING.DOM_RENDER_DELAY);
+    });
+  } else if (result.needsMoreStones) {
+    showInsufficientStreakStonesPopup(result.required, result.current);
+  }
+}
+
+/**
+ * Scroll to a pack container after it has been unlocked
+ * @param {string} packId - The ID of the pack to scroll to
+ */
+function scrollToPackAfterUnlock(packId) {
+  const packContainer = document.querySelector(`.pack-container[data-pack-id="${packId}"]`);
+  if (packContainer) {
+    // Get the packs tab content to scroll within
+    const packsTabContent = document.getElementById('shopTabPacks');
+    if (packsTabContent) {
+      // Calculate position relative to the scrollable container
+      const containerTop = packContainer.offsetTop;
+      
+      // Scroll the tab content
+      packsTabContent.scrollTo({
+        top: containerTop - 20, // 20px offset for better visibility
+        behavior: 'smooth'
+      });
+      
+      // Apply highlight effect
+      setTimeout(() => {
+        packContainer.classList.add('background-newly-purchasable-highlight');
+        
+        // Remove highlight after animation
+        setTimeout(() => {
+          packContainer.classList.remove('background-newly-purchasable-highlight');
+        }, ANIMATION_TIMING.REWARD_HIGHLIGHT_DURATION);
+      }, ANIMATION_TIMING.SCROLL_SETTLE_DELAY);
+    }
+  }
 }
 
 /**
