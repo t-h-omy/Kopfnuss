@@ -102,9 +102,9 @@ function getBackgroundsSource() {
     return backgrounds;
   }
   
-  // Filter for standard backgrounds only
+  // Filter for standard backgrounds only (excluding pack backgrounds)
   BACKGROUNDS_UNIFIED
-    .filter(bg => bg.category === 'standard' && bg.active)
+    .filter(bg => bg.category === 'standard' && bg.active && !bg.pack)
     .forEach(bg => {
       backgrounds[bg.id] = convertToLegacyFormat(bg);
     });
