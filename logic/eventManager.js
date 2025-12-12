@@ -154,8 +154,7 @@ export function isEventActive() {
 export function getNextEvent() {
   const currentDate = getCurrentDate();
   const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentDay = currentDate.getDate();
+  const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
   
   let nextEvent = null;
   let nextStartDate = null;
@@ -167,13 +166,13 @@ export function getNextEvent() {
     // Calculate start date for this year
     let startDate = new Date(currentYear, event.startMonth - 1, event.startDay);
     
-    // If the event start is in the past this year, check next year
-    if (startDate <= currentDate) {
+    // If the event start is in the past, check next year
+    if (startDate < currentDate) {
       startDate = new Date(currentYear + 1, event.startMonth - 1, event.startDay);
     }
     
     // Calculate days until event starts
-    const daysUntilStart = Math.ceil((startDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysUntilStart = Math.ceil((startDate.getTime() - currentDate.getTime()) / MILLISECONDS_PER_DAY);
     
     // Keep track of the closest upcoming event
     if (daysUntilStart > 0 && daysUntilStart < minDaysUntilStart) {

@@ -32,6 +32,10 @@ import { playBackgroundPurchased } from '../logic/audioBootstrap.js';
 import { ANIMATION_TIMING } from '../data/constants.js';
 import { updateHeaderDiamondsDisplay, updateHeaderStreakStonesDisplay } from './headerUI.js';
 
+// Date formatting constants
+const DATE_FORMAT_LOCALE = 'de-DE';
+const DATE_FORMAT_OPTIONS = { day: '2-digit', month: '2-digit', year: 'numeric' };
+
 /**
  * Initialize shop UI
  * Called once during app initialization
@@ -325,8 +329,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
     
     if (nextEventInfo) {
       const startDate = nextEventInfo.startDate;
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-      const dateString = startDate.toLocaleDateString('de-DE', options);
+      const dateString = startDate.toLocaleDateString(DATE_FORMAT_LOCALE, DATE_FORMAT_OPTIONS);
       nextEventMessage = `
         <p class="seasonal-empty-next-event">
           Nächstes Event: <strong>${nextEventInfo.event.emoticon} ${nextEventInfo.event.name}</strong> ab ${dateString}
