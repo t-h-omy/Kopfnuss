@@ -3004,12 +3004,15 @@ function setupDevSettingsListeners() {
       let milestoneProgress = loadMilestoneProgress();
       milestoneProgress += 1;
       
-      // Clamp milestone progress to stay below milestone interval
-      // Don't trigger milestone in dev mode, just clamp to max value
+      // Check if milestone is reached
       const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
-      if (milestoneProgress >= milestoneInterval) {
-        milestoneProgress = milestoneInterval - 1;
+      let milestoneReached = false;
+      
+      if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
+        milestoneReached = true;
+        milestoneProgress = 0; // Reset after milestone
       }
+      
       saveMilestoneProgress(milestoneProgress);
       
       // Update dev settings display
@@ -3018,6 +3021,11 @@ function setupDevSettingsListeners() {
       const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
       if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
       showDevFeedback('🔥 ' + streak.currentStreak);
+      
+      // Trigger milestone popup if reached
+      if (milestoneReached) {
+        showMilestoneRewardPopup();
+      }
     });
   }
   
