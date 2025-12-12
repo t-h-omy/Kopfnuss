@@ -244,7 +244,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
       const buttonDisabled = !canAfford ? 'disabled' : '';
       packsContentHtml += `
           <button class="btn-primary pack-unlock-button" ${buttonDisabled} data-pack-id="${pack.id}" data-cost="${pack.costStreakStones}">
-            🪨 ${pack.costStreakStones} freischalten
+            ♦️ ${pack.costStreakStones} freischalten
           </button>
       `;
     }
@@ -913,7 +913,7 @@ function showInsufficientStreakStonesPopup(required, current) {
   popupCard.innerHTML = `
     <h2>Nicht genug Streak-Steine!</h2>
     <div class="insufficient-stones-display">
-      <span class="insufficient-stones-icon">🪨</span>
+      <span class="insufficient-stones-icon">♦️</span>
       <span class="insufficient-stones-text">${current} / ${required}</span>
     </div>
     <p>Du brauchst noch <strong>${missing} Streak-Steine</strong>, um dieses Pack freizuschalten.</p>
@@ -954,7 +954,7 @@ function showPackUnlockConfirmPopup(packId, cost) {
     <h2>Pack freischalten?</h2>
     <p><strong>${pack.name}</strong></p>
     <div class="background-confirm-cost">
-      <span>🪨</span>
+      <span>♦️</span>
       <span>${cost} Streak-Steine</span>
     </div>
     <p>Dieses Pack enthält ${pack.backgrounds.length} exklusive Hintergründe!</p>
