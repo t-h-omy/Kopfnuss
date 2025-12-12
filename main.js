@@ -75,7 +75,7 @@ import {
   shouldShowEventStartPopup,
   markEventStartPopupShown,
   shouldShowEventEndPopup,
-  hasNewSeasonalBackgrounds
+  hasNewSeasonalBackgrounds,
   markEventEndPopupShown,
   checkAndResetSeasonalBackground,
   isSeasonalBackgroundUsable,

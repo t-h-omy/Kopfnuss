@@ -457,6 +457,25 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
     });
   });
   
+  // Helper function to mark tab as seen and remove NEW badge
+  function markTabAsSeen(tabName, buttonElement) {
+    if (tabName === 'standard') {
+      markStandardBackgroundsSeen();
+    } else if (tabName === 'packs') {
+      markPacksBackgroundsSeen();
+    } else if (tabName === 'seasonal') {
+      markSeasonalBackgroundsSeen();
+    }
+    
+    // Remove NEW badge from button
+    if (buttonElement) {
+      const newBadge = buttonElement.querySelector('.tab-new-badge');
+      if (newBadge) {
+        newBadge.remove();
+      }
+    }
+  }
+  
   // Add tab switching handlers
   const tabButtons = popupCard.querySelectorAll('.shop-tab-button');
   tabButtons.forEach(button => {
@@ -476,39 +495,13 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
       }
       
       // Mark the tab as seen when player enters it
-      if (targetTab === 'standard') {
-        markStandardBackgroundsSeen();
-        // Remove NEW badge from this tab button
-        const newBadge = button.querySelector('.tab-new-badge');
-        if (newBadge) {
-          newBadge.remove();
-        }
-      } else if (targetTab === 'packs') {
-        markPacksBackgroundsSeen();
-        // Remove NEW badge from this tab button
-        const newBadge = button.querySelector('.tab-new-badge');
-        if (newBadge) {
-          newBadge.remove();
-        }
-      } else if (targetTab === 'seasonal') {
-        markSeasonalBackgroundsSeen();
-        // Remove NEW badge from this tab button
-        const newBadge = button.querySelector('.tab-new-badge');
-        if (newBadge) {
-          newBadge.remove();
-        }
-      }
+      markTabAsSeen(targetTab, button);
     });
   });
   
   // Mark the initial tab as seen when shop opens
-  if (activeTab === 'standard') {
-    markStandardBackgroundsSeen();
-  } else if (activeTab === 'packs') {
-    markPacksBackgroundsSeen();
-  } else if (activeTab === 'seasonal') {
-    markSeasonalBackgroundsSeen();
-  }
+  const initialButton = popupCard.querySelector(`.shop-tab-button[data-tab="${activeTab}"]`);
+  markTabAsSeen(activeTab, initialButton);
   
   // Add close button handler
   const closeBtn = document.getElementById('close-background-shop');
