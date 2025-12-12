@@ -28,7 +28,9 @@ import {
   saveAudioMutedSetting,
   markShopOpenedWithNewBackgrounds,
   loadStreakStones,
-  saveStreakStones
+  saveStreakStones,
+  loadMilestoneProgress,
+  saveMilestoneProgress
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancingLoader.js';
@@ -2646,6 +2648,14 @@ function showSettingsPopup() {
             <button id="dev-diamonds-plus" class="dev-btn-small">+</button>
           </div>
         </div>
+        <div class="dev-setting-row">
+          <label>♦️ Streak-Steine:</label>
+          <div class="dev-setting-controls">
+            <button id="dev-streak-stones-minus" class="dev-btn-small">-</button>
+            <span id="dev-streak-stones-value" class="dev-value">${loadStreakStones()}</span>
+            <button id="dev-streak-stones-plus" class="dev-btn-small">+</button>
+          </div>
+        </div>
         ${seasonalCurrencyHtml}
         <div class="dev-setting-row">
           <label>🔥 Streak:</label>
@@ -2920,6 +2930,39 @@ function setupDevSettingsListeners() {
     });
   }
   
+  // Streak Stone controls
+  const streakStonesMinus = document.getElementById('dev-streak-stones-minus');
+  const streakStonesPlus = document.getElementById('dev-streak-stones-plus');
+  const streakStonesValue = document.getElementById('dev-streak-stones-value');
+  
+  if (streakStonesMinus) {
+    streakStonesMinus.addEventListener('click', () => {
+      const current = loadStreakStones();
+      const newValue = Math.max(0, current - 1);
+      saveStreakStones(newValue);
+      // Update dev settings display
+      if (streakStonesValue) streakStonesValue.textContent = newValue;
+      // Update main UI streak stones display
+      const mainStreakStonesDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+      if (mainStreakStonesDisplay) mainStreakStonesDisplay.textContent = newValue;
+      showDevFeedback('♦️ ' + newValue);
+    });
+  }
+  
+  if (streakStonesPlus) {
+    streakStonesPlus.addEventListener('click', () => {
+      const current = loadStreakStones();
+      const newValue = current + 1;
+      saveStreakStones(newValue);
+      // Update dev settings display
+      if (streakStonesValue) streakStonesValue.textContent = newValue;
+      // Update main UI streak stones display
+      const mainStreakStonesDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
+      if (mainStreakStonesDisplay) mainStreakStonesDisplay.textContent = newValue;
+      showDevFeedback('♦️ ' + newValue);
+    });
+  }
+  
   // Streak controls
   const streakMinus = document.getElementById('dev-streak-minus');
   const streakPlus = document.getElementById('dev-streak-plus');
@@ -2928,8 +2971,18 @@ function setupDevSettingsListeners() {
   if (streakMinus) {
     streakMinus.addEventListener('click', () => {
       const streak = loadStreak();
+      const oldStreak = streak.currentStreak;
       streak.currentStreak = Math.max(0, streak.currentStreak - 1);
       saveStreak(streak);
+      
+      // Update milestone progress: decrease by the same amount, but not below 0
+      const decreaseAmount = oldStreak - streak.currentStreak;
+      if (decreaseAmount > 0) {
+        let milestoneProgress = loadMilestoneProgress();
+        milestoneProgress = Math.max(0, milestoneProgress - decreaseAmount);
+        saveMilestoneProgress(milestoneProgress);
+      }
+      
       // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
       // Update main UI streak display
@@ -2947,6 +3000,19 @@ function setupDevSettingsListeners() {
         streak.longestStreak = streak.currentStreak;
       }
       saveStreak(streak);
+      
+      // Update milestone progress: increase by 1
+      let milestoneProgress = loadMilestoneProgress();
+      milestoneProgress += 1;
+      
+      // Clamp milestone progress to stay below milestone interval
+      // Don't trigger milestone in dev mode, just clamp to max value
+      const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+      if (milestoneProgress >= milestoneInterval) {
+        milestoneProgress = milestoneInterval - 1;
+      }
+      saveMilestoneProgress(milestoneProgress);
+      
       // Update dev settings display
       if (streakValue) streakValue.textContent = streak.currentStreak;
       // Update main UI streak display
