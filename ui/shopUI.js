@@ -321,9 +321,6 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   
   packsContentHtml += '</div>';
   
-  // Determine which tab should be active (defaults to 'standard' if not specified)
-  const activeTab = initialTab || 'standard';
-  
   // Build tab content HTML
   const tabStandardHtml = `
     <div class="shop-tab-content ${activeTab === 'standard' ? 'active' : ''}" id="shopTabStandard">

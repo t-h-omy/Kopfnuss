@@ -641,7 +641,8 @@ export function getBackgroundPacksWithState() {
         ...bg,
         state: state,
         tasksRemaining: tasksRemaining
-    }));
+      };
+    });
     
     return {
       id: pack.id,
