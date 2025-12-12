@@ -53,6 +53,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
+  const streakStones = loadStreakStones();
   
   // Get seasonal event info
   const activeEvent = getActiveEvent();
@@ -68,11 +69,15 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card background-shop-card';
   
-  // Create header with diamond count and seasonal currency if active
+  // Create header with diamond count, streak stones, and seasonal currency if active
   let currencyDisplayHtml = `
     <div class="background-shop-diamonds">
       <span>💎</span>
       <span id="shop-diamond-count">${diamonds}</span>
+    </div>
+    <div class="background-shop-streak-stones">
+      <span>♦️</span>
+      <span id="shop-streak-stones-count">${streakStones}</span>
     </div>
   `;
   
@@ -162,7 +167,6 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   
   // Create Packs tab content
   const packs = getBackgroundPacksWithState();
-  const streakStones = loadStreakStones();
   
   // Sort packs: unlocked first, locked second
   const sortedPacks = [...packs].sort((a, b) => {
