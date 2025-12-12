@@ -3037,6 +3037,99 @@ button,
   background: var(--color-gray-hover);
 }
 
+/* Pack Container Styles */
+.pack-container {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: white;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-gray);
+}
+
+.pack-container.unlocked {
+  border-color: var(--color-success);
+  background: linear-gradient(135deg, #E8F5E9 0%, #ffffff 100%);
+}
+
+.pack-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-sm);
+}
+
+.pack-name {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.pack-unlock-button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.pack-unlock-button-disabled {
+  background: var(--color-gray);
+  color: var(--text-color-lighter);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.pack-unlock-button-disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: var(--color-gray);
+}
+
+.pack-unlock-button-disabled:active {
+  transform: none;
+  background: var(--color-gray);
+}
+
+/* Insufficient Streak Stones Popup */
+.insufficient-stones-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.insufficient-stones-card {
+  max-width: 350px;
+  text-align: center;
+}
+
+.insufficient-stones-card h2 {
+  color: var(--color-danger);
+  margin-bottom: var(--spacing-md);
+}
+
+.insufficient-stones-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 0;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.insufficient-stones-icon {
+  font-size: 24px;
+}
+
+.insufficient-stones-text {
+  color: #E65100;
+}
+
 .super-success-display.seasonal-reward {
   background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
 }
