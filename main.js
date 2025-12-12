@@ -1432,7 +1432,7 @@ function showMilestoneRewardPopup(onClose = null) {
     <p>Du hast einen Streak-Meilenstein erreicht. Wähle deine Belohnung:</p>
     <div class="milestone-reward-buttons">
       <button id="milestone-reward-stone-button" class="btn-primary milestone-reward-btn">
-        <span class="milestone-reward-icon">⭐</span>
+        <span class="milestone-reward-icon">♦️</span>
         <span class="milestone-reward-text">1 Streak-Stein</span>
       </button>
       <button id="milestone-reward-diamond-button" class="btn-primary milestone-reward-btn">

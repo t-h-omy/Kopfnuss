@@ -647,6 +647,28 @@ button,
   color: var(--color-orange);
 }
 
+/* Milestone Reward Buttons */
+.milestone-reward-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+}
+
+.milestone-reward-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.milestone-reward-icon {
+  font-size: 20px;
+}
+
+.milestone-reward-text {
+  font-weight: 600;
+}
+
 #new-challenge-button {
   margin-top: var(--spacing-md);
   width: 100%;
@@ -864,25 +886,25 @@ button,
 .header-stats {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: nowrap;
 }
 
 .stat-capsule {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   background: var(--color-white);
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 12px;
   box-shadow: 0 var(--shadow-offset-y-small) var(--shadow-blur-small) var(--shadow-spread-small) var(--shadow-color);
   font-family: 'Fredoka', sans-serif;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-color);
 }
 
-.stat-capsule .stat-icon { font-size: 16px; }
+.stat-capsule .stat-icon { font-size: 15px; }
 .stat-capsule .stat-value { font-weight: 600; }
 
 .stat-capsule.streak-frozen {
