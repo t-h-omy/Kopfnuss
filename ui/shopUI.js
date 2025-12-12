@@ -17,7 +17,8 @@ import {
   getSeasonalCurrency,
   getAllActiveSeasonalBackgrounds,
   unlockSeasonalBackground,
-  updateKnownSeasonalPurchasableBackgrounds
+  updateKnownSeasonalPurchasableBackgrounds,
+  getNextEvent
 } from '../logic/eventManager.js';
 import { loadDiamonds } from '../logic/diamondManager.js';
 import { 
@@ -30,6 +31,10 @@ import { createConfettiEffect } from '../logic/popupManager.js';
 import { playBackgroundPurchased } from '../logic/audioBootstrap.js';
 import { ANIMATION_TIMING } from '../data/constants.js';
 import { updateHeaderDiamondsDisplay, updateHeaderStreakStonesDisplay } from './headerUI.js';
+
+// Date formatting constants
+const DATE_FORMAT_LOCALE = 'de-DE';
+const DATE_FORMAT_OPTIONS = { day: '2-digit', month: '2-digit', year: 'numeric' };
 
 /**
  * Initialize shop UI
@@ -48,6 +53,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
+  const streakStones = loadStreakStones();
   
   // Get seasonal event info
   const activeEvent = getActiveEvent();
@@ -63,11 +69,15 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   const popupCard = document.createElement('div');
   popupCard.className = 'popup-card background-shop-card';
   
-  // Create header with diamond count and seasonal currency if active
+  // Create header with diamond count, streak stones, and seasonal currency if active
   let currencyDisplayHtml = `
     <div class="background-shop-diamonds">
       <span>💎</span>
       <span id="shop-diamond-count">${diamonds}</span>
+    </div>
+    <div class="background-shop-streak-stones">
+      <span>♦️</span>
+      <span id="shop-streak-stones-count">${streakStones}</span>
     </div>
   `;
   
@@ -95,73 +105,8 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
     </div>
   `;
   
-  // Create seasonal section if event is active
-  let seasonalSectionHtml = '';
-  if (activeEvent && seasonalBackgrounds.length > 0) {
-    seasonalSectionHtml = `
-      <div class="seasonal-backgrounds-section">
-        <h3 class="seasonal-section-title">${activeEvent.emoticon} ${activeEvent.name}-Event</h3>
-        <div class="seasonal-backgrounds-grid">
-    `;
-    
-    seasonalBackgrounds.forEach(bg => {
-      const isUnlocked = bg.isUnlocked;
-      const canAfford = bg.canAfford;
-      const hasEnoughTasks = bg.hasEnoughTasks;
-      const isActive = selectedBg.id === bg.id;
-      
-      let tileClass = 'background-tile seasonal-tile';
-      let costHtml = '';
-      let statusHtml = '';
-      let lockIcon = '';
-      let newBadge = '';
-      
-      if (isActive) {
-        tileClass += ' state-active selected';
-        costHtml = '<span class="background-cost">✓ Aktiv</span>';
-        statusHtml = '<div class="background-selected-badge">Aktiv</div>';
-      } else if (isUnlocked) {
-        tileClass += ' state-unlocked unlocked';
-        costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
-      } else if (!hasEnoughTasks) {
-        tileClass += ' state-locked locked';
-        const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
-        costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
-        lockIcon = '<div class="background-lock-icon">🔒</div>';
-      } else {
-        tileClass += ' state-purchasable purchasable seasonal-purchasable';
-        costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
-        // Add NEW badge for newly purchasable seasonal backgrounds
-        if (bg.isNewlyPurchasable) {
-          newBadge = '<div class="background-new-badge">NEU</div>';
-        }
-      }
-      
-      seasonalSectionHtml += `
-        <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="true">
-          <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
-          ${lockIcon}
-          ${statusHtml}
-          ${newBadge}
-          <div class="background-info">
-            <div class="background-name">${bg.name}</div>
-            ${costHtml}
-          </div>
-        </div>
-      `;
-    });
-    
-    seasonalSectionHtml += `
-        </div>
-      </div>
-    `;
-  }
-  
   // Create grid of regular background tiles
   let tilesHtml = '<div class="regular-backgrounds-section">';
-  if (activeEvent) {
-    tilesHtml += '<h3 class="regular-section-title">🎨 Hintergründe</h3>';
-  }
   tilesHtml += '<div class="backgrounds-grid" id="backgrounds-grid">';
   
   backgrounds.forEach(bg => {
@@ -222,7 +167,6 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   
   // Create Packs tab content
   const packs = getBackgroundPacksWithState();
-  const streakStones = loadStreakStones();
   
   // Sort packs: unlocked first, locked second
   const sortedPacks = [...packs].sort((a, b) => {
@@ -321,10 +265,94 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   
   packsContentHtml += '</div>';
   
+  // Build Seasonal Tab content
+  let seasonalTabContentHtml = '';
+  if (activeEvent && seasonalBackgrounds.length > 0) {
+    // Event is active - show seasonal backgrounds
+    seasonalTabContentHtml = `
+      <div class="seasonal-backgrounds-section">
+        <h3 class="seasonal-section-title">${activeEvent.emoticon} ${activeEvent.name}-Event</h3>
+        <div class="seasonal-backgrounds-grid">
+    `;
+    
+    seasonalBackgrounds.forEach(bg => {
+      const isUnlocked = bg.isUnlocked;
+      const canAfford = bg.canAfford;
+      const hasEnoughTasks = bg.hasEnoughTasks;
+      const isActive = selectedBg.id === bg.id;
+      
+      let tileClass = 'background-tile seasonal-tile';
+      let costHtml = '';
+      let statusHtml = '';
+      let lockIcon = '';
+      let newBadge = '';
+      
+      if (isActive) {
+        tileClass += ' state-active selected';
+        costHtml = '<span class="background-cost">✓ Aktiv</span>';
+        statusHtml = '<div class="background-selected-badge">Aktiv</div>';
+      } else if (isUnlocked) {
+        tileClass += ' state-unlocked unlocked';
+        costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
+      } else if (!hasEnoughTasks) {
+        tileClass += ' state-locked locked';
+        const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
+        costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText} nötig</span>`;
+        lockIcon = '<div class="background-lock-icon">🔒</div>';
+      } else {
+        tileClass += ' state-purchasable purchasable seasonal-purchasable';
+        costHtml = `<span class="background-cost">${activeEvent.emoticon} ${bg.cost}</span>`;
+        // Add NEW badge for newly purchasable seasonal backgrounds
+        if (bg.isNewlyPurchasable) {
+          newBadge = '<div class="background-new-badge">NEU</div>';
+        }
+      }
+      
+      seasonalTabContentHtml += `
+        <div class="${tileClass}" data-bg-id="${bg.id}" data-is-seasonal="true">
+          <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
+          ${lockIcon}
+          ${statusHtml}
+          ${newBadge}
+          <div class="background-info">
+            <div class="background-name">${bg.name}</div>
+            ${costHtml}
+          </div>
+        </div>
+      `;
+    });
+    
+    seasonalTabContentHtml += `
+        </div>
+      </div>
+    `;
+  } else {
+    // No event active - show empty state
+    const nextEventInfo = getNextEvent();
+    let nextEventMessage = '';
+    
+    if (nextEventInfo) {
+      const startDate = nextEventInfo.startDate;
+      const dateString = startDate.toLocaleDateString(DATE_FORMAT_LOCALE, DATE_FORMAT_OPTIONS);
+      nextEventMessage = `
+        <p class="seasonal-empty-next-event">
+          Nächstes Event: <strong>${nextEventInfo.event.emoticon} ${nextEventInfo.event.name}</strong> ab ${dateString}
+        </p>
+      `;
+    }
+    
+    seasonalTabContentHtml = `
+      <div class="seasonal-empty-state">
+        <div class="seasonal-empty-icon">🎪</div>
+        <p class="seasonal-empty-message">Derzeit läuft kein Event.</p>
+        ${nextEventMessage}
+      </div>
+    `;
+  }
+  
   // Build tab content HTML
   const tabStandardHtml = `
     <div class="shop-tab-content ${activeTab === 'standard' ? 'active' : ''}" id="shopTabStandard">
-      ${seasonalSectionHtml}
       ${tilesHtml}
     </div>
   `;
@@ -337,7 +365,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   
   const tabSeasonalHtml = `
     <div class="shop-tab-content ${activeTab === 'seasonal' ? 'active' : ''}" id="shopTabSeasonal">
-      <!-- Seasonal content will be added here in future -->
+      ${seasonalTabContentHtml}
     </div>
   `;
   
