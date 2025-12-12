@@ -245,7 +245,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
     
     packsContentHtml += `
         </div>
-        <div class="pack-backgrounds-grid">
+        <div class="backgrounds-grid">
     `;
     
     // Render backgrounds for this pack
