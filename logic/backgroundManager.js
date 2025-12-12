@@ -171,8 +171,8 @@ export function getBackgroundState(background) {
       return BACKGROUND_STATE.LOCKED_BY_PACK;
     }
     
-    // Pack is unlocked, now check two separate requirements:
-    // 1. Tasks since pack unlock
+    // Pack is unlocked, now check only one requirement:
+    // Tasks since pack unlock (minTasksSincePackUnlock)
     const tasksSinceUnlock = packTasksSinceUnlock[background.pack] || 0;
     const minTasksSincePackUnlock = background.minTasksSincePackUnlock || 0;
     
@@ -180,19 +180,7 @@ export function getBackgroundState(background) {
       return BACKGROUND_STATE.REQUIREMENTS_NOT_MET;
     }
     
-    // 2. Total tasks completed (minTasksSinceStart)
-    let minTasksSinceStart = 0;
-    if (background.requirements && background.category === 'standard') {
-      minTasksSinceStart = background.requirements.minTasksSinceStart || 0;
-    } else if (background.tasksRequired !== undefined) {
-      minTasksSinceStart = background.tasksRequired;
-    }
-    
-    if (totalTasksCompleted < minTasksSinceStart) {
-      return BACKGROUND_STATE.REQUIREMENTS_NOT_MET;
-    }
-    
-    // Pack is unlocked and all requirements met, can be purchased
+    // Pack is unlocked and requirement met, can be purchased
     return BACKGROUND_STATE.PURCHASABLE;
   }
   
@@ -787,18 +775,11 @@ export function getBackgroundPacksWithState() {
     const backgroundsWithState = backgrounds.map(bg => {
       const state = getBackgroundState(bg);
       
-      // Calculate tasks remaining based on which requirement is not met
+      // Calculate tasks remaining based on minTasksSincePackUnlock only
       let tasksRemaining = 0;
       if (unlocked && state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
-        // Check both requirements and show whichever is larger
-        const tasksFromPackUnlock = Math.max(0, (bg.minTasksSincePackUnlock || 0) - tasksSinceUnlock);
-        
-        const progress = loadProgress();
-        const totalTasksCompleted = progress.totalTasksCompleted || 0;
-        const minTasksSinceStart = bg.requirements?.minTasksSinceStart || bg.tasksRequired || 0;
-        const tasksFromTotalProgress = Math.max(0, minTasksSinceStart - totalTasksCompleted);
-        
-        tasksRemaining = Math.max(tasksFromPackUnlock, tasksFromTotalProgress);
+        // Only check tasks since pack unlock
+        tasksRemaining = Math.max(0, (bg.minTasksSincePackUnlock || 0) - tasksSinceUnlock);
       }
       
       return {
