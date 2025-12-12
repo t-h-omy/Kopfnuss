@@ -148,6 +148,52 @@ export function isEventActive() {
 }
 
 /**
+ * Get the next upcoming seasonal event
+ * @returns {Object|null} Object with event and startDate, or null if no events configured
+ */
+export function getNextEvent() {
+  const currentDate = getCurrentDate();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentDay = currentDate.getDate();
+  
+  let nextEvent = null;
+  let nextStartDate = null;
+  let minDaysUntilStart = Infinity;
+  
+  for (const eventKey in SEASONAL_EVENTS) {
+    const event = SEASONAL_EVENTS[eventKey];
+    
+    // Calculate start date for this year
+    let startDate = new Date(currentYear, event.startMonth - 1, event.startDay);
+    
+    // If the event start is in the past this year, check next year
+    if (startDate <= currentDate) {
+      startDate = new Date(currentYear + 1, event.startMonth - 1, event.startDay);
+    }
+    
+    // Calculate days until event starts
+    const daysUntilStart = Math.ceil((startDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Keep track of the closest upcoming event
+    if (daysUntilStart > 0 && daysUntilStart < minDaysUntilStart) {
+      minDaysUntilStart = daysUntilStart;
+      nextEvent = event;
+      nextStartDate = startDate;
+    }
+  }
+  
+  if (nextEvent) {
+    return {
+      event: nextEvent,
+      startDate: nextStartDate
+    };
+  }
+  
+  return null;
+}
+
+/**
  * Get the event end date as a Date object
  * @param {Object} event - Event configuration
  * @returns {Date} Event end date
