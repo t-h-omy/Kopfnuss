@@ -2975,11 +2975,10 @@ function setupDevSettingsListeners() {
       streak.currentStreak = Math.max(0, streak.currentStreak - 1);
       saveStreak(streak);
       
-      // Update milestone progress: decrease by the same amount, but not below 0
-      const decreaseAmount = oldStreak - streak.currentStreak;
-      if (decreaseAmount > 0) {
+      // Update milestone progress: decrease by 1 if streak was actually decreased
+      if (oldStreak > 0) {
         let milestoneProgress = loadMilestoneProgress();
-        milestoneProgress = Math.max(0, milestoneProgress - decreaseAmount);
+        milestoneProgress = Math.max(0, milestoneProgress - 1);
         saveMilestoneProgress(milestoneProgress);
       }
       
