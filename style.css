@@ -3074,7 +3074,7 @@ button,
   white-space: nowrap;
 }
 
-.pack-unlock-button:disabled {
+.pack-unlock-button-disabled {
   background: var(--color-gray);
   color: var(--text-color-lighter);
   cursor: not-allowed;
@@ -3082,9 +3082,15 @@ button,
   box-shadow: none;
 }
 
-.pack-unlock-button:disabled:hover {
+.pack-unlock-button-disabled:hover {
   transform: none;
   box-shadow: none;
+  background: var(--color-gray);
+}
+
+.pack-unlock-button-disabled:active {
+  transform: none;
+  background: var(--color-gray);
 }
 
 /* Insufficient Streak Stones Popup */

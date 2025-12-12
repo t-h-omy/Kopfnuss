@@ -241,9 +241,9 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
     
     // Add unlock button for locked packs
     if (!pack.unlocked) {
-      const buttonDisabled = !canAfford ? 'disabled' : '';
+      const buttonClass = !canAfford ? 'pack-unlock-button pack-unlock-button-disabled' : 'pack-unlock-button';
       packsContentHtml += `
-          <button class="btn-primary pack-unlock-button" ${buttonDisabled} data-pack-id="${pack.id}" data-cost="${pack.costStreakStones}">
+          <button class="btn-primary ${buttonClass}" data-pack-id="${pack.id}" data-cost="${pack.costStreakStones}" data-can-afford="${canAfford}">
             ♦️ ${pack.costStreakStones} freischalten
           </button>
       `;
