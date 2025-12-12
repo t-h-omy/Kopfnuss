@@ -57,6 +57,7 @@ import {
   isBackgroundUnlocked,
   BACKGROUND_STATE,
   checkForNewlyPurchasableBackgrounds,
+  checkForNewlyPurchasablePackBackgrounds,
   shouldShowNewBadge,
   updateKnownPurchasableBackgrounds,
   hasNewStandardBackgrounds,
@@ -349,6 +350,11 @@ function loadChallengesScreen(container) {
     const showBackgroundUnlock = backgroundUnlockResult.hasNew;
     const newlyPurchasableBackground = backgroundUnlockResult.firstNewBackground;
     
+    // Check for newly purchasable pack backgrounds
+    const packBackgroundUnlockResult = checkForNewlyPurchasablePackBackgrounds();
+    const showPackBackgroundUnlock = packBackgroundUnlockResult.hasNew;
+    const newlyPurchasablePackBackground = packBackgroundUnlockResult.firstNewBackground;
+    
     // Check for newly purchasable seasonal backgrounds
     const seasonalBackgroundUnlockResult = checkForNewlyPurchasableSeasonalBackgrounds();
     const showSeasonalBackgroundUnlock = seasonalBackgroundUnlockResult.hasNew;
@@ -398,6 +404,10 @@ function loadChallengesScreen(container) {
     if (showBackgroundUnlock && newlyPurchasableBackground) {
       // Show background unlock celebration popup when a new background becomes purchasable
       popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(newlyPurchasableBackground, next));
+    }
+    if (showPackBackgroundUnlock && newlyPurchasablePackBackground) {
+      // Show pack background unlock celebration popup when a new pack background becomes purchasable
+      popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(newlyPurchasablePackBackground, next));
     }
     if (showSeasonalBackgroundUnlock && newlyPurchasableSeasonalBackground) {
       // Show seasonal background unlock celebration popup when a new seasonal background becomes purchasable

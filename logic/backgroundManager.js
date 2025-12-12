@@ -313,6 +313,85 @@ export function checkForNewlyPurchasableBackgrounds() {
 }
 
 /**
+ * Get list of pack backgrounds that are currently purchasable
+ * @returns {Array<string>} Array of pack background IDs that are purchasable
+ */
+function getPurchasablePackBackgroundIds() {
+  const packs = getBackgroundPacksWithState();
+  const purchasableIds = [];
+  
+  for (const pack of packs) {
+    for (const bg of pack.backgrounds) {
+      if (bg.state === BACKGROUND_STATE.PURCHASABLE) {
+        purchasableIds.push(bg.id);
+      }
+    }
+  }
+  
+  return purchasableIds;
+}
+
+/**
+ * Check for newly purchasable pack backgrounds (became purchasable since last check)
+ * @returns {Object} Object with newlyPurchasable array and firstNewBackground object
+ */
+export function checkForNewlyPurchasablePackBackgrounds() {
+  const currentPurchasable = getPurchasablePackBackgroundIds();
+  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  
+  // Find backgrounds that are now purchasable but weren't before
+  const newlyPurchasable = currentPurchasable.filter(
+    id => !lastKnownPurchasable.includes(id)
+  );
+  
+  // If new backgrounds became available, update lastKnownPurchasable to prevent showing the popup again
+  // Also clear the shop opened flag so the NEW badge shows on the shop button
+  if (newlyPurchasable.length > 0) {
+    clearShopOpenedFlag();
+    
+    // Remove newly purchasable backgrounds from seen lists so they show as NEW
+    const seenPacks = loadSeenPacksBackgrounds();
+    const updatedSeenPacks = seenPacks.filter(id => !newlyPurchasable.includes(id));
+    saveSeenPacksBackgrounds(updatedSeenPacks);
+    
+    // Mark these backgrounds as "seen" in terms of the unlock popup
+    // This prevents the popup from showing again on subsequent challenge completions
+    const unlockedIds = loadUnlockedBackgrounds();
+    const updatedKnownPurchasable = [...new Set([...lastKnownPurchasable, ...newlyPurchasable])]
+      .filter(id => !unlockedIds.includes(id));
+    saveLastKnownPurchasableBackgrounds(updatedKnownPurchasable);
+  }
+  
+  // Get the first newly purchasable background object for display
+  let firstNewBackground = null;
+  if (newlyPurchasable.length > 0) {
+    const packs = getBackgroundPacksWithState();
+    for (const pack of packs) {
+      for (const bg of pack.backgrounds) {
+        if (newlyPurchasable.includes(bg.id)) {
+          // Convert to legacy format for compatibility
+          firstNewBackground = {
+            id: bg.id,
+            name: bg.name,
+            file: bg.file,
+            cost: bg.cost,
+            tasksRequired: bg.requirements?.minTasksSinceStart || 0
+          };
+          break;
+        }
+      }
+      if (firstNewBackground) break;
+    }
+  }
+  
+  return {
+    newlyPurchasable,
+    firstNewBackground,
+    hasNew: newlyPurchasable.length > 0
+  };
+}
+
+/**
  * Update the list of known purchasable backgrounds
  * Should be called when shop is closed to mark backgrounds as "seen"
  */
