@@ -216,6 +216,11 @@
       "id": "example_pack",
       "name": "Beispiel-Pack",
       "costStreakStones": 1
+    },
+    {
+      "id": "winter_paket",
+      "name": "Winter Paket",
+      "costStreakStones": 1
     }
   ]
 }
