@@ -42,8 +42,9 @@ export function initShopUI() {
 /**
  * Show background shop popup with all available backgrounds
  * @param {string|null} scrollToBackgroundId - Optional background ID to scroll to and highlight
+ * @param {string|null} initialTab - Optional tab to show initially ('standard', 'packs', 'seasonal')
  */
-export function showBackgroundShopPopup(scrollToBackgroundId = null) {
+export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab = null) {
   const backgrounds = getAllBackgrounds();
   const selectedBg = getSelectedBackground();
   const diamonds = loadDiamonds();
@@ -79,15 +80,18 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
     `;
   }
   
+  // Determine which tab button should be active
+  const activeTab = initialTab || 'standard';
+  
   let headerHtml = `
     <h2>🎨 Hintergründe</h2>
     <div class="background-shop-header">
       ${currencyDisplayHtml}
     </div>
     <div class="shop-tab-header">
-      <button class="shop-tab-button active" data-tab="standard">Standard</button>
-      <button class="shop-tab-button" data-tab="packs">Pakete</button>
-      <button class="shop-tab-button" data-tab="seasonal">Event</button>
+      <button class="shop-tab-button ${activeTab === 'standard' ? 'active' : ''}" data-tab="standard">Standard</button>
+      <button class="shop-tab-button ${activeTab === 'packs' ? 'active' : ''}" data-tab="packs">Pakete</button>
+      <button class="shop-tab-button ${activeTab === 'seasonal' ? 'active' : ''}" data-tab="seasonal">Event</button>
     </div>
   `;
   
@@ -317,22 +321,25 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   
   packsContentHtml += '</div>';
   
+  // Determine which tab should be active (defaults to 'standard' if not specified)
+  const activeTab = initialTab || 'standard';
+  
   // Build tab content HTML
   const tabStandardHtml = `
-    <div class="shop-tab-content active" id="shopTabStandard">
+    <div class="shop-tab-content ${activeTab === 'standard' ? 'active' : ''}" id="shopTabStandard">
       ${seasonalSectionHtml}
       ${tilesHtml}
     </div>
   `;
   
   const tabPacksHtml = `
-    <div class="shop-tab-content" id="shopTabPacks">
+    <div class="shop-tab-content ${activeTab === 'packs' ? 'active' : ''}" id="shopTabPacks">
       ${packsContentHtml}
     </div>
   `;
   
   const tabSeasonalHtml = `
-    <div class="shop-tab-content" id="shopTabSeasonal">
+    <div class="shop-tab-content ${activeTab === 'seasonal' ? 'active' : ''}" id="shopTabSeasonal">
       <!-- Seasonal content will be added here in future -->
     </div>
   `;
@@ -489,10 +496,11 @@ export function closeBackgroundShopPopup() {
 
 /**
  * Refresh shop UI (re-opens shop with current state)
+ * @param {string|null} activeTab - Optional tab to show after refresh
  */
-export function refreshShopUI() {
+export function refreshShopUI(activeTab = null) {
   closeBackgroundShopPopup();
-  showBackgroundShopPopup();
+  showBackgroundShopPopup(null, activeTab);
 }
 
 /**
@@ -1011,8 +1019,8 @@ function executePackUnlock(packId) {
     // Show confetti
     createConfettiEffect();
     
-    // Refresh shop UI (this will re-render with the pack unlocked and moved to top)
-    refreshShopUI();
+    // Refresh shop UI staying on the Packs tab (this will re-render with the pack unlocked and moved to top)
+    refreshShopUI('packs');
     
     // After refresh, scroll to the unlocked pack
     requestAnimationFrame(() => {
