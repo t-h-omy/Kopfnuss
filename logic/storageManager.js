@@ -131,6 +131,10 @@ const STORAGE_KEYS = {
   get SELECTED_BACKGROUND() { return getStorageKey('kopfnuss_selected_background'); },
   get LAST_KNOWN_PURCHASABLE_BACKGROUNDS() { return getStorageKey('kopfnuss_last_known_purchasable_backgrounds'); },
   get SHOP_OPENED_WITH_NEW_BACKGROUNDS() { return getStorageKey('kopfnuss_shop_opened_with_new'); },
+  // Per-tab seen backgrounds for NEW badge logic
+  get SEEN_STANDARD_BACKGROUNDS() { return getStorageKey('kopfnuss_seen_standard_backgrounds'); },
+  get SEEN_PACKS_BACKGROUNDS() { return getStorageKey('kopfnuss_seen_packs_backgrounds'); },
+  get SEEN_SEASONAL_BACKGROUNDS() { return getStorageKey('kopfnuss_seen_seasonal_backgrounds'); },
   // Streak Milestone & Background Packs storage keys
   get STREAK_STONES() { return getStorageKey('kopfnuss_streak_stones'); },
   get MILESTONE_PROGRESS() { return getStorageKey('kopfnuss_milestone_progress'); },
@@ -696,6 +700,57 @@ export function wasShopOpenedWithNewBackgrounds() {
  */
 export function clearShopOpenedFlag() {
   return saveToStorage(STORAGE_KEYS.SHOP_OPENED_WITH_NEW_BACKGROUNDS, false);
+}
+
+/**
+ * Load seen backgrounds for standard tab
+ * @returns {Array<string>} Array of background IDs that have been seen
+ */
+export function loadSeenStandardBackgrounds() {
+  return loadFromStorage(STORAGE_KEYS.SEEN_STANDARD_BACKGROUNDS, []);
+}
+
+/**
+ * Save seen backgrounds for standard tab
+ * @param {Array<string>} backgroundIds - Array of background IDs
+ * @returns {boolean} Success status
+ */
+export function saveSeenStandardBackgrounds(backgroundIds) {
+  return saveToStorage(STORAGE_KEYS.SEEN_STANDARD_BACKGROUNDS, backgroundIds);
+}
+
+/**
+ * Load seen backgrounds for packs tab
+ * @returns {Array<string>} Array of background IDs that have been seen
+ */
+export function loadSeenPacksBackgrounds() {
+  return loadFromStorage(STORAGE_KEYS.SEEN_PACKS_BACKGROUNDS, []);
+}
+
+/**
+ * Save seen backgrounds for packs tab
+ * @param {Array<string>} backgroundIds - Array of background IDs
+ * @returns {boolean} Success status
+ */
+export function saveSeenPacksBackgrounds(backgroundIds) {
+  return saveToStorage(STORAGE_KEYS.SEEN_PACKS_BACKGROUNDS, backgroundIds);
+}
+
+/**
+ * Load seen backgrounds for seasonal tab
+ * @returns {Array<string>} Array of background IDs that have been seen
+ */
+export function loadSeenSeasonalBackgrounds() {
+  return loadFromStorage(STORAGE_KEYS.SEEN_SEASONAL_BACKGROUNDS, []);
+}
+
+/**
+ * Save seen backgrounds for seasonal tab
+ * @param {Array<string>} backgroundIds - Array of background IDs
+ * @returns {boolean} Success status
+ */
+export function saveSeenSeasonalBackgrounds(backgroundIds) {
+  return saveToStorage(STORAGE_KEYS.SEEN_SEASONAL_BACKGROUNDS, backgroundIds);
 }
 
 export { STORAGE_KEYS };

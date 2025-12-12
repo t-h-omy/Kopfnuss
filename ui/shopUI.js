@@ -10,7 +10,11 @@ import {
   BACKGROUND_STATE,
   updateKnownPurchasableBackgrounds,
   getBackgroundPacksWithState,
-  unlockPack
+  unlockPack,
+  hasNewStandardBackgrounds,
+  hasNewPacksBackgrounds,
+  markStandardBackgroundsSeen,
+  markPacksBackgroundsSeen
 } from '../logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -18,7 +22,9 @@ import {
   getAllActiveSeasonalBackgrounds,
   unlockSeasonalBackground,
   updateKnownSeasonalPurchasableBackgrounds,
-  getNextEvent
+  getNextEvent,
+  hasNewSeasonalBackgrounds,
+  markSeasonalBackgroundsSeen
 } from '../logic/eventManager.js';
 import { loadDiamonds } from '../logic/diamondManager.js';
 import { 
@@ -93,15 +99,26 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
   // Determine which tab button should be active
   const activeTab = initialTab || 'standard';
   
+  // Check if each tab has NEW backgrounds
+  const standardHasNew = hasNewStandardBackgrounds();
+  const packsHasNew = hasNewPacksBackgrounds();
+  const seasonalHasNew = hasNewSeasonalBackgrounds();
+  
   let headerHtml = `
     <h2>🎨 Hintergründe</h2>
     <div class="background-shop-header">
       ${currencyDisplayHtml}
     </div>
     <div class="shop-tab-header">
-      <button class="shop-tab-button ${activeTab === 'standard' ? 'active' : ''}" data-tab="standard">Standard</button>
-      <button class="shop-tab-button ${activeTab === 'packs' ? 'active' : ''}" data-tab="packs">Pakete</button>
-      <button class="shop-tab-button ${activeTab === 'seasonal' ? 'active' : ''}" data-tab="seasonal">Event</button>
+      <button class="shop-tab-button ${activeTab === 'standard' ? 'active' : ''}" data-tab="standard">
+        Standard${standardHasNew ? '<span class="tab-new-badge">NEU</span>' : ''}
+      </button>
+      <button class="shop-tab-button ${activeTab === 'packs' ? 'active' : ''}" data-tab="packs">
+        Pakete${packsHasNew ? '<span class="tab-new-badge">NEU</span>' : ''}
+      </button>
+      <button class="shop-tab-button ${activeTab === 'seasonal' ? 'active' : ''}" data-tab="seasonal">
+        Event${seasonalHasNew ? '<span class="tab-new-badge">NEU</span>' : ''}
+      </button>
     </div>
   `;
   
@@ -457,8 +474,41 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
       if (targetTabElement) {
         targetTabElement.classList.add('active');
       }
+      
+      // Mark the tab as seen when player enters it
+      if (targetTab === 'standard') {
+        markStandardBackgroundsSeen();
+        // Remove NEW badge from this tab button
+        const newBadge = button.querySelector('.tab-new-badge');
+        if (newBadge) {
+          newBadge.remove();
+        }
+      } else if (targetTab === 'packs') {
+        markPacksBackgroundsSeen();
+        // Remove NEW badge from this tab button
+        const newBadge = button.querySelector('.tab-new-badge');
+        if (newBadge) {
+          newBadge.remove();
+        }
+      } else if (targetTab === 'seasonal') {
+        markSeasonalBackgroundsSeen();
+        // Remove NEW badge from this tab button
+        const newBadge = button.querySelector('.tab-new-badge');
+        if (newBadge) {
+          newBadge.remove();
+        }
+      }
     });
   });
+  
+  // Mark the initial tab as seen when shop opens
+  if (activeTab === 'standard') {
+    markStandardBackgroundsSeen();
+  } else if (activeTab === 'packs') {
+    markPacksBackgroundsSeen();
+  } else if (activeTab === 'seasonal') {
+    markSeasonalBackgroundsSeen();
+  }
   
   // Add close button handler
   const closeBtn = document.getElementById('close-background-shop');
@@ -501,20 +551,24 @@ export function closeBackgroundShopPopup() {
   if (overlay) {
     overlay.remove();
   }
-  // Mark shop as opened to hide NEW badge after closing
+  // Mark shop as opened to hide NEW badge after closing (legacy)
   markShopOpenedWithNewBackgrounds();
   // Update the list of known purchasable backgrounds (marks them as "seen")
   updateKnownPurchasableBackgrounds();
   updateKnownSeasonalPurchasableBackgrounds();
   
-  // Update shop button to remove NEW badge class
+  // Update shop button to remove NEW badge only if no tabs have NEW anymore
   const shopButton = document.getElementById('shop-button');
   if (shopButton) {
-    shopButton.classList.remove('has-new-badge');
-    // Also remove the badge HTML
-    const badgeElement = shopButton.querySelector('.shop-new-badge');
-    if (badgeElement) {
-      badgeElement.remove();
+    const stillHasNew = hasNewStandardBackgrounds() || hasNewPacksBackgrounds() || hasNewSeasonalBackgrounds();
+    
+    if (!stillHasNew) {
+      shopButton.classList.remove('has-new-badge');
+      // Also remove the badge HTML
+      const badgeElement = shopButton.querySelector('.shop-new-badge');
+      if (badgeElement) {
+        badgeElement.remove();
+      }
     }
   }
 }

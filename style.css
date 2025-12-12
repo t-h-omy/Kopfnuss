@@ -3082,6 +3082,19 @@ button,
   font-weight: 600;
 }
 
+/* Tab NEW Badge */
+.tab-new-badge {
+  display: inline-block;
+  margin-left: 6px;
+  background: var(--color-orange);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 8px;
+  vertical-align: middle;
+}
+
 .shop-tab-content {
   display: none;
   overflow-y: auto;

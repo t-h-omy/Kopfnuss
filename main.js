@@ -58,7 +58,9 @@ import {
   BACKGROUND_STATE,
   checkForNewlyPurchasableBackgrounds,
   shouldShowNewBadge,
-  updateKnownPurchasableBackgrounds
+  updateKnownPurchasableBackgrounds,
+  hasNewStandardBackgrounds,
+  hasNewPacksBackgrounds
 } from './logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -73,6 +75,7 @@ import {
   shouldShowEventStartPopup,
   markEventStartPopupShown,
   shouldShowEventEndPopup,
+  hasNewSeasonalBackgrounds
   markEventEndPopupShown,
   checkAndResetSeasonalBackground,
   isSeasonalBackgroundUsable,
@@ -492,8 +495,8 @@ function loadChallengesScreen(container) {
     `;
   }
   
-  // Check if NEW badge should be shown on shop button
-  const showNewBadge = shouldShowNewBadge();
+  // Check if NEW badge should be shown on shop button (if any tab has new backgrounds)
+  const showNewBadge = hasNewStandardBackgrounds() || hasNewPacksBackgrounds() || hasNewSeasonalBackgrounds();
   const newBadgeHtml = showNewBadge ? '<span class="shop-new-badge">NEU</span>' : '';
   
   // Create fixed header with two-row layout

@@ -18,7 +18,11 @@ import {
   loadUnlockedPacks,
   saveUnlockedPacks,
   loadPackTasksSinceUnlock,
-  savePackTasksSinceUnlock
+  savePackTasksSinceUnlock,
+  loadSeenStandardBackgrounds,
+  saveSeenStandardBackgrounds,
+  loadSeenPacksBackgrounds,
+  saveSeenPacksBackgrounds
 } from './storageManager.js';
 
 /**
@@ -591,6 +595,78 @@ export function incrementPackTasks() {
   }
   
   savePackTasksSinceUnlock(packTasks);
+}
+
+/**
+ * Check if standard tab has NEW backgrounds (purchasable but not yet seen)
+ * @returns {boolean} True if standard tab should show NEW badge
+ */
+export function hasNewStandardBackgrounds() {
+  const backgrounds = getAllBackgrounds();
+  const seenIds = loadSeenStandardBackgrounds();
+  
+  // Check if any standard background (without pack) is purchasable and not seen
+  return backgrounds.some(bg => 
+    !bg.pack && 
+    bg.state === BACKGROUND_STATE.PURCHASABLE && 
+    !seenIds.includes(bg.id)
+  );
+}
+
+/**
+ * Check if packs tab has NEW backgrounds (purchasable but not yet seen)
+ * @returns {boolean} True if packs tab should show NEW badge
+ */
+export function hasNewPacksBackgrounds() {
+  const packs = getBackgroundPacksWithState();
+  const seenIds = loadSeenPacksBackgrounds();
+  
+  // Check if any pack background is purchasable and not seen
+  for (const pack of packs) {
+    for (const bg of pack.backgrounds) {
+      if (bg.state === BACKGROUND_STATE.PURCHASABLE && !seenIds.includes(bg.id)) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Mark standard tab backgrounds as seen (when player enters the tab)
+ */
+export function markStandardBackgroundsSeen() {
+  const backgrounds = getAllBackgrounds();
+  const currentPurchasable = backgrounds
+    .filter(bg => !bg.pack && bg.state === BACKGROUND_STATE.PURCHASABLE)
+    .map(bg => bg.id);
+  
+  // Merge with previously seen IDs
+  const seenIds = loadSeenStandardBackgrounds();
+  const updatedSeen = [...new Set([...seenIds, ...currentPurchasable])];
+  saveSeenStandardBackgrounds(updatedSeen);
+}
+
+/**
+ * Mark packs tab backgrounds as seen (when player enters the tab)
+ */
+export function markPacksBackgroundsSeen() {
+  const packs = getBackgroundPacksWithState();
+  const currentPurchasable = [];
+  
+  for (const pack of packs) {
+    for (const bg of pack.backgrounds) {
+      if (bg.state === BACKGROUND_STATE.PURCHASABLE) {
+        currentPurchasable.push(bg.id);
+      }
+    }
+  }
+  
+  // Merge with previously seen IDs
+  const seenIds = loadSeenPacksBackgrounds();
+  const updatedSeen = [...new Set([...seenIds, ...currentPurchasable])];
+  saveSeenPacksBackgrounds(updatedSeen);
 }
 
 /**
