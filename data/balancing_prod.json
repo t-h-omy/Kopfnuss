@@ -213,8 +213,8 @@
   },
   "backgroundPacks": [
     {
-      "id": "example_pack",
-      "name": "Beispiel-Pack",
+      "id": "winter_paket",
+      "name": "Winter Paket",
       "costStreakStones": 1
     }
   ]

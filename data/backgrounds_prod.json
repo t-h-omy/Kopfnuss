@@ -1005,6 +1005,66 @@
       "active": true,
       "pack": null,
       "minTasksSincePackUnlock": 0
+    },
+    {
+      "id": "winterpaket_kingfisher",
+      "name": "Eisvogel",
+      "file": "backgrounds/kingfisher_background_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 3000
+      },
+      "event": null,
+      "active": true,
+      "pack": "winter_paket",
+      "minTasksSincePackUnlock": 0
+    },
+    {
+      "id": "winterpaket_snow_leopard",
+      "name": "Schneeleopard",
+      "file": "backgrounds/snow_leopard_papercut_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 3150
+      },
+      "event": null,
+      "active": true,
+      "pack": "winter_paket",
+      "minTasksSincePackUnlock": 0
+    },
+    {
+      "id": "winterpaket_snowflake",
+      "name": "Schneeflocke",
+      "file": "backgrounds/snowflake_pattern_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 3300
+      },
+      "event": null,
+      "active": true,
+      "pack": "winter_paket",
+      "minTasksSincePackUnlock": 0
+    },
+    {
+      "id": "winterpaket_marmot",
+      "name": "Murmeltier",
+      "file": "backgrounds/winter_marmot_graffiti_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": 3450
+      },
+      "event": null,
+      "active": true,
+      "pack": "winter_paket",
+      "minTasksSincePackUnlock": 0
     }
   ]
 }

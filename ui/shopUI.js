@@ -8,7 +8,8 @@ import {
   unlockBackground,
   selectBackground,
   BACKGROUND_STATE,
-  updateKnownPurchasableBackgrounds
+  updateKnownPurchasableBackgrounds,
+  getBackgroundPacksWithState
 } from '../logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -212,6 +213,104 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   
   tilesHtml += '</div></div>';
   
+  // Create Packs tab content
+  const packs = getBackgroundPacksWithState();
+  
+  // Sort packs: unlocked first, locked second
+  const sortedPacks = [...packs].sort((a, b) => {
+    if (a.unlocked && !b.unlocked) return -1;
+    if (!a.unlocked && b.unlocked) return 1;
+    return 0;
+  });
+  
+  let packsContentHtml = '<div class="packs-section">';
+  
+  sortedPacks.forEach(pack => {
+    const packClass = pack.unlocked ? 'pack-container unlocked' : 'pack-container locked';
+    
+    packsContentHtml += `
+      <div class="${packClass}" data-pack-id="${pack.id}">
+        <div class="pack-header">
+          <h3 class="pack-name">${pack.unlocked ? '✓ ' : '🔒 '}${pack.name}</h3>
+    `;
+    
+    // Add unlock button for locked packs
+    if (!pack.unlocked) {
+      packsContentHtml += `
+          <button class="btn-primary pack-unlock-button" disabled data-pack-id="${pack.id}">
+            Pack freischalten
+          </button>
+      `;
+    }
+    
+    packsContentHtml += `
+        </div>
+        <div class="backgrounds-grid">
+    `;
+    
+    // Render backgrounds for this pack
+    pack.backgrounds.forEach(bg => {
+      const state = bg.state;
+      const isActive = selectedBg.id === bg.id;
+      
+      // Build tile class based on state
+      let tileClass = 'background-tile pack-background';
+      tileClass += ` state-${state}`;
+      
+      // Add legacy classes for compatibility
+      if (state === BACKGROUND_STATE.UNLOCKED || state === BACKGROUND_STATE.ACTIVE) {
+        tileClass += ' unlocked';
+      }
+      if (state === BACKGROUND_STATE.LOCKED || state === BACKGROUND_STATE.LOCKED_BY_PACK || state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
+        tileClass += ' locked';
+      }
+      if (state === BACKGROUND_STATE.ACTIVE) {
+        tileClass += ' selected';
+      }
+      if (state === BACKGROUND_STATE.PURCHASABLE) {
+        tileClass += ' purchasable';
+      }
+      
+      // Build cost/status HTML based on state
+      let costHtml = '';
+      if (state === BACKGROUND_STATE.ACTIVE) {
+        costHtml = '<span class="background-cost">✓ Aktiv</span>';
+      } else if (state === BACKGROUND_STATE.UNLOCKED) {
+        costHtml = '<span class="background-cost">✓ Freigeschaltet</span>';
+      } else if (state === BACKGROUND_STATE.PURCHASABLE) {
+        costHtml = `<span class="background-cost">💎 ${bg.cost}</span>`;
+      } else if (state === BACKGROUND_STATE.LOCKED_BY_PACK) {
+        costHtml = '<span class="background-cost background-locked-text">Pack freischalten</span>';
+      } else if (state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
+        const tasksText = bg.tasksRemaining === 1 ? 'Aufgabe' : 'Aufgaben';
+        costHtml = `<span class="background-cost background-locked-text">Noch ${bg.tasksRemaining} ${tasksText}</span>`;
+      }
+      
+      // Build badges and icons
+      let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
+      let lockIcon = (state === BACKGROUND_STATE.LOCKED || state === BACKGROUND_STATE.LOCKED_BY_PACK || state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) ? '<div class="background-lock-icon">🔒</div>' : '';
+      
+      packsContentHtml += `
+        <div class="${tileClass}" data-bg-id="${bg.id}" data-is-pack="true" data-pack-id="${pack.id}">
+          <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
+          ${lockIcon}
+          ${activeBadge}
+          <div class="background-info">
+            <div class="background-name">${bg.name}</div>
+            ${costHtml}
+          </div>
+        </div>
+      `;
+    });
+    
+    packsContentHtml += `
+        </div>
+      </div>
+    `;
+  });
+  
+  packsContentHtml += '</div>';
+  
   // Build tab content HTML
   const tabStandardHtml = `
     <div class="shop-tab-content active" id="shopTabStandard">
@@ -222,7 +321,7 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
   
   const tabPacksHtml = `
     <div class="shop-tab-content" id="shopTabPacks">
-      <!-- Packs content will be added here in future -->
+      ${packsContentHtml}
     </div>
   `;
   
@@ -270,6 +369,25 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null) {
       tile.addEventListener('click', () => {
         handleSeasonalBackgroundTileClick(bgId);
       });
+    }
+  });
+  
+  // Add click handlers for pack backgrounds
+  const packTiles = popupCard.querySelectorAll('.background-tile[data-is-pack="true"]');
+  packTiles.forEach(tile => {
+    const bgId = tile.dataset.bgId;
+    const packId = tile.dataset.packId;
+    const pack = packs.find(p => p.id === packId);
+    
+    if (pack) {
+      const bg = pack.backgrounds.find(b => b.id === bgId);
+      
+      // Only make tiles clickable if they are purchasable, unlocked, or active
+      if (bg && (bg.state === BACKGROUND_STATE.PURCHASABLE || bg.state === BACKGROUND_STATE.UNLOCKED || bg.state === BACKGROUND_STATE.ACTIVE)) {
+        tile.addEventListener('click', () => {
+          handleBackgroundTileClick(bgId);
+        });
+      }
     }
   });
   
@@ -377,7 +495,17 @@ export function updateShopNewBadgeState() {
  */
 function handleBackgroundTileClick(bgId) {
   const backgrounds = getAllBackgrounds();
-  const bg = backgrounds.find(b => b.id === bgId);
+  let bg = backgrounds.find(b => b.id === bgId);
+  
+  // If not found in regular backgrounds, check pack backgrounds
+  if (!bg) {
+    const packs = getBackgroundPacksWithState();
+    for (const pack of packs) {
+      bg = pack.backgrounds.find(b => b.id === bgId);
+      if (bg) break;
+    }
+  }
+  
   if (!bg) return;
   
   const state = bg.state;
