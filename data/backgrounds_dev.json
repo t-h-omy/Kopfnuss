@@ -1147,7 +1147,7 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 88,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
@@ -1164,7 +1164,7 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 92,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
@@ -1181,7 +1181,7 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 96,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
@@ -1198,7 +1198,7 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 100,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
