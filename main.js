@@ -61,7 +61,8 @@ import {
   shouldShowNewBadge,
   updateKnownPurchasableBackgrounds,
   hasNewStandardBackgrounds,
-  hasNewPacksBackgrounds
+  hasNewPacksBackgrounds,
+  incrementPackTasks
 } from './logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -3011,6 +3012,8 @@ function setupDevSettingsListeners() {
       if (streak.currentStreak > streak.longestStreak) {
         streak.longestStreak = streak.currentStreak;
       }
+      // DON'T update lastActiveDate in dev settings to avoid interfering with real gameplay
+      // streak.lastActiveDate should only be updated by actual challenge completion
       saveStreak(streak);
       
       // Update milestone progress: increase by 1
@@ -3161,6 +3164,12 @@ function setupDevSettingsListeners() {
       
       progress.totalTasksCompleted = newTotal;
       saveProgress(progress);
+      
+      // Increment pack tasks for all unlocked packs (by 10, matching the task increment)
+      // We call incrementPackTasks() 10 times to match the 10 tasks added
+      for (let i = 0; i < 10; i++) {
+        incrementPackTasks();
+      }
       
       // Also increment seasonal tasks if an event is active
       const activeEvent = getActiveEvent();
@@ -3451,11 +3460,45 @@ function closeSettingsPopup() {
     overlay.remove();
   }
   
+  // Check for newly purchasable backgrounds after dev settings changes
+  const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
+  const packBackgroundUnlockResult = checkForNewlyPurchasablePackBackgrounds();
+  const seasonalBackgroundUnlockResult = checkForNewlyPurchasableSeasonalBackgrounds();
+  
+  // Queue popups in order: diamonds, then background unlocks
+  const popupsToShow = [];
+  
   // Show diamond celebration popup if diamonds were earned from dev settings
   if (devDiamondsEarned > 0) {
     const diamondsToShow = devDiamondsEarned;
     devDiamondsEarned = 0; // Reset before showing popup
-    showDiamondCelebrationPopup(diamondsToShow, CONFIG.TASKS_PER_DIAMOND);
+    popupsToShow.push((next) => showDiamondCelebrationPopup(diamondsToShow, CONFIG.TASKS_PER_DIAMOND, next));
+  }
+  
+  // Show standard background unlock popups
+  if (backgroundUnlockResult.hasNew && backgroundUnlockResult.firstNewBackground) {
+    popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(backgroundUnlockResult.firstNewBackground, next));
+  }
+  
+  // Show pack background unlock popups
+  if (packBackgroundUnlockResult.hasNew && packBackgroundUnlockResult.firstNewBackground) {
+    popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(packBackgroundUnlockResult.firstNewBackground, next));
+  }
+  
+  // Show seasonal background unlock popups
+  if (seasonalBackgroundUnlockResult.hasNew && seasonalBackgroundUnlockResult.firstNewBackground) {
+    popupsToShow.push((next) => showSeasonalBackgroundUnlockCelebrationPopup(seasonalBackgroundUnlockResult.firstNewBackground, next));
+  }
+  
+  // Execute popup chain
+  if (popupsToShow.length > 0) {
+    let chain = () => {}; // Empty function at the end
+    for (let i = popupsToShow.length - 1; i >= 0; i--) {
+      const currentPopup = popupsToShow[i];
+      const nextInChain = chain;
+      chain = () => currentPopup(nextInChain);
+    }
+    chain(); // Start the chain
   }
 }
 
