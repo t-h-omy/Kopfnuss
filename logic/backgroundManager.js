@@ -455,8 +455,15 @@ export function getSelectedBackgroundPath() {
  * @returns {boolean} True if the background is unlocked
  */
 export function isBackgroundUnlocked(backgroundId) {
+  // First try to find in standard backgrounds
   const backgroundsSource = getBackgroundsSource();
-  const background = backgroundsSource[backgroundId];
+  let background = backgroundsSource[backgroundId];
+  
+  // If not found in standard backgrounds, check pack backgrounds
+  if (!background) {
+    background = BACKGROUNDS_UNIFIED.find(bg => bg.id === backgroundId && bg.pack);
+  }
+  
   if (!background) return false;
   if (background.isDefault) return true;
   
