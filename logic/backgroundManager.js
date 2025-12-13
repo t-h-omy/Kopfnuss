@@ -471,8 +471,18 @@ export function isBackgroundUnlocked(backgroundId) {
  * @returns {Object} Result with success status and message
  */
 export function unlockBackground(backgroundId) {
+  // First try to find in standard backgrounds (legacy format)
   const backgroundsSource = getBackgroundsSource();
-  const background = backgroundsSource[backgroundId];
+  let background = backgroundsSource[backgroundId];
+  let isPackBackground = false;
+  
+  // If not found in standard backgrounds, check pack backgrounds in unified format
+  if (!background) {
+    background = BACKGROUNDS_UNIFIED.find(bg => bg.id === backgroundId && bg.pack);
+    if (background) {
+      isPackBackground = true;
+    }
+  }
   
   if (!background) {
     return {
@@ -496,12 +506,12 @@ export function unlockBackground(backgroundId) {
   }
   
   // Check if task requirement is fulfilled
+  // getBackgroundState works with both legacy and unified formats
   const state = getBackgroundState(background);
-  if (state === BACKGROUND_STATE.LOCKED) {
-    const tasksRemaining = getTasksRemaining(background);
+  if (state === BACKGROUND_STATE.LOCKED || state === BACKGROUND_STATE.LOCKED_BY_PACK || state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
     return {
       success: false,
-      message: `Noch ${tasksRemaining} Aufgaben nötig`,
+      message: 'Noch nicht verfügbar',
       isLocked: true
     };
   }
@@ -530,7 +540,7 @@ export function unlockBackground(backgroundId) {
     success: true,
     message: 'Hintergrund freigeschaltet!',
     newDiamondCount,
-    background
+    background: isPackBackground ? convertToLegacyFormat(background) : background
   };
 }
 
@@ -540,8 +550,17 @@ export function unlockBackground(backgroundId) {
  * @returns {Object} Result with success status and message
  */
 export function selectBackground(backgroundId) {
+  // First try to find in standard backgrounds
   const backgroundsSource = getBackgroundsSource();
-  const background = backgroundsSource[backgroundId];
+  let background = backgroundsSource[backgroundId];
+  
+  // If not found in standard backgrounds, check pack backgrounds
+  if (!background) {
+    const packBackground = BACKGROUNDS_UNIFIED.find(bg => bg.id === backgroundId && bg.pack);
+    if (packBackground) {
+      background = convertToLegacyFormat(packBackground);
+    }
+  }
   
   if (!background) {
     return {
