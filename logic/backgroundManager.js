@@ -799,6 +799,7 @@ export function getBackgroundsByPack(packId) {
 export function getBackgroundPacksWithState() {
   const unlockedPacks = loadUnlockedPacks();
   const packTasks = loadPackTasksSinceUnlock();
+  const seenPackBackgrounds = loadSeenPacksBackgrounds();
   
   return BACKGROUND_PACKS.map(pack => {
     const unlocked = unlockedPacks.includes(pack.id);
@@ -819,7 +820,9 @@ export function getBackgroundPacksWithState() {
       return {
         ...bg,
         state: state,
-        tasksRemaining: tasksRemaining
+        tasksRemaining: tasksRemaining,
+        // Show NEW badge if background is purchasable and not yet seen in packs tab
+        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !seenPackBackgrounds.includes(bg.id)
       };
     });
     

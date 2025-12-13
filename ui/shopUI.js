@@ -260,12 +260,14 @@ export function showBackgroundShopPopup(scrollToBackgroundId = null, initialTab 
       // Build badges and icons
       let activeBadge = state === BACKGROUND_STATE.ACTIVE ? '<div class="background-selected-badge">Aktiv</div>' : '';
       let lockIcon = (state === BACKGROUND_STATE.LOCKED || state === BACKGROUND_STATE.LOCKED_BY_PACK || state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) ? '<div class="background-lock-icon">🔒</div>' : '';
+      let newBadge = (state === BACKGROUND_STATE.PURCHASABLE && bg.isNewlyPurchasable) ? '<div class="background-new-badge">NEU</div>' : '';
       
       packsContentHtml += `
         <div class="${tileClass}" data-bg-id="${bg.id}" data-is-pack="true" data-pack-id="${pack.id}">
           <img src="./assets/${bg.file}" alt="${bg.name}" class="background-preview">
           ${lockIcon}
           ${activeBadge}
+          ${newBadge}
           <div class="background-info">
             <div class="background-name">${bg.name}</div>
             ${costHtml}
