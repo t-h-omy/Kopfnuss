@@ -516,9 +516,17 @@ export function unlockBackground(backgroundId) {
   // getBackgroundState works with both legacy and unified formats
   const state = getBackgroundState(background);
   if (state === BACKGROUND_STATE.LOCKED || state === BACKGROUND_STATE.LOCKED_BY_PACK || state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
+    let errorMessage = 'Noch nicht verfügbar';
+    
+    if (state === BACKGROUND_STATE.LOCKED_BY_PACK) {
+      errorMessage = 'Paket muss zuerst freigeschaltet werden';
+    } else if (state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
+      errorMessage = 'Noch nicht genug Aufgaben abgeschlossen';
+    }
+    
     return {
       success: false,
-      message: 'Noch nicht verfügbar',
+      message: errorMessage,
       isLocked: true
     };
   }
