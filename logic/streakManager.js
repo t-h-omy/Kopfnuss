@@ -239,25 +239,41 @@ export function incrementStreakByChallenge() {
     };
   }
   
-  // If no previous date, start first streak
+  // If no previous date, start or continue streak
   if (!lastActiveDate) {
-    streak.currentStreak = 1;
-    streak.longestStreak = Math.max(streak.longestStreak || 0, 1);
+    // If streak already exists (e.g., from dev settings), increment it
+    // Otherwise, start first streak
+    if (streak.currentStreak > 0) {
+      streak.currentStreak += 1;
+    } else {
+      streak.currentStreak = 1;
+    }
+    streak.longestStreak = Math.max(streak.longestStreak || 0, streak.currentStreak);
     streak.lastActiveDate = today;
     streak.isFrozen = false;
     streak.lossReason = null;
     saveStreak(streak);
     
-    // Start milestone progress at 1
-    let milestoneProgress = 1;
+    // Update milestone progress
+    let milestoneProgress = loadMilestoneProgress() + 1;
+    
+    // Check if milestone is reached
+    const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+    let milestoneReached = false;
+    
+    if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
+      milestoneReached = true;
+      milestoneProgress = 0; // Reset after milestone
+    }
+    
     saveMilestoneProgress(milestoneProgress);
     
     return {
       success: true,
       wasIncremented: true,
-      message: 'First streak day started!',
+      message: 'Streak started/continued!',
       newStreak: streak.currentStreak,
-      milestoneReached: false
+      milestoneReached: milestoneReached
     };
   }
   

@@ -1147,14 +1147,14 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 88,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
       "active": true,
       "isDefault": false,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 4
     },
     {
       "id": "winterpaket_snow_leopard",
@@ -1164,14 +1164,14 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 92,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
       "active": true,
       "isDefault": false,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 8
     },
     {
       "id": "winterpaket_snowflake",
@@ -1181,14 +1181,14 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 96,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
       "active": true,
       "isDefault": false,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 12
     },
     {
       "id": "winterpaket_marmot",
@@ -1198,14 +1198,14 @@
       "cost": 1,
       "currency": "diamonds",
       "requirements": {
-        "minTasksSinceStart": 100,
+        "minTasksSinceStart": null,
         "minTasksSinceEventStart": null
       },
       "event": null,
       "active": true,
       "isDefault": false,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 16
     }
   ]
 }

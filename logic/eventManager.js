@@ -20,7 +20,9 @@ import {
   saveSeasonalLastKnownPurchasable,
   clearShopOpenedFlag,
   wasShopOpenedWithNewBackgrounds,
-  getTodayDate
+  getTodayDate,
+  loadSeenSeasonalBackgrounds,
+  saveSeenSeasonalBackgrounds
 } from './storageManager.js';
 
 /**
@@ -732,6 +734,12 @@ export function checkForNewlyPurchasableSeasonalBackgrounds() {
   // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
     clearShopOpenedFlag();
+    
+    // Remove newly purchasable backgrounds from seasonal seen list so they show as NEW
+    const seenSeasonal = loadSeenSeasonalBackgrounds();
+    const updatedSeenSeasonal = seenSeasonal.filter(id => !newlyPurchasable.includes(id));
+    saveSeenSeasonalBackgrounds(updatedSeenSeasonal);
+    
     // Mark these backgrounds as "seen" in terms of the unlock popup
     // This prevents the popup from showing again on subsequent challenge completions
     const unlockedIds = loadSeasonalUnlockedBackgrounds(activeEvent.id);
@@ -779,4 +787,45 @@ export function updateKnownSeasonalPurchasableBackgrounds() {
     .filter(id => !unlockedIds.includes(id));
   
   saveSeasonalLastKnownPurchasable(activeEvent.id, allKnownPurchasable);
+}
+
+/**
+ * Check if seasonal tab has NEW backgrounds (purchasable but not yet seen)
+ * @returns {boolean} True if seasonal tab should show NEW badge
+ */
+export function hasNewSeasonalBackgrounds() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    return false;
+  }
+  
+  const seasonalBackgrounds = getAllActiveSeasonalBackgrounds();
+  const seenIds = loadSeenSeasonalBackgrounds();
+  
+  // Check if any seasonal background is purchasable and not seen
+  return seasonalBackgrounds.some(bg => 
+    bg.hasEnoughTasks && 
+    !bg.isUnlocked && 
+    !seenIds.includes(bg.id)
+  );
+}
+
+/**
+ * Mark seasonal tab backgrounds as seen (when player enters the tab)
+ */
+export function markSeasonalBackgroundsSeen() {
+  const activeEvent = getActiveEvent();
+  if (!activeEvent) {
+    return;
+  }
+  
+  const seasonalBackgrounds = getAllActiveSeasonalBackgrounds();
+  const currentPurchasable = seasonalBackgrounds
+    .filter(bg => bg.hasEnoughTasks && !bg.isUnlocked)
+    .map(bg => bg.id);
+  
+  // Merge with previously seen IDs
+  const seenIds = loadSeenSeasonalBackgrounds();
+  const updatedSeen = [...new Set([...seenIds, ...currentPurchasable])];
+  saveSeenSeasonalBackgrounds(updatedSeen);
 }

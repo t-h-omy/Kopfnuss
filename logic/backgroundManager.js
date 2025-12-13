@@ -18,7 +18,11 @@ import {
   loadUnlockedPacks,
   saveUnlockedPacks,
   loadPackTasksSinceUnlock,
-  savePackTasksSinceUnlock
+  savePackTasksSinceUnlock,
+  loadSeenStandardBackgrounds,
+  saveSeenStandardBackgrounds,
+  loadSeenPacksBackgrounds,
+  saveSeenPacksBackgrounds
 } from './storageManager.js';
 
 /**
@@ -73,12 +77,16 @@ function convertToLegacyFormat(unifiedBg) {
   
   // Add tasksRequired based on category
   if (unifiedBg.category === 'standard') {
-    legacy.tasksRequired = unifiedBg.requirements.minTasksSinceStart || 0;
-  } else {
+    // Standard backgrounds (including pack backgrounds)
+    legacy.tasksRequired = unifiedBg.requirements?.minTasksSinceStart || 0;
+  } else if (unifiedBg.category === 'seasonal') {
     // Seasonal backgrounds
-    legacy.tasksRequired = unifiedBg.requirements.minTasksSinceEventStart || 0;
+    legacy.tasksRequired = unifiedBg.requirements?.minTasksSinceEventStart || 0;
     legacy.eventId = unifiedBg.event;
     legacy.isSeasonal = true;
+  } else {
+    // Unknown category fallback
+    legacy.tasksRequired = 0;
   }
   
   if (unifiedBg.isDefault) {
@@ -167,8 +175,8 @@ export function getBackgroundState(background) {
       return BACKGROUND_STATE.LOCKED_BY_PACK;
     }
     
-    // Pack is unlocked, now check two separate requirements:
-    // 1. Tasks since pack unlock
+    // Pack is unlocked, now check only one requirement:
+    // Tasks since pack unlock (minTasksSincePackUnlock)
     const tasksSinceUnlock = packTasksSinceUnlock[background.pack] || 0;
     const minTasksSincePackUnlock = background.minTasksSincePackUnlock || 0;
     
@@ -176,19 +184,7 @@ export function getBackgroundState(background) {
       return BACKGROUND_STATE.REQUIREMENTS_NOT_MET;
     }
     
-    // 2. Total tasks completed (minTasksSinceStart)
-    let minTasksSinceStart = 0;
-    if (background.requirements && background.category === 'standard') {
-      minTasksSinceStart = background.requirements.minTasksSinceStart || 0;
-    } else if (background.tasksRequired !== undefined) {
-      minTasksSinceStart = background.tasksRequired;
-    }
-    
-    if (totalTasksCompleted < minTasksSinceStart) {
-      return BACKGROUND_STATE.REQUIREMENTS_NOT_MET;
-    }
-    
-    // Pack is unlocked and all requirements met, can be purchased
+    // Pack is unlocked and requirement met, can be purchased
     return BACKGROUND_STATE.PURCHASABLE;
   }
   
@@ -278,6 +274,15 @@ export function checkForNewlyPurchasableBackgrounds() {
   // Also clear the shop opened flag so the NEW badge shows on the shop button
   if (newlyPurchasable.length > 0) {
     clearShopOpenedFlag();
+    
+    // Remove newly purchasable backgrounds from seen lists so they show as NEW
+    const seenStandard = loadSeenStandardBackgrounds();
+    const seenPacks = loadSeenPacksBackgrounds();
+    const updatedSeenStandard = seenStandard.filter(id => !newlyPurchasable.includes(id));
+    const updatedSeenPacks = seenPacks.filter(id => !newlyPurchasable.includes(id));
+    saveSeenStandardBackgrounds(updatedSeenStandard);
+    saveSeenPacksBackgrounds(updatedSeenPacks);
+    
     // Mark these backgrounds as "seen" in terms of the unlock popup
     // This prevents the popup from showing again on subsequent challenge completions
     const unlockedIds = loadUnlockedBackgrounds();
@@ -291,6 +296,85 @@ export function checkForNewlyPurchasableBackgrounds() {
   const firstNewBackground = newlyPurchasable.length > 0 
     ? backgroundsSource[newlyPurchasable[0]] 
     : null;
+  
+  return {
+    newlyPurchasable,
+    firstNewBackground,
+    hasNew: newlyPurchasable.length > 0
+  };
+}
+
+/**
+ * Get list of pack backgrounds that are currently purchasable
+ * @returns {Array<string>} Array of pack background IDs that are purchasable
+ */
+function getPurchasablePackBackgroundIds() {
+  const packs = getBackgroundPacksWithState();
+  const purchasableIds = [];
+  
+  for (const pack of packs) {
+    for (const bg of pack.backgrounds) {
+      if (bg.state === BACKGROUND_STATE.PURCHASABLE) {
+        purchasableIds.push(bg.id);
+      }
+    }
+  }
+  
+  return purchasableIds;
+}
+
+/**
+ * Check for newly purchasable pack backgrounds (became purchasable since last check)
+ * @returns {Object} Object with newlyPurchasable array and firstNewBackground object
+ */
+export function checkForNewlyPurchasablePackBackgrounds() {
+  const currentPurchasable = getPurchasablePackBackgroundIds();
+  const lastKnownPurchasable = loadLastKnownPurchasableBackgrounds();
+  
+  // Find backgrounds that are now purchasable but weren't before
+  const newlyPurchasable = currentPurchasable.filter(
+    id => !lastKnownPurchasable.includes(id)
+  );
+  
+  // If new backgrounds became available, update lastKnownPurchasable to prevent showing the popup again
+  // Also clear the shop opened flag so the NEW badge shows on the shop button
+  if (newlyPurchasable.length > 0) {
+    clearShopOpenedFlag();
+    
+    // Remove newly purchasable backgrounds from seen lists so they show as NEW
+    const seenPacks = loadSeenPacksBackgrounds();
+    const updatedSeenPacks = seenPacks.filter(id => !newlyPurchasable.includes(id));
+    saveSeenPacksBackgrounds(updatedSeenPacks);
+    
+    // Mark these backgrounds as "seen" in terms of the unlock popup
+    // This prevents the popup from showing again on subsequent challenge completions
+    const unlockedIds = loadUnlockedBackgrounds();
+    const updatedKnownPurchasable = [...new Set([...lastKnownPurchasable, ...newlyPurchasable])]
+      .filter(id => !unlockedIds.includes(id));
+    saveLastKnownPurchasableBackgrounds(updatedKnownPurchasable);
+  }
+  
+  // Get the first newly purchasable background object for display
+  let firstNewBackground = null;
+  if (newlyPurchasable.length > 0) {
+    const packs = getBackgroundPacksWithState();
+    for (const pack of packs) {
+      for (const bg of pack.backgrounds) {
+        if (newlyPurchasable.includes(bg.id)) {
+          // Convert to legacy format for compatibility
+          firstNewBackground = {
+            id: bg.id,
+            name: bg.name,
+            file: bg.file,
+            cost: bg.cost,
+            tasksRequired: bg.requirements?.minTasksSinceStart || 0
+          };
+          break;
+        }
+      }
+      if (firstNewBackground) break;
+    }
+  }
   
   return {
     newlyPurchasable,
@@ -337,6 +421,12 @@ export function getSelectedBackground() {
     return seasonalBackground;
   }
   
+  // Check pack backgrounds
+  const packBackground = BACKGROUNDS_UNIFIED.find(bg => bg.id === selectedId && bg.pack && bg.active);
+  if (packBackground) {
+    return convertToLegacyFormat(packBackground);
+  }
+  
   // If selected background doesn't exist in either, return default background
   // Explicitly check for 'default' ID first, then fallback to first background
   if (backgroundsSource['default']) {
@@ -375,8 +465,15 @@ export function getSelectedBackgroundPath() {
  * @returns {boolean} True if the background is unlocked
  */
 export function isBackgroundUnlocked(backgroundId) {
+  // First try to find in standard backgrounds
   const backgroundsSource = getBackgroundsSource();
-  const background = backgroundsSource[backgroundId];
+  let background = backgroundsSource[backgroundId];
+  
+  // If not found in standard backgrounds, check pack backgrounds
+  if (!background) {
+    background = BACKGROUNDS_UNIFIED.find(bg => bg.id === backgroundId && bg.pack);
+  }
+  
   if (!background) return false;
   if (background.isDefault) return true;
   
@@ -391,8 +488,18 @@ export function isBackgroundUnlocked(backgroundId) {
  * @returns {Object} Result with success status and message
  */
 export function unlockBackground(backgroundId) {
+  // First try to find in standard backgrounds (legacy format)
   const backgroundsSource = getBackgroundsSource();
-  const background = backgroundsSource[backgroundId];
+  let background = backgroundsSource[backgroundId];
+  let isPackBackground = false;
+  
+  // If not found in standard backgrounds, check pack backgrounds in unified format
+  if (!background) {
+    background = BACKGROUNDS_UNIFIED.find(bg => bg.id === backgroundId && bg.pack);
+    if (background) {
+      isPackBackground = true;
+    }
+  }
   
   if (!background) {
     return {
@@ -416,12 +523,20 @@ export function unlockBackground(backgroundId) {
   }
   
   // Check if task requirement is fulfilled
+  // getBackgroundState works with both legacy and unified formats
   const state = getBackgroundState(background);
-  if (state === BACKGROUND_STATE.LOCKED) {
-    const tasksRemaining = getTasksRemaining(background);
+  if (state === BACKGROUND_STATE.LOCKED || state === BACKGROUND_STATE.LOCKED_BY_PACK || state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
+    let errorMessage = 'Noch nicht verfügbar';
+    
+    if (state === BACKGROUND_STATE.LOCKED_BY_PACK) {
+      errorMessage = 'Paket muss zuerst freigeschaltet werden';
+    } else if (state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
+      errorMessage = 'Noch nicht genug Aufgaben abgeschlossen';
+    }
+    
     return {
       success: false,
-      message: `Noch ${tasksRemaining} Aufgaben nötig`,
+      message: errorMessage,
       isLocked: true
     };
   }
@@ -450,7 +565,7 @@ export function unlockBackground(backgroundId) {
     success: true,
     message: 'Hintergrund freigeschaltet!',
     newDiamondCount,
-    background
+    background: isPackBackground ? convertToLegacyFormat(background) : background
   };
 }
 
@@ -460,8 +575,17 @@ export function unlockBackground(backgroundId) {
  * @returns {Object} Result with success status and message
  */
 export function selectBackground(backgroundId) {
+  // First try to find in standard backgrounds
   const backgroundsSource = getBackgroundsSource();
-  const background = backgroundsSource[backgroundId];
+  let background = backgroundsSource[backgroundId];
+  
+  // If not found in standard backgrounds, check pack backgrounds
+  if (!background) {
+    const packBackground = BACKGROUNDS_UNIFIED.find(bg => bg.id === backgroundId && bg.pack);
+    if (packBackground) {
+      background = convertToLegacyFormat(packBackground);
+    }
+  }
   
   if (!background) {
     return {
@@ -594,6 +718,78 @@ export function incrementPackTasks() {
 }
 
 /**
+ * Check if standard tab has NEW backgrounds (purchasable but not yet seen)
+ * @returns {boolean} True if standard tab should show NEW badge
+ */
+export function hasNewStandardBackgrounds() {
+  const backgrounds = getAllBackgrounds();
+  const seenIds = loadSeenStandardBackgrounds();
+  
+  // Check if any standard background (without pack) is purchasable and not seen
+  return backgrounds.some(bg => 
+    !bg.pack && 
+    bg.state === BACKGROUND_STATE.PURCHASABLE && 
+    !seenIds.includes(bg.id)
+  );
+}
+
+/**
+ * Check if packs tab has NEW backgrounds (purchasable but not yet seen)
+ * @returns {boolean} True if packs tab should show NEW badge
+ */
+export function hasNewPacksBackgrounds() {
+  const packs = getBackgroundPacksWithState();
+  const seenIds = loadSeenPacksBackgrounds();
+  
+  // Check if any pack background is purchasable and not seen
+  for (const pack of packs) {
+    for (const bg of pack.backgrounds) {
+      if (bg.state === BACKGROUND_STATE.PURCHASABLE && !seenIds.includes(bg.id)) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Mark standard tab backgrounds as seen (when player enters the tab)
+ */
+export function markStandardBackgroundsSeen() {
+  const backgrounds = getAllBackgrounds();
+  const currentPurchasable = backgrounds
+    .filter(bg => !bg.pack && bg.state === BACKGROUND_STATE.PURCHASABLE)
+    .map(bg => bg.id);
+  
+  // Merge with previously seen IDs
+  const seenIds = loadSeenStandardBackgrounds();
+  const updatedSeen = [...new Set([...seenIds, ...currentPurchasable])];
+  saveSeenStandardBackgrounds(updatedSeen);
+}
+
+/**
+ * Mark packs tab backgrounds as seen (when player enters the tab)
+ */
+export function markPacksBackgroundsSeen() {
+  const packs = getBackgroundPacksWithState();
+  const currentPurchasable = [];
+  
+  for (const pack of packs) {
+    for (const bg of pack.backgrounds) {
+      if (bg.state === BACKGROUND_STATE.PURCHASABLE) {
+        currentPurchasable.push(bg.id);
+      }
+    }
+  }
+  
+  // Merge with previously seen IDs
+  const seenIds = loadSeenPacksBackgrounds();
+  const updatedSeen = [...new Set([...seenIds, ...currentPurchasable])];
+  saveSeenPacksBackgrounds(updatedSeen);
+}
+
+/**
  * Get backgrounds belonging to a specific pack
  * @param {string} packId - Pack ID
  * @returns {Array} Array of background objects from unified schema
@@ -613,6 +809,7 @@ export function getBackgroundsByPack(packId) {
 export function getBackgroundPacksWithState() {
   const unlockedPacks = loadUnlockedPacks();
   const packTasks = loadPackTasksSinceUnlock();
+  const seenPackBackgrounds = loadSeenPacksBackgrounds();
   
   return BACKGROUND_PACKS.map(pack => {
     const unlocked = unlockedPacks.includes(pack.id);
@@ -623,24 +820,19 @@ export function getBackgroundPacksWithState() {
     const backgroundsWithState = backgrounds.map(bg => {
       const state = getBackgroundState(bg);
       
-      // Calculate tasks remaining based on which requirement is not met
+      // Calculate tasks remaining based on minTasksSincePackUnlock only
       let tasksRemaining = 0;
       if (unlocked && state === BACKGROUND_STATE.REQUIREMENTS_NOT_MET) {
-        // Check both requirements and show whichever is larger
-        const tasksFromPackUnlock = Math.max(0, (bg.minTasksSincePackUnlock || 0) - tasksSinceUnlock);
-        
-        const progress = loadProgress();
-        const totalTasksCompleted = progress.totalTasksCompleted || 0;
-        const minTasksSinceStart = bg.requirements?.minTasksSinceStart || bg.tasksRequired || 0;
-        const tasksFromTotalProgress = Math.max(0, minTasksSinceStart - totalTasksCompleted);
-        
-        tasksRemaining = Math.max(tasksFromPackUnlock, tasksFromTotalProgress);
+        // Only check tasks since pack unlock
+        tasksRemaining = Math.max(0, (bg.minTasksSincePackUnlock || 0) - tasksSinceUnlock);
       }
       
       return {
         ...bg,
         state: state,
-        tasksRemaining: tasksRemaining
+        tasksRemaining: tasksRemaining,
+        // Show NEW badge if background is purchasable and not yet seen in packs tab
+        isNewlyPurchasable: state === BACKGROUND_STATE.PURCHASABLE && !seenPackBackgrounds.includes(bg.id)
       };
     });
     

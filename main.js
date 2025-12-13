@@ -57,8 +57,12 @@ import {
   isBackgroundUnlocked,
   BACKGROUND_STATE,
   checkForNewlyPurchasableBackgrounds,
+  checkForNewlyPurchasablePackBackgrounds,
   shouldShowNewBadge,
-  updateKnownPurchasableBackgrounds
+  updateKnownPurchasableBackgrounds,
+  hasNewStandardBackgrounds,
+  hasNewPacksBackgrounds,
+  incrementPackTasks
 } from './logic/backgroundManager.js';
 import {
   getActiveEvent,
@@ -73,6 +77,7 @@ import {
   shouldShowEventStartPopup,
   markEventStartPopupShown,
   shouldShowEventEndPopup,
+  hasNewSeasonalBackgrounds,
   markEventEndPopupShown,
   checkAndResetSeasonalBackground,
   isSeasonalBackgroundUsable,
@@ -346,6 +351,11 @@ function loadChallengesScreen(container) {
     const showBackgroundUnlock = backgroundUnlockResult.hasNew;
     const newlyPurchasableBackground = backgroundUnlockResult.firstNewBackground;
     
+    // Check for newly purchasable pack backgrounds
+    const packBackgroundUnlockResult = checkForNewlyPurchasablePackBackgrounds();
+    const showPackBackgroundUnlock = packBackgroundUnlockResult.hasNew;
+    const newlyPurchasablePackBackground = packBackgroundUnlockResult.firstNewBackground;
+    
     // Check for newly purchasable seasonal backgrounds
     const seasonalBackgroundUnlockResult = checkForNewlyPurchasableSeasonalBackgrounds();
     const showSeasonalBackgroundUnlock = seasonalBackgroundUnlockResult.hasNew;
@@ -395,6 +405,10 @@ function loadChallengesScreen(container) {
     if (showBackgroundUnlock && newlyPurchasableBackground) {
       // Show background unlock celebration popup when a new background becomes purchasable
       popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(newlyPurchasableBackground, next));
+    }
+    if (showPackBackgroundUnlock && newlyPurchasablePackBackground) {
+      // Show pack background unlock celebration popup when a new pack background becomes purchasable
+      popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(newlyPurchasablePackBackground, next));
     }
     if (showSeasonalBackgroundUnlock && newlyPurchasableSeasonalBackground) {
       // Show seasonal background unlock celebration popup when a new seasonal background becomes purchasable
@@ -492,8 +506,8 @@ function loadChallengesScreen(container) {
     `;
   }
   
-  // Check if NEW badge should be shown on shop button
-  const showNewBadge = shouldShowNewBadge();
+  // Check if NEW badge should be shown on shop button (if any tab has new backgrounds)
+  const showNewBadge = hasNewStandardBackgrounds() || hasNewPacksBackgrounds() || hasNewSeasonalBackgrounds();
   const newBadgeHtml = showNewBadge ? '<span class="shop-new-badge">NEU</span>' : '';
   
   // Create fixed header with two-row layout
@@ -2998,6 +3012,8 @@ function setupDevSettingsListeners() {
       if (streak.currentStreak > streak.longestStreak) {
         streak.longestStreak = streak.currentStreak;
       }
+      // DON'T update lastActiveDate in dev settings to avoid interfering with real gameplay
+      // streak.lastActiveDate should only be updated by actual challenge completion
       saveStreak(streak);
       
       // Update milestone progress: increase by 1
@@ -3148,6 +3164,12 @@ function setupDevSettingsListeners() {
       
       progress.totalTasksCompleted = newTotal;
       saveProgress(progress);
+      
+      // Increment pack tasks for all unlocked packs (by 10, matching the task increment)
+      // We call incrementPackTasks() 10 times to match the 10 tasks added
+      for (let i = 0; i < 10; i++) {
+        incrementPackTasks();
+      }
       
       // Also increment seasonal tasks if an event is active
       const activeEvent = getActiveEvent();
@@ -3438,11 +3460,45 @@ function closeSettingsPopup() {
     overlay.remove();
   }
   
+  // Check for newly purchasable backgrounds after dev settings changes
+  const backgroundUnlockResult = checkForNewlyPurchasableBackgrounds();
+  const packBackgroundUnlockResult = checkForNewlyPurchasablePackBackgrounds();
+  const seasonalBackgroundUnlockResult = checkForNewlyPurchasableSeasonalBackgrounds();
+  
+  // Queue popups in order: diamonds, then background unlocks
+  const popupsToShow = [];
+  
   // Show diamond celebration popup if diamonds were earned from dev settings
   if (devDiamondsEarned > 0) {
     const diamondsToShow = devDiamondsEarned;
     devDiamondsEarned = 0; // Reset before showing popup
-    showDiamondCelebrationPopup(diamondsToShow, CONFIG.TASKS_PER_DIAMOND);
+    popupsToShow.push((next) => showDiamondCelebrationPopup(diamondsToShow, CONFIG.TASKS_PER_DIAMOND, next));
+  }
+  
+  // Show standard background unlock popups
+  if (backgroundUnlockResult.hasNew && backgroundUnlockResult.firstNewBackground) {
+    popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(backgroundUnlockResult.firstNewBackground, next));
+  }
+  
+  // Show pack background unlock popups
+  if (packBackgroundUnlockResult.hasNew && packBackgroundUnlockResult.firstNewBackground) {
+    popupsToShow.push((next) => showBackgroundUnlockCelebrationPopup(packBackgroundUnlockResult.firstNewBackground, next));
+  }
+  
+  // Show seasonal background unlock popups
+  if (seasonalBackgroundUnlockResult.hasNew && seasonalBackgroundUnlockResult.firstNewBackground) {
+    popupsToShow.push((next) => showSeasonalBackgroundUnlockCelebrationPopup(seasonalBackgroundUnlockResult.firstNewBackground, next));
+  }
+  
+  // Execute popup chain
+  if (popupsToShow.length > 0) {
+    let chain = () => {}; // Empty function at the end
+    for (let i = popupsToShow.length - 1; i >= 0; i--) {
+      const currentPopup = popupsToShow[i];
+      const nextInChain = chain;
+      chain = () => currentPopup(nextInChain);
+    }
+    chain(); // Start the chain
   }
 }
 
