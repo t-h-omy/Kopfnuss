@@ -84,6 +84,9 @@ function convertToLegacyFormat(unifiedBg) {
     legacy.tasksRequired = unifiedBg.requirements?.minTasksSinceEventStart || 0;
     legacy.eventId = unifiedBg.event;
     legacy.isSeasonal = true;
+  } else {
+    // Unknown category fallback
+    legacy.tasksRequired = 0;
   }
   
   if (unifiedBg.isDefault) {
@@ -419,7 +422,7 @@ export function getSelectedBackground() {
   }
   
   // Check pack backgrounds
-  const packBackground = BACKGROUNDS_UNIFIED.find(bg => bg.id === selectedId && bg.pack);
+  const packBackground = BACKGROUNDS_UNIFIED.find(bg => bg.id === selectedId && bg.pack && bg.active);
   if (packBackground) {
     return convertToLegacyFormat(packBackground);
   }
