@@ -417,6 +417,12 @@ export function getSelectedBackground() {
     return seasonalBackground;
   }
   
+  // Check pack backgrounds
+  const packBackground = BACKGROUNDS_UNIFIED.find(bg => bg.id === selectedId && bg.pack);
+  if (packBackground) {
+    return convertToLegacyFormat(packBackground);
+  }
+  
   // If selected background doesn't exist in either, return default background
   // Explicitly check for 'default' ID first, then fallback to first background
   if (backgroundsSource['default']) {
