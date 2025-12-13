@@ -77,10 +77,11 @@ function convertToLegacyFormat(unifiedBg) {
   
   // Add tasksRequired based on category
   if (unifiedBg.category === 'standard') {
-    legacy.tasksRequired = unifiedBg.requirements.minTasksSinceStart || 0;
-  } else {
+    // Standard backgrounds (including pack backgrounds)
+    legacy.tasksRequired = unifiedBg.requirements?.minTasksSinceStart || 0;
+  } else if (unifiedBg.category === 'seasonal') {
     // Seasonal backgrounds
-    legacy.tasksRequired = unifiedBg.requirements.minTasksSinceEventStart || 0;
+    legacy.tasksRequired = unifiedBg.requirements?.minTasksSinceEventStart || 0;
     legacy.eventId = unifiedBg.event;
     legacy.isSeasonal = true;
   }
