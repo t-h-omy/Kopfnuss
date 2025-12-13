@@ -1019,7 +1019,7 @@
       "event": null,
       "active": true,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 40
     },
     {
       "id": "winterpaket_snow_leopard",
@@ -1034,7 +1034,7 @@
       "event": null,
       "active": true,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 140
     },
     {
       "id": "winterpaket_snowflake",
@@ -1049,7 +1049,7 @@
       "event": null,
       "active": true,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 240
     },
     {
       "id": "winterpaket_marmot",
@@ -1064,7 +1064,7 @@
       "event": null,
       "active": true,
       "pack": "winter_paket",
-      "minTasksSincePackUnlock": 0
+      "minTasksSincePackUnlock": 340
     }
   ]
 }
