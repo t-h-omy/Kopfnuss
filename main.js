@@ -578,7 +578,7 @@ function loadChallengesScreen(container) {
   }
   
   // Add click handlers for resource capsules (opens info popups)
-  const statCapsules = header.querySelectorAll('.header-stats .stat-capsule, .header-stats .stat-capsule.streak-frozen');
+  const statCapsules = header.querySelectorAll('.header-stats > div');
   statCapsules.forEach((capsule, index) => {
     capsule.style.cursor = 'pointer';
     capsule.addEventListener('click', () => {
