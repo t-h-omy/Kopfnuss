@@ -231,7 +231,7 @@ export function resetChallenges() {
 
 /**
  * Check if player is at true game start
- * Game start is defined as: streak === 0 AND totalFinishedTasks === 0
+ * Game start is defined as: streak === 0 AND totalTasksCompleted === 0
  * @returns {boolean} True if at game start
  */
 function isAtGameStart() {
@@ -243,7 +243,7 @@ function isAtGameStart() {
 /**
  * Regenerate premium challenges (Zeit-Challenge and Kopfnuss-Challenge) with mutually exclusive spawn
  * Zeit-Challenge is rolled first; if it doesn't spawn, Kopfnuss-Challenge is rolled
- * At true game start (streak === 0 AND totalFinishedTasks === 0), no premium challenges spawn
+ * At true game start (streak === 0 AND totalTasksCompleted === 0), no premium challenges spawn
  * @param {string} date - Date string
  */
 function regeneratePremiumChallenges(date) {
