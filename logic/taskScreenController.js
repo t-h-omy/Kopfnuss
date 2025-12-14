@@ -348,8 +348,10 @@ function handlePlaceValueInput(e) {
   const index = parseInt(input.dataset.index, 10);
   const value = input.value.trim();
   
-  // Remove overwrite-mode class when typing
-  input.classList.remove('overwrite-mode');
+  // Remove overwrite-mode class when typing (if present)
+  if (input.classList.contains('overwrite-mode')) {
+    input.classList.remove('overwrite-mode');
+  }
   
   // Only process single digits
   if (value.length > 1) {
@@ -468,14 +470,16 @@ function handlePlaceValueFocus(e) {
 
 /**
  * Handle click on place-value digit slot
+ * Enables easy overwriting of filled slots
  */
 function handlePlaceValueClick(e) {
   const input = e.target;
   const index = parseInt(input.dataset.index, 10);
   
-  // If the slot has a value, select all for easy overwrite
+  // If the slot has a value, select all for easy overwrite and add visual indicator
   if (input.value !== '') {
     input.select();
+    input.classList.add('overwrite-mode');
   }
 }
 
