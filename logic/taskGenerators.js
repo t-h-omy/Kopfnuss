@@ -153,6 +153,8 @@ export function generateMixed() {
   const generators = [
     generateAddition,
     generateSubtraction,
+    generateAdditionPlaceValue,
+    generateSubtractionPlaceValue,
     generateMultiplication,
     generateDivision,
     generateSquared
