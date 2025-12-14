@@ -715,7 +715,7 @@ function loadChallengesScreen(container) {
     if (isKopfnussCompleted) {
       hintText = 'Erfolgreich geknackt!';
     } else if (isKopfnussFailed) {
-      hintText = 'Erneut versuchen?';
+      hintText = 'Nur ein Versuch – wartet auf den nächsten Tag';
     }
     
     // Build splash rays with premium scale
@@ -752,7 +752,6 @@ function loadChallengesScreen(container) {
                 🤔
                 ${kopfnussStatusIcon}
               </div>
-              <div class="kopfnuss-node-label">Nur ein Versuch</div>
             </div>
           </div>
           <div class="kopfnuss-info-card">
