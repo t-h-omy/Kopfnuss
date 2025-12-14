@@ -8,6 +8,14 @@
       "min": 10,
       "max": 999
     },
+    "additionPlaceValue": {
+      "min": 1000,
+      "max": 9999
+    },
+    "subtractionPlaceValue": {
+      "min": 1000,
+      "max": 9999
+    },
     "multiplication": {
       "factor1": {
         "min": 2,
@@ -109,6 +117,16 @@
       "name": "Subtraktion",
       "icon": "➖",
       "difficulty": 1
+    },
+    "additionPlaceValue": {
+      "name": "Addition (Stellenwert)",
+      "icon": "➕",
+      "difficulty": 2
+    },
+    "subtractionPlaceValue": {
+      "name": "Subtraktion (Stellenwert)",
+      "icon": "➖",
+      "difficulty": 2
     },
     "multiplication": {
       "name": "Multiplikation",

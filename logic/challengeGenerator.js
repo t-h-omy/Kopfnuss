@@ -133,6 +133,8 @@ export function generateDailyChallenges() {
   const allChallengeTypes = [
     'addition',
     'subtraction',
+    'additionPlaceValue',
+    'subtractionPlaceValue',
     'multiplication',
     'division',
     'squared',

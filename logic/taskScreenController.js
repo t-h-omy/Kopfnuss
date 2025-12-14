@@ -9,7 +9,8 @@ import {
   nextTask, 
   completeCurrentChallenge,
   abandonChallenge,
-  getTaskFlowState
+  getTaskFlowState,
+  incrementErrorCount
 } from './taskFlow.js';
 import { startChallenge } from './challengeStateManager.js';
 import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult, notifyMilestoneReached } from './uiBridge.js';
@@ -87,8 +88,6 @@ export function showTaskScreenForChallenge(container, challengeIndex, onBackClic
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
           <div class="task-question" id="task-question"></div>
-          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
-          <button id="submit-answer">Prüfen</button>
         </div>
         <div class="task-feedback" id="task-feedback"></div>
       </div>
@@ -169,11 +168,15 @@ function displayCurrentTask() {
     progressElement.innerHTML = progressBarHtml;
   }
   
-  // Clear input
-  const inputElement = document.getElementById('task-input');
-  if (inputElement) {
-    inputElement.value = '';
-    inputElement.focus();
+  // Check if this is a place-value input task
+  const isPlaceValue = currentTask.task.metadata && currentTask.task.metadata.placeValueInput;
+  
+  if (isPlaceValue) {
+    // Render place-value input UI
+    renderPlaceValueInput();
+  } else {
+    // Render standard input UI
+    renderStandardInput();
   }
   
   // Clear feedback
@@ -181,6 +184,300 @@ function displayCurrentTask() {
   if (feedbackElement) {
     feedbackElement.textContent = '';
     feedbackElement.className = 'task-feedback';
+  }
+}
+
+/**
+ * Render standard input UI
+ */
+function renderStandardInput() {
+  const taskContent = document.querySelector('.task-content');
+  if (!taskContent) return;
+  
+  // Remove existing input elements
+  const existingInput = taskContent.querySelector('.task-input-container');
+  if (existingInput) {
+    existingInput.remove();
+  }
+  
+  // Add standard input
+  const inputContainer = document.createElement('div');
+  inputContainer.className = 'task-input-container';
+  inputContainer.innerHTML = `
+    <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
+    <button id="submit-answer">Prüfen</button>
+  `;
+  
+  const questionElement = document.getElementById('task-question');
+  if (questionElement && questionElement.parentNode) {
+    questionElement.parentNode.appendChild(inputContainer);
+  }
+  
+  // Focus the input
+  const inputElement = document.getElementById('task-input');
+  if (inputElement) {
+    inputElement.value = '';
+    inputElement.focus();
+  }
+  
+  // Re-setup event listeners for standard input
+  setupStandardInputListeners();
+}
+
+/**
+ * Render place-value input UI
+ */
+function renderPlaceValueInput() {
+  const taskContent = document.querySelector('.task-content');
+  if (!taskContent) return;
+  
+  // Remove existing input elements
+  const existingInput = taskContent.querySelector('.task-input-container');
+  if (existingInput) {
+    existingInput.remove();
+  }
+  
+  // Add place-value input slots
+  const inputContainer = document.createElement('div');
+  inputContainer.className = 'task-input-container place-value-container';
+  inputContainer.innerHTML = `
+    <div class="place-value-inputs">
+      <div class="place-value-slot">
+        <label class="place-value-label">T</label>
+        <input type="tel" id="digit-0" class="place-value-digit active" inputmode="numeric" pattern="[0-9]" maxlength="1" data-index="0" aria-label="Tausender">
+      </div>
+      <div class="place-value-slot">
+        <label class="place-value-label">H</label>
+        <input type="tel" id="digit-1" class="place-value-digit" inputmode="numeric" pattern="[0-9]" maxlength="1" data-index="1" aria-label="Hunderter" disabled>
+      </div>
+      <div class="place-value-slot">
+        <label class="place-value-label">Z</label>
+        <input type="tel" id="digit-2" class="place-value-digit" inputmode="numeric" pattern="[0-9]" maxlength="1" data-index="2" aria-label="Zehner" disabled>
+      </div>
+      <div class="place-value-slot">
+        <label class="place-value-label">E</label>
+        <input type="tel" id="digit-3" class="place-value-digit" inputmode="numeric" pattern="[0-9]" maxlength="1" data-index="3" aria-label="Einer" disabled>
+      </div>
+    </div>
+  `;
+  
+  const questionElement = document.getElementById('task-question');
+  if (questionElement && questionElement.parentNode) {
+    questionElement.parentNode.appendChild(inputContainer);
+  }
+  
+  // Focus the first digit input
+  const firstInput = document.getElementById('digit-0');
+  if (firstInput) {
+    firstInput.focus();
+  }
+  
+  // Setup event listeners for place-value inputs
+  setupPlaceValueInputListeners();
+}
+
+/**
+ * Setup event listeners for standard input
+ */
+function setupStandardInputListeners() {
+  const submitButton = document.getElementById('submit-answer');
+  if (submitButton) {
+    submitButton.removeEventListener('click', handleAnswerSubmit);
+    submitButton.addEventListener('click', handleAnswerSubmit);
+  }
+  
+  const inputElement = document.getElementById('task-input');
+  if (inputElement) {
+    inputElement.removeEventListener('keypress', handleStandardInputKeypress);
+    inputElement.addEventListener('keypress', handleStandardInputKeypress);
+  }
+}
+
+/**
+ * Handle keypress for standard input
+ */
+function handleStandardInputKeypress(e) {
+  if (e.key === 'Enter') {
+    handleAnswerSubmit();
+  }
+}
+
+// Track place-value input state
+let placeValueState = {
+  currentIndex: 0,
+  enteredDigits: ['', '', '', ''],
+  correctDigits: []
+};
+
+/**
+ * Setup event listeners for place-value inputs
+ */
+function setupPlaceValueInputListeners() {
+  // Reset state
+  const currentTask = getCurrentTask();
+  if (currentTask && currentTask.task.metadata && currentTask.task.metadata.digitArray) {
+    placeValueState.correctDigits = currentTask.task.metadata.digitArray;
+    placeValueState.currentIndex = 0;
+    placeValueState.enteredDigits = ['', '', '', ''];
+  }
+  
+  // Add listeners to all digit inputs
+  for (let i = 0; i < 4; i++) {
+    const input = document.getElementById(`digit-${i}`);
+    if (input) {
+      // Remove old listeners
+      input.removeEventListener('input', handlePlaceValueInput);
+      input.removeEventListener('focus', handlePlaceValueFocus);
+      input.removeEventListener('click', handlePlaceValueClick);
+      
+      // Add new listeners
+      input.addEventListener('input', handlePlaceValueInput);
+      input.addEventListener('focus', handlePlaceValueFocus);
+      input.addEventListener('click', handlePlaceValueClick);
+    }
+  }
+}
+
+/**
+ * Handle input in place-value digit slot
+ */
+function handlePlaceValueInput(e) {
+  const input = e.target;
+  const index = parseInt(input.dataset.index, 10);
+  const value = input.value.trim();
+  
+  // Remove overwrite-mode class when typing (if present)
+  if (input.classList.contains('overwrite-mode')) {
+    input.classList.remove('overwrite-mode');
+  }
+  
+  // Only process single digits
+  if (value.length > 1) {
+    input.value = value.charAt(value.length - 1);
+    return;
+  }
+  
+  // Validate digit (0-9)
+  if (value !== '' && !/^[0-9]$/.test(value)) {
+    input.value = '';
+    return;
+  }
+  
+  if (value !== '') {
+    const digit = parseInt(value, 10);
+    const correctDigit = placeValueState.correctDigits[index];
+    
+    // Store the entered digit
+    placeValueState.enteredDigits[index] = value;
+    
+    // Validate the digit
+    if (digit === correctDigit) {
+      // Correct digit
+      input.classList.remove('incorrect');
+      input.classList.add('correct');
+      
+      // Move to next slot
+      if (index < 3) {
+        placeValueState.currentIndex = index + 1;
+        const nextInput = document.getElementById(`digit-${index + 1}`);
+        if (nextInput) {
+          nextInput.disabled = false;
+          nextInput.classList.add('active');
+          nextInput.focus();
+          
+          // Remove active class from current
+          input.classList.remove('active');
+        }
+      } else {
+        // All digits entered correctly
+        input.classList.remove('active');
+        
+        // Show success feedback
+        const feedbackElement = document.getElementById('task-feedback');
+        if (feedbackElement) {
+          feedbackElement.textContent = '✓ Richtig!';
+          feedbackElement.className = 'task-feedback feedback-correct';
+        }
+        
+        // Play correct answer sound
+        playAnswerFeedback(true);
+        
+        // Move to next task after a short delay
+        setTimeout(() => {
+          const nextTaskResult = nextTask();
+          
+          if (nextTaskResult.isComplete) {
+            handleChallengeCompletion();
+          } else {
+            displayCurrentTask();
+          }
+        }, 1500);
+      }
+    } else {
+      // Incorrect digit
+      input.classList.remove('correct');
+      input.classList.add('incorrect');
+      
+      // Increment error count (both local taskFlow state and challenge state)
+      // NOTE: We don't use validateAnswer() here because we're validating individual
+      // digits rather than a complete answer. incrementErrorCount() handles both
+      // the local error counter and the challenge state consistently.
+      incrementErrorCount();
+      
+      // Show error feedback
+      const feedbackElement = document.getElementById('task-feedback');
+      if (feedbackElement) {
+        feedbackElement.textContent = '✗ Falsch! Versuche es nochmal.';
+        feedbackElement.className = 'task-feedback feedback-incorrect';
+      }
+      
+      // Play wrong answer sound
+      playAnswerFeedback(false);
+      
+      // Clear the input after a short delay
+      setTimeout(() => {
+        input.value = '';
+        placeValueState.enteredDigits[index] = '';
+        input.classList.remove('incorrect');
+        input.focus();
+        
+        // Clear feedback
+        const feedbackElement = document.getElementById('task-feedback');
+        if (feedbackElement) {
+          feedbackElement.textContent = '';
+          feedbackElement.className = 'task-feedback';
+        }
+      }, 1500);
+    }
+  }
+}
+
+/**
+ * Handle focus on place-value digit slot
+ */
+function handlePlaceValueFocus(e) {
+  const input = e.target;
+  const index = parseInt(input.dataset.index, 10);
+  
+  // If this slot already has a value and is being focused, prepare for overwrite
+  if (input.value !== '') {
+    // Show the existing digit in a lowlighted state (add class)
+    input.classList.add('overwrite-mode');
+  }
+}
+
+/**
+ * Handle click on place-value digit slot
+ * Enables easy overwriting of filled slots
+ */
+function handlePlaceValueClick(e) {
+  const input = e.target;
+  const index = parseInt(input.dataset.index, 10);
+  
+  // If the slot has a value, select all for easy overwrite and add visual indicator
+  if (input.value !== '') {
+    input.select();
+    input.classList.add('overwrite-mode');
   }
 }
 
@@ -344,20 +641,14 @@ function handleChallengeCompletion() {
  * Setup event listeners for task screen
  */
 function setupTaskScreenEventListeners() {
-  // Submit button
-  const submitButton = document.getElementById('submit-answer');
-  if (submitButton) {
-    submitButton.addEventListener('click', handleAnswerSubmit);
-  }
+  // Check if current task is place-value or standard
+  const currentTask = getCurrentTask();
+  const isPlaceValue = currentTask && currentTask.task.metadata && currentTask.task.metadata.placeValueInput;
   
-  // Enter key on input
-  const inputElement = document.getElementById('task-input');
-  if (inputElement) {
-    inputElement.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        handleAnswerSubmit();
-      }
-    });
+  if (isPlaceValue) {
+    setupPlaceValueInputListeners();
+  } else {
+    setupStandardInputListeners();
   }
   
   // Back button (handled in main.js already, but kept for reference)
