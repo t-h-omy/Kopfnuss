@@ -2,7 +2,7 @@
 // Manages updates to header displays (streak, diamonds, seasonal currency, progress)
 
 import { getDiamondInfo } from '../logic/diamondManager.js';
-import { loadStreakStones, loadStreak, loadMilestoneProgress, loadProgress } from '../logic/storageManager.js';
+import { loadStreakStones, loadStreak } from '../logic/storageManager.js';
 import { CONFIG } from '../data/balancingLoader.js';
 import { showResourceInfoPopup } from '../logic/popupManager.js';
 import { getActiveEvent } from '../logic/eventManager.js';
@@ -109,14 +109,12 @@ export function showDiamondInfoPopup() {
  * Show streak stones resource info popup
  */
 export function showStreakStonesInfoPopup() {
-  const streakStones = loadStreakStones();
   const streak = loadStreak();
   const currentStreak = streak.currentStreak || 0;
   const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
   
   // Calculate next milestone
   const nextMilestone = Math.ceil((currentStreak + 1) / milestoneInterval) * milestoneInterval;
-  const streaksUntilNext = nextMilestone - currentStreak;
   
   showResourceInfoPopup({
     title: 'Streak Stones ♦️',
@@ -133,7 +131,7 @@ export function showStreakInfoPopup() {
   showResourceInfoPopup({
     title: 'Streak 🔥',
     line1: 'Zeigt, wie viele Tage du ununterbrochen min. 1 Challenge geschafft hast.',
-    line2: 'Jeden Tag bekommst du 1🔥. Du verlierst alle 🔥, wenn du nicht jeden Tag dranbleibst.'
+    line2: 'Jeden Tag bekommst du 1 🔥. Du verlierst alle 🔥, wenn du nicht jeden Tag dranbleibst.'
   });
 }
 
