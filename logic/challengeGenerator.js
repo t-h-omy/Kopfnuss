@@ -695,12 +695,18 @@ export function startZeitChallenge() {
     return false;
   }
   
+  // Ensure tasks are present - regenerate if missing to fix initialization issue
+  const tasksToUse = (zeit.tasks && zeit.tasks.length > 0) 
+    ? zeit.tasks 
+    : generateZeitChallengeTasksForChallenge();
+  
   return updateZeitChallenge({
     state: ZEIT_CHALLENGE_STATE.IN_PROGRESS,
     startedAt: new Date().toISOString(),
     currentTaskIndex: 0,
     errors: 0,
-    timeRemaining: CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120
+    timeRemaining: CONFIG.ZEIT_CHALLENGE_TIME_LIMIT_SECONDS || 120,
+    tasks: tasksToUse
   });
 }
 
