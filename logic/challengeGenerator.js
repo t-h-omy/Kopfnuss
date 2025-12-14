@@ -3,7 +3,7 @@
 
 import { generateTask, generateKopfnussTask } from './taskGenerators.js';
 import { CONFIG, CHALLENGE_TYPES } from '../data/balancingLoader.js';
-import { saveChallenges, loadChallenges, getTodayDate, saveKopfnussChallenge, loadKopfnussChallenge, saveZeitChallenge, loadZeitChallenge } from './storageManager.js';
+import { saveChallenges, loadChallenges, getTodayDate, saveKopfnussChallenge, loadKopfnussChallenge, saveZeitChallenge, loadZeitChallenge, loadStreak, loadProgress } from './storageManager.js';
 import { logError } from './logging.js';
 
 /**
@@ -230,11 +230,32 @@ export function resetChallenges() {
 }
 
 /**
+ * Check if player is at true game start
+ * Game start is defined as: streak === 0 AND totalTasksCompleted === 0
+ * @returns {boolean} True if at game start
+ */
+function isAtGameStart() {
+  const streak = loadStreak();
+  const progress = loadProgress();
+  return streak.currentStreak === 0 && progress.totalTasksCompleted === 0;
+}
+
+/**
  * Regenerate premium challenges (Zeit-Challenge and Kopfnuss-Challenge) with mutually exclusive spawn
  * Zeit-Challenge is rolled first; if it doesn't spawn, Kopfnuss-Challenge is rolled
+ * At true game start (streak === 0 AND totalTasksCompleted === 0), no premium challenges spawn
  * @param {string} date - Date string
  */
 function regeneratePremiumChallenges(date) {
+  // Check if player is at true game start - if so, don't spawn premium challenges
+  if (isAtGameStart()) {
+    const kopfnuss = createKopfnussChallenge(false);
+    saveKopfnussChallenge(kopfnuss, date);
+    const zeitChallenge = createZeitChallenge(false);
+    saveZeitChallenge(zeitChallenge, date);
+    return;
+  }
+  
   const zeitSpawnProbability = CONFIG.ZEIT_CHALLENGE_SPAWN_PROBABILITY || 0.15;
   const kopfnussSpawnProbability = CONFIG.KOPFNUSS_SPAWN_PROBABILITY || 0.3;
   
