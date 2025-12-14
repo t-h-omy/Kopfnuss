@@ -12,11 +12,12 @@ import { showScreen, notifyKopfnussChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
-  addSeasonalCurrency 
+  addSeasonalCurrency
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { playAnswerFeedback, playChallengeComplete, playDiamondEarn, playChallengeFailed } from './audioBootstrap.js';
 import { logError } from './logging.js';
+import { updateHeaderSeasonalDisplay, updateHeaderDiamondsDisplay } from '../ui/headerUI.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -235,6 +236,8 @@ function handleKopfnussChallengeCompletion() {
     // If no event, award diamonds immediately
     if (!eventActive) {
       addDiamonds(rewardAmount);
+      // Update diamond display in header
+      updateHeaderDiamondsDisplay();
       rewardInfo.isDiamond = true;
     }
     
@@ -314,6 +317,8 @@ function handleKopfnussChallengeCompletion() {
           playDiamondEarn();
           
           addDiamonds(rewardInfo.amount);
+          // Update diamond display in header
+          updateHeaderDiamondsDisplay();
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
           notifyKopfnussChallengeResultBridge(true, rewardInfo);
@@ -326,7 +331,11 @@ function handleKopfnussChallengeCompletion() {
           // Play currency received sound
           playDiamondEarn();
           
-          addSeasonalCurrency(rewardInfo.amount);
+          const result = addSeasonalCurrency(rewardInfo.amount);
+          // Update seasonal currency display in header
+          if (result.success) {
+            updateHeaderSeasonalDisplay(result.total);
+          }
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
           notifyKopfnussChallengeResultBridge(true, rewardInfo);
