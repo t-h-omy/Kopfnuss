@@ -1442,16 +1442,16 @@ function showMilestoneRewardPopup(onClose = null) {
   
   popupCard.innerHTML = `
     <div class="reward-celebration">🎖️</div>
-    <h2>Streak Milestone erreicht!</h2>
-    <p>Du hast einen Streak-Meilenstein erreicht. Wähle deine Belohnung:</p>
+    <h2>Streak-Meilenstein erreicht!</h2>
+    <p style="font-size: 16px; color: #4CAF50; font-weight: 600; margin-bottom: 8px;">Starke Streak-Serie!</p>
+    <p>Streak-Steine ♦️ schalten neue Hintergrund-Pakete frei.</p>
+    <p style="font-size: 14px; color: #666; margin-top: 16px; margin-bottom: 8px;">Wähle deine Belohnung:</p>
     <div class="milestone-reward-buttons">
       <button id="milestone-reward-stone-button" class="btn-primary milestone-reward-btn">
-        <span class="milestone-reward-icon">♦️</span>
-        <span class="milestone-reward-text">1 Streak-Stein</span>
+        +1 ♦️
       </button>
       <button id="milestone-reward-diamond-button" class="btn-primary milestone-reward-btn">
-        <span class="milestone-reward-icon">💎</span>
-        <span class="milestone-reward-text">1 Diamant</span>
+        +1 💎
       </button>
     </div>
   `;
