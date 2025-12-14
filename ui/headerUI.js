@@ -92,6 +92,16 @@ export function updateHeaderSeasonalDisplay(amount) {
 }
 
 /**
+ * Calculate the next streak milestone
+ * @param {number} currentStreak - Current streak value
+ * @returns {number} Next milestone value
+ */
+function getNextStreakMilestone(currentStreak) {
+  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+  return Math.ceil((currentStreak + 1) / milestoneInterval) * milestoneInterval;
+}
+
+/**
  * Show diamond resource info popup
  */
 export function showDiamondInfoPopup() {
@@ -111,10 +121,7 @@ export function showDiamondInfoPopup() {
 export function showStreakStonesInfoPopup() {
   const streak = loadStreak();
   const currentStreak = streak.currentStreak || 0;
-  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
-  
-  // Calculate next milestone
-  const nextMilestone = Math.ceil((currentStreak + 1) / milestoneInterval) * milestoneInterval;
+  const nextMilestone = getNextStreakMilestone(currentStreak);
   
   showResourceInfoPopup({
     title: 'Streak Stones ♦️',
@@ -130,10 +137,7 @@ export function showStreakStonesInfoPopup() {
 export function showStreakInfoPopup() {
   const streak = loadStreak();
   const currentStreak = streak.currentStreak || 0;
-  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
-  
-  // Calculate next milestone
-  const nextMilestone = Math.ceil((currentStreak + 1) / milestoneInterval) * milestoneInterval;
+  const nextMilestone = getNextStreakMilestone(currentStreak);
   
   showResourceInfoPopup({
     title: 'Streak 🔥',
