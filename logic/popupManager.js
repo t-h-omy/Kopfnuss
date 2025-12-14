@@ -204,3 +204,48 @@ export function showStreakPopup(config) {
   
   return overlay;
 }
+
+/**
+ * Show a resource info popup
+ * @param {Object} config - Popup configuration
+ * @param {string} config.title - Popup title (with emoji)
+ * @param {string} config.line1 - First line: What the resource is for
+ * @param {string} config.line2 - Second line: How the resource is earned
+ * @param {string} config.line3 - Third line (optional): Progress until next unit
+ */
+export function showResourceInfoPopup(config) {
+  const overlayId = 'resource-info-popup';
+  const existingOverlay = document.getElementById(overlayId);
+  if (existingOverlay) {
+    existingOverlay.remove();
+  }
+  
+  const overlay = createPopupOverlay(overlayId, 'resource-info-overlay');
+  const popupCard = createPopupCard('resource-info-card');
+  
+  const line3Html = config.line3 ? `<p class="resource-info-line">${config.line3}</p>` : '';
+  
+  popupCard.innerHTML = `
+    <h2 class="resource-info-title">${config.title}</h2>
+    <p class="resource-info-line">${config.line1}</p>
+    <p class="resource-info-line">${config.line2}</p>
+    ${line3Html}
+    <button id="resource-info-ok-btn" class="btn-primary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Close on button click
+  const okButton = document.getElementById('resource-info-ok-btn');
+  okButton.addEventListener('click', () => {
+    closePopup(overlayId);
+  });
+  
+  // Close on overlay click (tap outside)
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closePopup(overlayId);
+    }
+  });
+}

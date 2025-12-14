@@ -4109,3 +4109,34 @@ button,
     display: none;
   }
 }
+
+/* ===========================
+   19. RESOURCE INFO POPUP
+   =========================== */
+
+.resource-info-overlay {
+  /* Uses base popup-overlay styles */
+}
+
+.resource-info-card {
+  /* Uses base popup-card styles */
+}
+
+.resource-info-title {
+  font-size: var(--font-node-title-large);
+  font-weight: 700;
+  color: var(--color-blue);
+  margin-bottom: var(--spacing-lg);
+}
+
+.resource-info-line {
+  font-size: var(--font-progress);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-color);
+  text-align: left;
+}
+
+.resource-info-line:last-of-type {
+  margin-bottom: var(--spacing-lg);
+}

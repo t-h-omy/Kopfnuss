@@ -2,8 +2,10 @@
 // Manages updates to header displays (streak, diamonds, seasonal currency, progress)
 
 import { getDiamondInfo } from '../logic/diamondManager.js';
-import { loadStreakStones } from '../logic/storageManager.js';
+import { loadStreakStones, loadStreak, loadMilestoneProgress, loadProgress } from '../logic/storageManager.js';
 import { CONFIG } from '../data/balancingLoader.js';
+import { showResourceInfoPopup } from '../logic/popupManager.js';
+import { getActiveEvent } from '../logic/eventManager.js';
 
 /**
  * Initialize header UI
@@ -87,4 +89,87 @@ export function updateHeaderSeasonalDisplay(amount) {
   if (seasonalDisplay) {
     seasonalDisplay.textContent = amount;
   }
+}
+
+/**
+ * Show diamond resource info popup
+ */
+export function showDiamondInfoPopup() {
+  const diamondInfo = getDiamondInfo();
+  
+  showResourceInfoPopup({
+    title: 'Diamanten 💎',
+    line1: 'Benötigt um Hintergründe freizuscahlten + Für Kopfnuss- und Zeit-Challenges.',
+    line2: 'Verdient durch lösen von Aufgaben, wenn du alle Tages-Challenges abschließt und bei bestimmten Challenges.',
+    line3: `Nächster 💎 in ${diamondInfo.tasksUntilNext} Aufgaben.`
+  });
+}
+
+/**
+ * Show streak stones resource info popup
+ */
+export function showStreakStonesInfoPopup() {
+  const streakStones = loadStreakStones();
+  const streak = loadStreak();
+  const currentStreak = streak.currentStreak || 0;
+  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+  
+  // Calculate next milestone
+  const nextMilestone = Math.ceil((currentStreak + 1) / milestoneInterval) * milestoneInterval;
+  const streaksUntilNext = nextMilestone - currentStreak;
+  
+  showResourceInfoPopup({
+    title: 'Streak Stones ♦️',
+    line1: 'Mit ♦️ Schaltst du Hintergrund-Pakete frei.',
+    line2: '♦️ verdienst du durch Streak-Meilensteine.',
+    line3: `Den nächsten ♦️ bekommst du in ${currentStreak}/${nextMilestone} 🔥.`
+  });
+}
+
+/**
+ * Show streak resource info popup
+ */
+export function showStreakInfoPopup() {
+  showResourceInfoPopup({
+    title: 'Streak 🔥',
+    line1: 'Zeigt, wie viele Tage du ununterbrochen min. 1 Challenge geschafft hast.',
+    line2: 'Jeden Tag bekommst du 1🔥. Du verlierst alle 🔥, wenn du nicht jeden Tag dranbleibst.'
+  });
+}
+
+/**
+ * Show event resource info popup
+ */
+export function showEventResourceInfoPopup() {
+  const activeEvent = getActiveEvent();
+  
+  if (!activeEvent) {
+    return; // No active event, don't show popup
+  }
+  
+  const eventEmoji = activeEvent.emoticon;
+  
+  // Calculate days until event ends
+  const currentDate = new Date();
+  let year = currentDate.getFullYear();
+  
+  // Handle events that span year boundary
+  if (activeEvent.startMonth > activeEvent.endMonth) {
+    if (currentDate.getMonth() + 1 <= activeEvent.endMonth) {
+      // We're in the ending part of the event (new year)
+    } else {
+      // We're in the starting part, end is next year
+      year += 1;
+    }
+  }
+  
+  const endDate = new Date(year, activeEvent.endMonth - 1, activeEvent.endDay, 23, 59, 59);
+  const daysUntilEnd = Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  showResourceInfoPopup({
+    title: `Event-Ressource ${eventEmoji}`,
+    line1: `mit ${eventEmoji} bekommst du Event-Hintergründe.`,
+    line2: `Du verdienst ${eventEmoji} durch Kopfnuss-, Zeit- und Super-Challenes während Events.`,
+    line3: `${eventEmoji} Event endet in ${daysUntilEnd} Tagen.`
+  });
 }

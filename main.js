@@ -109,7 +109,11 @@ import {
   updateHeaderDiamondsDisplay,
   updateHeaderStreakStonesDisplay,
   updateDiamondProgressText,
-  updateHeaderSeasonalDisplay
+  updateHeaderSeasonalDisplay,
+  showDiamondInfoPopup,
+  showStreakStonesInfoPopup,
+  showStreakInfoPopup,
+  showEventResourceInfoPopup
 } from './ui/headerUI.js';
 import { 
   initShopUI,
@@ -572,6 +576,24 @@ function loadChallengesScreen(container) {
       queuePopup(() => showEventInfoPopup());
     });
   }
+  
+  // Add click handlers for resource capsules (opens info popups)
+  const statCapsules = header.querySelectorAll('.header-stats .stat-capsule, .header-stats .stat-capsule.streak-frozen');
+  statCapsules.forEach((capsule, index) => {
+    capsule.style.cursor = 'pointer';
+    capsule.addEventListener('click', () => {
+      // Index 0: Streak, 1: Streak Stones, 2: Diamonds, 3: Event Resource (if present)
+      if (index === 0) {
+        showStreakInfoPopup();
+      } else if (index === 1) {
+        showStreakStonesInfoPopup();
+      } else if (index === 2) {
+        showDiamondInfoPopup();
+      } else if (index === 3) {
+        showEventResourceInfoPopup();
+      }
+    });
+  });
   
   // Create page title (below fixed header)
   const pageTitle = document.createElement('h1');
