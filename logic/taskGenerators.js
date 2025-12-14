@@ -169,6 +169,76 @@ export function generateMixed() {
 }
 
 /**
+ * Generate an addition task with place-value input requirement
+ * Result range: 0-9999 (4 digits max)
+ * @returns {Task} Task object with question, answer, metadata, and digit decomposition
+ */
+export function generateAdditionPlaceValue() {
+  const a = randomInt(BALANCING.additionPlaceValue.min, BALANCING.additionPlaceValue.max);
+  const b = randomInt(BALANCING.additionPlaceValue.min, BALANCING.additionPlaceValue.max);
+  const answer = a + b;
+  
+  // Ensure answer is within 4-digit range
+  const clampedAnswer = Math.min(answer, 9999);
+  
+  // Decompose answer into digits (thousands, hundreds, tens, ones)
+  const answerStr = clampedAnswer.toString().padStart(4, '0');
+  const digitArray = [
+    parseInt(answerStr[0], 10), // thousands
+    parseInt(answerStr[1], 10), // hundreds
+    parseInt(answerStr[2], 10), // tens
+    parseInt(answerStr[3], 10)  // ones
+  ];
+  
+  return {
+    question: `${a} + ${b}`,
+    answer: clampedAnswer,
+    metadata: {
+      operation: 'additionPlaceValue',
+      operands: [a, b],
+      placeValueInput: true,
+      digitArray: digitArray
+    }
+  };
+}
+
+/**
+ * Generate a subtraction task with place-value input requirement
+ * Result range: 0-9999 (4 digits max)
+ * Ensures result is positive
+ * @returns {Task} Task object with question, answer, metadata, and digit decomposition
+ */
+export function generateSubtractionPlaceValue() {
+  const a = randomInt(BALANCING.subtractionPlaceValue.min, BALANCING.subtractionPlaceValue.max);
+  const b = randomInt(BALANCING.subtractionPlaceValue.min, BALANCING.subtractionPlaceValue.max);
+  
+  // Ensure a >= b for positive result
+  const larger = Math.max(a, b);
+  const smaller = Math.min(a, b);
+  const answer = larger - smaller;
+  
+  // Decompose answer into digits (thousands, hundreds, tens, ones)
+  const answerStr = answer.toString().padStart(4, '0');
+  const digitArray = [
+    parseInt(answerStr[0], 10), // thousands
+    parseInt(answerStr[1], 10), // hundreds
+    parseInt(answerStr[2], 10), // tens
+    parseInt(answerStr[3], 10)  // ones
+  ];
+  
+  return {
+    question: `${larger} - ${smaller}`,
+    answer: answer,
+    metadata: {
+      operation: 'subtractionPlaceValue',
+      operands: [larger, smaller],
+      placeValueInput: true,
+      digitArray: digitArray
+    }
+  };
+}
+
+/**
  * Generate a task based on operation type
  * @param {string} operationType - Type of operation (addition, subtraction, etc.)
  * @returns {Task} Task object with question, answer, and metadata
@@ -179,6 +249,10 @@ export function generateTask(operationType) {
       return generateAddition();
     case 'subtraction':
       return generateSubtraction();
+    case 'additionPlaceValue':
+      return generateAdditionPlaceValue();
+    case 'subtractionPlaceValue':
+      return generateSubtractionPlaceValue();
     case 'multiplication':
       return generateMultiplication();
     case 'division':
@@ -192,7 +266,7 @@ export function generateTask(operationType) {
   }
 }
 
-// ============================================
+
 // KOPFNUSS CHALLENGE TASK GENERATORS
 // High-difficulty variants for the Kopfnuss Challenge
 // ============================================
