@@ -174,15 +174,16 @@ export function generateMixed() {
  * @returns {Task} Task object with question, answer, metadata, and digit decomposition
  */
 export function generateAdditionPlaceValue() {
-  const a = randomInt(BALANCING.additionPlaceValue.min, BALANCING.additionPlaceValue.max);
-  const b = randomInt(BALANCING.additionPlaceValue.min, BALANCING.additionPlaceValue.max);
-  const answer = a + b;
-  
-  // Ensure answer is within 4-digit range
-  const clampedAnswer = Math.min(answer, 9999);
+  // Generate operands ensuring the sum doesn't exceed 9999
+  let a, b, answer;
+  do {
+    a = randomInt(BALANCING.additionPlaceValue.min, BALANCING.additionPlaceValue.max);
+    b = randomInt(BALANCING.additionPlaceValue.min, BALANCING.additionPlaceValue.max);
+    answer = a + b;
+  } while (answer > 9999);
   
   // Decompose answer into digits (thousands, hundreds, tens, ones)
-  const answerStr = clampedAnswer.toString().padStart(4, '0');
+  const answerStr = answer.toString().padStart(4, '0');
   const digitArray = [
     parseInt(answerStr[0], 10), // thousands
     parseInt(answerStr[1], 10), // hundreds
@@ -192,7 +193,7 @@ export function generateAdditionPlaceValue() {
   
   return {
     question: `${a} + ${b}`,
-    answer: clampedAnswer,
+    answer: answer,
     metadata: {
       operation: 'additionPlaceValue',
       operands: [a, b],

@@ -347,6 +347,9 @@ function handlePlaceValueInput(e) {
   const index = parseInt(input.dataset.index, 10);
   const value = input.value.trim();
   
+  // Remove overwrite-mode class when typing
+  input.classList.remove('overwrite-mode');
+  
   // Only process single digits
   if (value.length > 1) {
     input.value = value.charAt(value.length - 1);
@@ -415,6 +418,8 @@ function handlePlaceValueInput(e) {
       input.classList.add('incorrect');
       
       // Increment error count directly through the challenge state manager
+      // NOTE: We don't use validateAnswer() here because we're validating individual
+      // digits rather than a complete answer, so we manage errors manually
       const currentTaskData = getCurrentTask();
       if (currentTaskData) {
         // Increment errors in the challenge state
