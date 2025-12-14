@@ -2093,11 +2093,8 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
         
         addSeasonalCurrency(1);
         // Update seasonal currency display in header
-        const activeEvent = getActiveEvent();
-        if (activeEvent) {
-          const newAmount = getSeasonalCurrency(activeEvent.id);
-          updateHeaderSeasonalDisplay(newAmount);
-        }
+        const newAmount = getSeasonalCurrency();
+        updateHeaderSeasonalDisplay(newAmount);
         overlay.remove();
         removeConfettiPieces();
         if (onClose && typeof onClose === 'function') {

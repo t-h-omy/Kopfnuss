@@ -532,11 +532,8 @@ function handleZeitChallengeCompletion() {
           
           addSeasonalCurrency(rewardInfo.amount);
           // Update seasonal currency display in header
-          const activeEvent = getActiveEvent();
-          if (activeEvent) {
-            const newAmount = getSeasonalCurrency(activeEvent.id);
-            updateHeaderSeasonalDisplay(newAmount);
-          }
+          const newAmount = getSeasonalCurrency();
+          updateHeaderSeasonalDisplay(newAmount);
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
           notifyZeitChallengeResultBridge(true, rewardInfo);
