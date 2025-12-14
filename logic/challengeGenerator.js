@@ -478,11 +478,17 @@ export function startKopfnussChallenge() {
     return false;
   }
   
+  // Ensure tasks are present - regenerate if missing to fix initialization issue
+  const tasksToUse = (kopfnuss.tasks && kopfnuss.tasks.length > 0) 
+    ? kopfnuss.tasks 
+    : generateKopfnussTasksForChallenge();
+  
   return updateKopfnussChallenge({
     state: KOPFNUSS_STATE.IN_PROGRESS,
     startedAt: new Date().toISOString(),
     currentTaskIndex: 0,
-    errors: 0
+    errors: 0,
+    tasks: tasksToUse
   });
 }
 

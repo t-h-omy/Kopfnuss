@@ -254,7 +254,14 @@ function handleTimeout() {
     const backButton = document.getElementById('back-to-challenges');
     if (backButton) {
       backButton.addEventListener('click', () => {
-        showScreen('challenges');
+        // Import and call reset function to allow restart
+        import('./challengeGenerator.js').then(module => {
+          module.resetZeitChallengeAfterFailure();
+          showScreen('challenges');
+        }).catch(err => {
+          logError('Error resetting Zeit challenge:', err);
+          showScreen('challenges');
+        });
       });
     }
   }

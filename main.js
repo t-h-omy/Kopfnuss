@@ -752,6 +752,7 @@ function loadChallengesScreen(container) {
                 🤔
                 ${kopfnussStatusIcon}
               </div>
+              <div class="kopfnuss-node-label">Nur ein Versuch</div>
             </div>
           </div>
           <div class="kopfnuss-info-card">
