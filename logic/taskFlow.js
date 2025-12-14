@@ -135,6 +135,21 @@ export function validateAnswer(userAnswer) {
 }
 
 /**
+ * Increment error count for the current challenge
+ * Used by place-value input which validates digit-by-digit
+ * @returns {boolean} True if error was counted
+ */
+export function incrementErrorCount() {
+  if (currentChallengeIndex === null) {
+    return false;
+  }
+  
+  errors++;
+  incrementErrors(currentChallengeIndex);
+  return true;
+}
+
+/**
  * Move to next task
  * @returns {Object} Next task state
  */

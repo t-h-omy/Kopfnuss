@@ -9,9 +9,10 @@ import {
   nextTask, 
   completeCurrentChallenge,
   abandonChallenge,
-  getTaskFlowState
+  getTaskFlowState,
+  incrementErrorCount
 } from './taskFlow.js';
-import { startChallenge, incrementErrors } from './challengeStateManager.js';
+import { startChallenge } from './challengeStateManager.js';
 import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult, notifyMilestoneReached } from './uiBridge.js';
 import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
 import { getChallenge } from './challengeGenerator.js';
@@ -417,14 +418,11 @@ function handlePlaceValueInput(e) {
       input.classList.remove('correct');
       input.classList.add('incorrect');
       
-      // Increment error count directly through the challenge state manager
+      // Increment error count (both local taskFlow state and challenge state)
       // NOTE: We don't use validateAnswer() here because we're validating individual
-      // digits rather than a complete answer, so we manage errors manually
-      const currentTaskData = getCurrentTask();
-      if (currentTaskData) {
-        // Increment errors in the challenge state
-        incrementErrors(taskFlowState.challengeIndex);
-      }
+      // digits rather than a complete answer. incrementErrorCount() handles both
+      // the local error counter and the challenge state consistently.
+      incrementErrorCount();
       
       // Show error feedback
       const feedbackElement = document.getElementById('task-feedback');
