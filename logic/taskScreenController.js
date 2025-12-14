@@ -88,8 +88,6 @@ export function showTaskScreenForChallenge(container, challengeIndex, onBackClic
         <div class="task-progress" id="task-progress"></div>
         <div class="task-content">
           <div class="task-question" id="task-question"></div>
-          <input type="number" id="task-input" inputmode="numeric" pattern="[0-9]*" placeholder="Deine Antwort" aria-label="Deine Antwort für die Rechenaufgabe">
-          <button id="submit-answer">Prüfen</button>
         </div>
         <div class="task-feedback" id="task-feedback"></div>
       </div>
