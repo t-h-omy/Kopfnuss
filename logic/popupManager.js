@@ -206,12 +206,12 @@ export function showStreakPopup(config) {
 }
 
 /**
- * Show a resource info popup
+ * Show a resource info popup with unified visual design
  * @param {Object} config - Popup configuration
  * @param {string} config.title - Popup title (with emoji)
- * @param {string} config.line1 - First line: What the resource is for
- * @param {string} config.line2 - Second line: How the resource is earned
- * @param {string} config.line3 - Third line (optional): Progress until next unit
+ * @param {string} config.use - USE section: What the resource is used for (primary)
+ * @param {string} config.source - SOURCE section: How the resource is earned (secondary)
+ * @param {string} config.progress - PROGRESS section (optional): Compact progress info
  */
 export function showResourceInfoPopup(config) {
   const overlayId = 'resource-info-popup';
@@ -223,13 +223,16 @@ export function showResourceInfoPopup(config) {
   const overlay = createPopupOverlay(overlayId, 'resource-info-overlay');
   const popupCard = createPopupCard('resource-info-card');
   
-  const line3Html = config.line3 ? `<p class="resource-info-line">${config.line3}</p>` : '';
+  const progressHtml = config.progress ? `
+    <div class="resource-info-divider"></div>
+    <p class="resource-info-progress">${config.progress}</p>
+  ` : '';
   
   popupCard.innerHTML = `
     <h2 class="resource-info-title">${config.title}</h2>
-    <p class="resource-info-line">${config.line1}</p>
-    <p class="resource-info-line">${config.line2}</p>
-    ${line3Html}
+    <p class="resource-info-use">${config.use}</p>
+    <p class="resource-info-source">${config.source}</p>
+    ${progressHtml}
     <button id="resource-info-ok-btn" class="btn-primary">OK</button>
   `;
   

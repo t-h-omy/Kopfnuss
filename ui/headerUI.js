@@ -99,9 +99,9 @@ export function showDiamondInfoPopup() {
   
   showResourceInfoPopup({
     title: 'Diamanten 💎',
-    line1: 'Benötigt um Hintergründe freizuscahlten + Für Kopfnuss- und Zeit-Challenges.',
-    line2: 'Verdient durch lösen von Aufgaben, wenn du alle Tages-Challenges abschließt und bei bestimmten Challenges.',
-    line3: `Nächster 💎 in ${diamondInfo.tasksUntilNext} Aufgaben.`
+    use: 'Schalten Hintergründe frei & starten Premium-Challenges',
+    source: 'Verdient durch Aufgaben & Tages-Challenges',
+    progress: `Noch ${diamondInfo.tasksUntilNext} Aufgaben → 💎`
   });
 }
 
@@ -118,9 +118,9 @@ export function showStreakStonesInfoPopup() {
   
   showResourceInfoPopup({
     title: 'Streak Stones ♦️',
-    line1: 'Mit ♦️ Schaltst du Hintergrund-Pakete frei.',
-    line2: '♦️ verdienst du durch Streak-Meilensteine.',
-    line3: `Den nächsten ♦️ bekommst du in ${currentStreak}/${nextMilestone} 🔥.`
+    use: 'Schalten Hintergrund-Pakete frei',
+    source: 'Verdient durch Streak-Meilensteine',
+    progress: `🔥 ${currentStreak} / ${nextMilestone} → ♦️`
   });
 }
 
@@ -128,10 +128,18 @@ export function showStreakStonesInfoPopup() {
  * Show streak resource info popup
  */
 export function showStreakInfoPopup() {
+  const streak = loadStreak();
+  const currentStreak = streak.currentStreak || 0;
+  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+  
+  // Calculate next milestone
+  const nextMilestone = Math.ceil((currentStreak + 1) / milestoneInterval) * milestoneInterval;
+  
   showResourceInfoPopup({
     title: 'Streak 🔥',
-    line1: 'Zeigt, wie viele Tage du ununterbrochen min. 1 Challenge geschafft hast.',
-    line2: 'Jeden Tag bekommst du 1 🔥. Du verlierst alle 🔥, wenn du nicht jeden Tag dranbleibst.'
+    use: 'Zeigt, wie viele Tage du dranbleibst',
+    source: 'Steigt, wenn du täglich mindestens 1 Challenge schaffst',
+    progress: `Nächster Meilenstein bei ${nextMilestone} 🔥`
   });
 }
 
@@ -166,8 +174,8 @@ export function showEventResourceInfoPopup() {
   
   showResourceInfoPopup({
     title: `Event-Ressource ${eventEmoji}`,
-    line1: `mit ${eventEmoji} bekommst du Event-Hintergründe.`,
-    line2: `Du verdienst ${eventEmoji} durch Kopfnuss-, Zeit- und Super-Challenes während Events.`,
-    line3: `${eventEmoji} Event endet in ${daysUntilEnd} Tagen.`
+    use: 'Schalten Event-Hintergründe frei',
+    source: 'Verdient durch Premium-Challenges während Events',
+    progress: `Event endet in ${daysUntilEnd} Tagen`
   });
 }

@@ -4127,16 +4127,42 @@ button,
   font-weight: 700;
   color: var(--color-blue);
   margin-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
-.resource-info-line {
+/* USE section - primary, larger, semibold */
+.resource-info-use {
   font-size: var(--font-progress);
-  line-height: 1.5;
+  font-weight: 600;
+  line-height: 1.4;
   margin-bottom: var(--spacing-md);
   color: var(--text-color);
   text-align: left;
 }
 
-.resource-info-line:last-of-type {
+/* SOURCE section - secondary, smaller, calmer */
+.resource-info-source {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
   margin-bottom: var(--spacing-lg);
+  color: rgba(0, 0, 0, 0.65);
+  text-align: left;
+}
+
+/* Optional subtle divider before progress */
+.resource-info-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: var(--spacing-md) 0;
+}
+
+/* PROGRESS section - compact, numeric */
+.resource-info-progress {
+  font-size: var(--font-progress);
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-color);
+  text-align: left;
 }
