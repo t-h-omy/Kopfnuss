@@ -14,12 +14,14 @@ import { showScreen, notifyZeitChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
-  addSeasonalCurrency 
+  addSeasonalCurrency,
+  getSeasonalCurrency 
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
 import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed, playDiamondEarn } from './audioBootstrap.js';
 import { logError } from './logging.js';
+import { updateHeaderSeasonalDisplay, updateHeaderDiamondsDisplay } from '../ui/headerUI.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -419,6 +421,8 @@ function handleZeitChallengeCompletion() {
   // If no event, award diamonds immediately
   if (!eventActive) {
     addDiamonds(rewardAmount);
+    // Update diamond display in header
+    updateHeaderDiamondsDisplay();
     rewardInfo.isDiamond = true;
   }
   
@@ -512,6 +516,8 @@ function handleZeitChallengeCompletion() {
           playDiamondEarn();
           
           addDiamonds(rewardInfo.amount);
+          // Update diamond display in header
+          updateHeaderDiamondsDisplay();
           rewardInfo.isDiamond = true;
           rewardInfo.pendingChoice = false;
           notifyZeitChallengeResultBridge(true, rewardInfo);
@@ -525,6 +531,12 @@ function handleZeitChallengeCompletion() {
           playDiamondEarn();
           
           addSeasonalCurrency(rewardInfo.amount);
+          // Update seasonal currency display in header
+          const activeEvent = getActiveEvent();
+          if (activeEvent) {
+            const newAmount = getSeasonalCurrency(activeEvent.id);
+            updateHeaderSeasonalDisplay(newAmount);
+          }
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
           notifyZeitChallengeResultBridge(true, rewardInfo);

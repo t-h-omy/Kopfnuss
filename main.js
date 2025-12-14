@@ -1305,6 +1305,9 @@ function showRewardPopup() {
     // Award the diamond when user confirms
     addDiamonds(1);
     
+    // Update diamond display in header
+    updateHeaderDiamondsDisplay();
+    
     // Close popup
     closeRewardPopup();
     
@@ -2089,6 +2092,12 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
         playDiamondEarn();
         
         addSeasonalCurrency(1);
+        // Update seasonal currency display in header
+        const activeEvent = getActiveEvent();
+        if (activeEvent) {
+          const newAmount = getSeasonalCurrency(activeEvent.id);
+          updateHeaderSeasonalDisplay(newAmount);
+        }
         overlay.remove();
         removeConfettiPieces();
         if (onClose && typeof onClose === 'function') {
