@@ -204,3 +204,51 @@ export function showStreakPopup(config) {
   
   return overlay;
 }
+
+/**
+ * Show a resource info popup with unified visual design
+ * @param {Object} config - Popup configuration
+ * @param {string} config.title - Popup title (with emoji)
+ * @param {string} config.use - USE section: What the resource is used for (primary)
+ * @param {string} config.source - SOURCE section: How the resource is earned (secondary)
+ * @param {string} config.progress - PROGRESS section (optional): Compact progress info
+ */
+export function showResourceInfoPopup(config) {
+  const overlayId = 'resource-info-popup';
+  const existingOverlay = document.getElementById(overlayId);
+  if (existingOverlay) {
+    existingOverlay.remove();
+  }
+  
+  const overlay = createPopupOverlay(overlayId, 'resource-info-overlay');
+  const popupCard = createPopupCard('resource-info-card');
+  
+  const progressHtml = config.progress ? `
+    <div class="resource-info-divider"></div>
+    <p class="resource-info-progress">${config.progress}</p>
+  ` : '';
+  
+  popupCard.innerHTML = `
+    <h2 class="resource-info-title">${config.title}</h2>
+    <p class="resource-info-use">${config.use}</p>
+    <p class="resource-info-source">${config.source}</p>
+    ${progressHtml}
+    <button id="resource-info-ok-btn" class="btn-primary">OK</button>
+  `;
+  
+  overlay.appendChild(popupCard);
+  document.body.appendChild(overlay);
+  
+  // Close on button click
+  const okButton = document.getElementById('resource-info-ok-btn');
+  okButton.addEventListener('click', () => {
+    closePopup(overlayId);
+  });
+  
+  // Close on overlay click (tap outside)
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closePopup(overlayId);
+    }
+  });
+}
