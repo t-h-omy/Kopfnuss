@@ -14,8 +14,7 @@ import { showScreen, notifyZeitChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
-  addSeasonalCurrency,
-  getSeasonalCurrency 
+  addSeasonalCurrency
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { createConfettiEffect } from './popupManager.js';
@@ -530,10 +529,11 @@ function handleZeitChallengeCompletion() {
           // Play currency received sound
           playDiamondEarn();
           
-          addSeasonalCurrency(rewardInfo.amount);
+          const result = addSeasonalCurrency(rewardInfo.amount);
           // Update seasonal currency display in header
-          const newAmount = getSeasonalCurrency();
-          updateHeaderSeasonalDisplay(newAmount);
+          if (result.success) {
+            updateHeaderSeasonalDisplay(result.total);
+          }
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
           notifyZeitChallengeResultBridge(true, rewardInfo);

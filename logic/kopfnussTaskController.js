@@ -12,8 +12,7 @@ import { showScreen, notifyKopfnussChallengeResultBridge } from './uiBridge.js';
 import { 
   isEventActive, 
   getActiveEvent, 
-  addSeasonalCurrency,
-  getSeasonalCurrency 
+  addSeasonalCurrency
 } from './eventManager.js';
 import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { playAnswerFeedback, playChallengeComplete, playDiamondEarn, playChallengeFailed } from './audioBootstrap.js';
@@ -332,10 +331,11 @@ function handleKopfnussChallengeCompletion() {
           // Play currency received sound
           playDiamondEarn();
           
-          addSeasonalCurrency(rewardInfo.amount);
+          const result = addSeasonalCurrency(rewardInfo.amount);
           // Update seasonal currency display in header
-          const newAmount = getSeasonalCurrency();
-          updateHeaderSeasonalDisplay(newAmount);
+          if (result.success) {
+            updateHeaderSeasonalDisplay(result.total);
+          }
           rewardInfo.isDiamond = false;
           rewardInfo.pendingChoice = false;
           notifyKopfnussChallengeResultBridge(true, rewardInfo);

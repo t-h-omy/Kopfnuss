@@ -2091,10 +2091,11 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
         // Play currency received sound
         playDiamondEarn();
         
-        addSeasonalCurrency(1);
+        const result = addSeasonalCurrency(1);
         // Update seasonal currency display in header
-        const newAmount = getSeasonalCurrency();
-        updateHeaderSeasonalDisplay(newAmount);
+        if (result.success) {
+          updateHeaderSeasonalDisplay(result.total);
+        }
         overlay.remove();
         removeConfettiPieces();
         if (onClose && typeof onClose === 'function') {
