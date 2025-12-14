@@ -6,6 +6,7 @@ import {
   updateZeitChallenge,
   completeZeitChallenge,
   failZeitChallenge,
+  resetZeitChallengeAfterFailure,
   ZEIT_CHALLENGE_STATE
 } from './challengeGenerator.js';
 import { CONFIG } from '../data/balancingLoader.js';
@@ -254,14 +255,9 @@ function handleTimeout() {
     const backButton = document.getElementById('back-to-challenges');
     if (backButton) {
       backButton.addEventListener('click', () => {
-        // Import and call reset function to allow restart
-        import('./challengeGenerator.js').then(module => {
-          module.resetZeitChallengeAfterFailure();
-          showScreen('challenges');
-        }).catch(err => {
-          logError('Error resetting Zeit challenge:', err);
-          showScreen('challenges');
-        });
+        // Reset Zeit Challenge to allow restart after timeout
+        resetZeitChallengeAfterFailure();
+        showScreen('challenges');
       });
     }
   }
