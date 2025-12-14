@@ -715,7 +715,7 @@ function loadChallengesScreen(container) {
     if (isKopfnussCompleted) {
       hintText = 'Erfolgreich geknackt!';
     } else if (isKopfnussFailed) {
-      hintText = 'Nur ein Versuch – wartet auf den nächsten Tag';
+      hintText = 'Erneut versuchen?';
     }
     
     // Build splash rays with premium scale
