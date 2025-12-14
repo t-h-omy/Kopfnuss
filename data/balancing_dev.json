@@ -9,12 +9,12 @@
       "max": 10
     },
     "additionPlaceValue": {
-      "min": 100,
-      "max": 4999
+      "min": 10,
+      "max": 99
     },
     "subtractionPlaceValue": {
-      "min": 100,
-      "max": 4999
+      "min": 10,
+      "max": 99
     },
     "multiplication": {
       "factor1": {
