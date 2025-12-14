@@ -11,7 +11,7 @@ import {
   abandonChallenge,
   getTaskFlowState
 } from './taskFlow.js';
-import { startChallenge } from './challengeStateManager.js';
+import { startChallenge, incrementErrors } from './challengeStateManager.js';
 import { showScreen, notifyStreakUnfrozen, notifyStreakIncremented, notifySuperChallengeResult, notifyMilestoneReached } from './uiBridge.js';
 import { startSuperChallengeSparkles, stopSuperChallengeSparkles } from './visualEffects.js';
 import { getChallenge } from './challengeGenerator.js';
@@ -414,12 +414,11 @@ function handlePlaceValueInput(e) {
       input.classList.remove('correct');
       input.classList.add('incorrect');
       
-      // Increment error count
-      const currentTask = getCurrentTask();
-      if (currentTask) {
-        // The error is counted by validateAnswer in taskFlow
-        // Here we just need to track it for the UI
-        const result = validateAnswer(digit); // This will count the error
+      // Increment error count directly through the challenge state manager
+      const currentTaskData = getCurrentTask();
+      if (currentTaskData) {
+        // Increment errors in the challenge state
+        incrementErrors(taskFlowState.challengeIndex);
       }
       
       // Show error feedback
