@@ -1274,6 +1274,74 @@
       "isDefault": false,
       "pack": "20_jhdt_kunst",
       "minTasksSincePackUnlock": 16
+    },
+    {
+      "id": "unterwasser_welten_abstrakte_wellen",
+      "name": "Abstrakte Wellen",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_abstrakte_wellen_oel.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 4
+    },
+    {
+      "id": "unterwasser_welten_korallenriff",
+      "name": "Korallenriff",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_korallenriff_pastell.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 8
+    },
+    {
+      "id": "unterwasser_welten_meeresbewohner",
+      "name": "Meeresbewohner",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_pattern_meeresbewohner.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 12
+    },
+    {
+      "id": "unterwasser_welten_hoehle",
+      "name": "Unterwasserhöhle",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_unterwasserhoehle_lichtstrahlen.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 16
     }
   ]
 }
