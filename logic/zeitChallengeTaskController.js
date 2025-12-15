@@ -21,6 +21,7 @@ import { createConfettiEffect } from './popupManager.js';
 import { playZeitChallengeMusic, stopZeitChallengeMusic, playAnswerFeedback, playChallengeComplete, playFinalCountdownMusic, playTimesUp, playChallengeFailed, playDiamondEarn } from './audioBootstrap.js';
 import { logError } from './logging.js';
 import { updateHeaderSeasonalDisplay, updateHeaderDiamondsDisplay } from '../ui/headerUI.js';
+import { incrementPackTasks } from './backgroundManager.js';
 
 let zeitState = null;
 let currentTaskIndex = 0;
@@ -352,6 +353,9 @@ function handleAnswerSubmit() {
     
     // Play correct answer sound
     playAnswerFeedback(true);
+    
+    // Increment pack tasks for correct answers
+    incrementPackTasks();
     
     // Move to next task after a short delay (faster than Kopfnuss for time pressure)
     setTimeout(() => {

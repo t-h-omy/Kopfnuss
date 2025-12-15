@@ -18,6 +18,7 @@ import { addDiamonds, loadDiamonds } from './diamondManager.js';
 import { playAnswerFeedback, playChallengeComplete, playDiamondEarn, playChallengeFailed } from './audioBootstrap.js';
 import { logError } from './logging.js';
 import { updateHeaderSeasonalDisplay, updateHeaderDiamondsDisplay } from '../ui/headerUI.js';
+import { incrementPackTasks } from './backgroundManager.js';
 
 let kopfnussState = null;
 let currentTaskIndex = 0;
@@ -163,6 +164,9 @@ function handleAnswerSubmit() {
     
     // Play correct answer sound
     playAnswerFeedback(true);
+    
+    // Increment pack tasks for correct answers
+    incrementPackTasks();
     
     // Move to next task after a short delay
     setTimeout(() => {
