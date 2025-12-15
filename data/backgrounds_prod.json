@@ -1065,6 +1065,126 @@
       "active": true,
       "pack": "winter_paket",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "20_jhdt_kunst_bauhaus",
+      "name": "Bauhaus",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_bauhaus_geometrische_ordnung.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "20_jhdt_kunst_blaue_periode",
+      "name": "Blaue Periode",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_blaue_periode.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "20_jhdt_kunst_kubismus",
+      "name": "Kubismus",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_kubismus_gesicht.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "20_jhdt_kunst_surrealismus",
+      "name": "Surrealismus",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_surreal_landschaft.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "unterwasser_welten_abstrakte_wellen",
+      "name": "Abstrakte Wellen",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_abstrakte_wellen_oel.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "unterwasser_welten_korallenriff",
+      "name": "Korallenriff",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_korallenriff_pastell.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "unterwasser_welten_meeresbewohner",
+      "name": "Meeresbewohner",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_pattern_meeresbewohner.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "unterwasser_welten_hoehle",
+      "name": "Unterwasserhöhle",
+      "file": "backgrounds/streak-packs/unterwasser-welten/kopfnuss_unterwasserhoehle_lichtstrahlen.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "unterwasser-welten",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }
