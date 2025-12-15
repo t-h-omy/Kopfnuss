@@ -1206,6 +1206,74 @@
       "isDefault": false,
       "pack": "winter_paket",
       "minTasksSincePackUnlock": 16
+    },
+    {
+      "id": "20_jhdt_kunst_bauhaus",
+      "name": "Bauhaus",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_bauhaus_geometrische_ordnung.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 4
+    },
+    {
+      "id": "20_jhdt_kunst_blaue_periode",
+      "name": "Blaue Periode",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_blaue_periode.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 8
+    },
+    {
+      "id": "20_jhdt_kunst_kubismus",
+      "name": "Kubismus",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_kubismus_gesicht.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 12
+    },
+    {
+      "id": "20_jhdt_kunst_surrealismus",
+      "name": "Surrealismus",
+      "file": "backgrounds/streak-packs/20-jhdt-kunst/kopfnuss_surreal_landschaft.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "20_jhdt_kunst",
+      "minTasksSincePackUnlock": 16
     }
   ]
 }
