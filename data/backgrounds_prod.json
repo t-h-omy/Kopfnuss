@@ -334,7 +334,7 @@
     {
       "id": "gingerbreadman",
       "name": "Gingerbreadman",
-      "file": "backgrounds/christmas/gingerbread_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/gingerbread_optimized.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -349,7 +349,7 @@
     {
       "id": "christmasTree",
       "name": "Weihnachtsbaum",
-      "file": "backgrounds/christmas/christmas_tree_presents_mobile.webp",
+      "file": "backgrounds/seasonal-events/christmas/christmas_tree_presents_mobile.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -364,7 +364,7 @@
     {
       "id": "christmasCookies",
       "name": "Weihnachtskekse",
-      "file": "backgrounds/christmas/cookies_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/cookies_optimized.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -379,7 +379,7 @@
     {
       "id": "snowyWinter",
       "name": "Schneelandschaft",
-      "file": "backgrounds/christmas/snow_background_mobile_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/snow_background_mobile_optimized.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -394,7 +394,7 @@
     {
       "id": "snowyOwl",
       "name": "Schnee-Eule",
-      "file": "backgrounds/christmas/snowy_owl_background_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/snowy_owl_background_optimized.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -409,7 +409,7 @@
     {
       "id": "gnome",
       "name": "Wichtel",
-      "file": "backgrounds/christmas/gnome_silhouette_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/gnome_silhouette_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -424,7 +424,7 @@
     {
       "id": "iceCrystal",
       "name": "Eiskristalle",
-      "file": "backgrounds/christmas/ice_crystal_modern_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/ice_crystal_modern_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -439,7 +439,7 @@
     {
       "id": "northernLights",
       "name": "Nordlichter",
-      "file": "backgrounds/christmas/northern_lights_2_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/northern_lights_2_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -454,7 +454,7 @@
     {
       "id": "origamiCrane",
       "name": "Origami-Kranich",
-      "file": "backgrounds/christmas/origami_crane_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/origami_crane_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -469,7 +469,7 @@
     {
       "id": "penguin",
       "name": "Pinguin",
-      "file": "backgrounds/christmas/penguin_background_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/penguin_background_optimized.webp",
       "category": "seasonal",
       "cost": 5,
       "currency": "seasonal",
@@ -484,7 +484,7 @@
     {
       "id": "reindeerCalf",
       "name": "Rentier-Kalb",
-      "file": "backgrounds/christmas/reindeer_calf_silhouette_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/reindeer_calf_silhouette_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -499,7 +499,7 @@
     {
       "id": "reindeer",
       "name": "Rentier",
-      "file": "backgrounds/christmas/reindeer_silhouette_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/reindeer_silhouette_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -514,7 +514,7 @@
     {
       "id": "santaHut",
       "name": "Weihnachtshütte",
-      "file": "backgrounds/christmas/santa_hut_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/santa_hut_optimized.webp",
       "category": "seasonal",
       "cost": 5,
       "currency": "seasonal",
@@ -529,7 +529,7 @@
     {
       "id": "snowSquirrel",
       "name": "Schnee-Eichhörnchen",
-      "file": "backgrounds/christmas/snow_squirrel_optimized.webp",
+      "file": "backgrounds/seasonal-events/christmas/snow_squirrel_optimized.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -544,7 +544,7 @@
     {
       "id": "newYearFireworks",
       "name": "Silvester-Feuerwerk",
-      "file": "backgrounds/newyear/silvester_fireworks_optimized.webp",
+      "file": "backgrounds/seasonal-events/new-years/silvester_fireworks_optimized.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -559,7 +559,7 @@
     {
       "id": "confetti",
       "name": "Konfetti",
-      "file": "backgrounds/newyear/confetti_optimized.webp",
+      "file": "backgrounds/seasonal-events/new-years/confetti_optimized.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -574,7 +574,7 @@
     {
       "id": "luckySymbols",
       "name": "Glückssymbole",
-      "file": "backgrounds/newyear/lucky_symbols_optimized.webp",
+      "file": "backgrounds/seasonal-events/new-years/lucky_symbols_optimized.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -589,7 +589,7 @@
     {
       "id": "neonHearts",
       "name": "Neon-Herzen",
-      "file": "backgrounds/valentines/neon_hearts.webp",
+      "file": "backgrounds/seasonal-events/valentines/neon_hearts.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -604,7 +604,7 @@
     {
       "id": "sunsetHearts",
       "name": "Sonnenuntergang mit Herzen",
-      "file": "backgrounds/valentines/sunset_hearts.webp",
+      "file": "backgrounds/seasonal-events/valentines/sunset_hearts.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -619,7 +619,7 @@
     {
       "id": "rosePond",
       "name": "Rosenteich",
-      "file": "backgrounds/valentines/rose_pond.webp",
+      "file": "backgrounds/seasonal-events/valentines/rose_pond.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -634,7 +634,7 @@
     {
       "id": "pixelatedHearts",
       "name": "Pixel-Herzen",
-      "file": "backgrounds/valentines/pixelated_hearts.webp",
+      "file": "backgrounds/seasonal-events/valentines/pixelated_hearts.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -649,7 +649,7 @@
     {
       "id": "origamiHeart",
       "name": "Origami-Herz",
-      "file": "backgrounds/valentines/origami_heart.webp",
+      "file": "backgrounds/seasonal-events/valentines/origami_heart.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -664,7 +664,7 @@
     {
       "id": "pixelHeartsMobile",
       "name": "Wolkenherzen",
-      "file": "backgrounds/valentines/pixel_hearts_mobile.webp",
+      "file": "backgrounds/seasonal-events/valentines/pixel_hearts_mobile.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -679,7 +679,7 @@
     {
       "id": "easterBunnies",
       "name": "Osterhasen",
-      "file": "backgrounds/easter/bunnies_q92.webp",
+      "file": "backgrounds/seasonal-events/easter/bunnies_q92.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -694,7 +694,7 @@
     {
       "id": "easterEggs",
       "name": "Ostereier",
-      "file": "backgrounds/easter/eggs_q88.webp",
+      "file": "backgrounds/seasonal-events/easter/eggs_q88.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -709,7 +709,7 @@
     {
       "id": "easterCutout",
       "name": "Blumenwiese",
-      "file": "backgrounds/easter/easter_cutout.webp",
+      "file": "backgrounds/seasonal-events/easter/easter_cutout.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -724,7 +724,7 @@
     {
       "id": "easterForest",
       "name": "Frühlingswald",
-      "file": "backgrounds/easter/forest_bg_optimized.webp",
+      "file": "backgrounds/seasonal-events/easter/forest_bg_optimized.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -739,7 +739,7 @@
     {
       "id": "easterPaperCutout",
       "name": "Papierblumen",
-      "file": "backgrounds/easter/paper_cutout_optimized.webp",
+      "file": "backgrounds/seasonal-events/easter/paper_cutout_optimized.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -754,7 +754,7 @@
     {
       "id": "easterSoftClay",
       "name": "Mamahuhn",
-      "file": "backgrounds/easter/easter_soft_clay.webp",
+      "file": "backgrounds/seasonal-events/easter/easter_soft_clay.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -769,7 +769,7 @@
     {
       "id": "easterGradientShapes",
       "name": "Sonnenaufgang",
-      "file": "backgrounds/easter/soft_gradient_shapes_optimized.webp",
+      "file": "backgrounds/seasonal-events/easter/soft_gradient_shapes_optimized.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -784,7 +784,7 @@
     {
       "id": "easterWatercolor",
       "name": "Aquarell",
-      "file": "backgrounds/easter/easter_watercolor.webp",
+      "file": "backgrounds/seasonal-events/easter/easter_watercolor.webp",
       "category": "seasonal",
       "cost": 4,
       "currency": "seasonal",
@@ -799,7 +799,7 @@
     {
       "id": "butterflies",
       "name": "Schmetterlinge",
-      "file": "backgrounds/summer/butterflies.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/butterflies.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -814,7 +814,7 @@
     {
       "id": "icecreamPattern",
       "name": "Eiscreme-Muster",
-      "file": "backgrounds/summer/icecream_pattern.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/icecream_pattern.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -829,7 +829,7 @@
     {
       "id": "watermelonPattern",
       "name": "Wassermelonen-Muster",
-      "file": "backgrounds/summer/watermelon_pattern.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/watermelon_pattern.webp",
       "category": "seasonal",
       "cost": 1,
       "currency": "seasonal",
@@ -844,7 +844,7 @@
     {
       "id": "summerFruitsGlass",
       "name": "Sommerfrüchte",
-      "file": "backgrounds/summer/summer_fruits_glass_pattern.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/summer_fruits_glass_pattern.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -859,7 +859,7 @@
     {
       "id": "poolscene",
       "name": "Poolszene",
-      "file": "backgrounds/summer/poolscene.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/poolscene.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -874,7 +874,7 @@
     {
       "id": "flamingo",
       "name": "Flamingo",
-      "file": "backgrounds/summer/flamingo.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/flamingo.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -889,7 +889,7 @@
     {
       "id": "streetChalk",
       "name": "Straßenkreide",
-      "file": "backgrounds/summer/street_chalk.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/street_chalk.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -904,7 +904,7 @@
     {
       "id": "cat",
       "name": "Katze",
-      "file": "backgrounds/summer/cat.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/cat.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -919,7 +919,7 @@
     {
       "id": "ladybug",
       "name": "Marienkäfer",
-      "file": "backgrounds/summer/ladybug.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/ladybug.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -934,7 +934,7 @@
     {
       "id": "pumaSleeping",
       "name": "Schlafender Puma",
-      "file": "backgrounds/summer/puma_sleeping.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/puma_sleeping.webp",
       "category": "seasonal",
       "cost": 3,
       "currency": "seasonal",
@@ -949,7 +949,7 @@
     {
       "id": "savanna",
       "name": "Savanne",
-      "file": "backgrounds/summer/savanna.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/savanna.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -964,7 +964,7 @@
     {
       "id": "cartoonOutline",
       "name": "Cartoon-Umrisse",
-      "file": "backgrounds/summer/cartoon_outline.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/cartoon_outline.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -979,7 +979,7 @@
     {
       "id": "softGradientShapes",
       "name": "Weiche Farbverläufe",
-      "file": "backgrounds/summer/soft_gradient_shapes.webp",
+      "file": "backgrounds/seasonal-events/summer-vacation/soft_gradient_shapes.webp",
       "category": "seasonal",
       "cost": 2,
       "currency": "seasonal",
@@ -1009,7 +1009,7 @@
     {
       "id": "winterpaket_kingfisher",
       "name": "Eisvogel",
-      "file": "backgrounds/kingfisher_background_optimized.webp",
+      "file": "backgrounds/streak-packs/winter/kingfisher_background_optimized.webp",
       "category": "standard",
       "cost": 4,
       "currency": "diamonds",
@@ -1024,7 +1024,7 @@
     {
       "id": "winterpaket_snow_leopard",
       "name": "Schneeleopard",
-      "file": "backgrounds/snow_leopard_papercut_optimized.webp",
+      "file": "backgrounds/streak-packs/winter/snow_leopard_papercut_optimized.webp",
       "category": "standard",
       "cost": 4,
       "currency": "diamonds",
@@ -1039,7 +1039,7 @@
     {
       "id": "winterpaket_snowflake",
       "name": "Schneeflocke",
-      "file": "backgrounds/snowflake_pattern_optimized.webp",
+      "file": "backgrounds/streak-packs/winter/snowflake_pattern_optimized.webp",
       "category": "standard",
       "cost": 4,
       "currency": "diamonds",
@@ -1054,7 +1054,7 @@
     {
       "id": "winterpaket_marmot",
       "name": "Murmeltier",
-      "file": "backgrounds/winter_marmot_graffiti_optimized.webp",
+      "file": "backgrounds/streak-packs/winter/winter_marmot_graffiti_optimized.webp",
       "category": "standard",
       "cost": 4,
       "currency": "diamonds",
