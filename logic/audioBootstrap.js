@@ -31,7 +31,11 @@ const POPUP_SFX_MAP = {
   'zeit-popup-overlay': 'premium_challenge_popup',
   'event-info-popup-overlay': 'modal_open',
   'event-start-popup-overlay': 'success_fanfare',
-  'task-exit-confirmation-overlay': 'modal_open'
+  'task-exit-confirmation-overlay': 'modal_open',
+  
+  // Info popups without sound (ui_click already plays on capsule click)
+  'resource-info-overlay': null,
+  'resource-info-popup': null
 };
 
 /**
@@ -160,9 +164,11 @@ function handleAddedElement(element) {
         activePopupIds.add(elementId);
       }
       
-      // Play the open sound with appropriate volume
-      const volume = SFX_VOLUME[sfxName] || 1.0;
-      audioManager.play(sfxName, { volume });
+      // Play the open sound with appropriate volume (skip if sfxName is null)
+      if (sfxName !== null) {
+        const volume = SFX_VOLUME[sfxName] || 1.0;
+        audioManager.play(sfxName, { volume });
+      }
       return;
     }
   }
