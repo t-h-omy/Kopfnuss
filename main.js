@@ -1822,10 +1822,7 @@ function showStreakRestoredSuccessPopup(newStreak, onClose = null) {
   
   // Update header UI with new streak and diamonds
   updateHeaderStreakDisplay(newStreak, false);
-  const diamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
-  if (diamondDisplay) {
-    diamondDisplay.textContent = loadDiamonds();
-  }
+  updateHeaderDiamondsDisplay();
   
   const closeButton = document.getElementById('streak-restored-close-button');
   closeButton.addEventListener('click', () => {
@@ -2041,10 +2038,7 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
     addDiamonds(1);
     
     // Update diamond display in header if visible
-    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
-    if (diamondDisplay) {
-      diamondDisplay.textContent = loadDiamonds();
-    }
+    updateHeaderDiamondsDisplay();
     buttonsHtml = '<button id="super-success-close-button" class="btn-primary btn-super-challenge">Einsammeln</button>';
   }
   
@@ -2073,10 +2067,7 @@ function showSuperChallengeSuccessPopup(challengeResult, onClose = null) {
         
         addDiamonds(1);
         // Update diamond display
-        const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
-        if (diamondDisplay) {
-          diamondDisplay.textContent = loadDiamonds();
-        }
+        updateHeaderDiamondsDisplay();
         overlay.remove();
         removeConfettiPieces();
         if (onClose && typeof onClose === 'function') {
@@ -2225,10 +2216,7 @@ function showKopfnussChallengeStartPopup() {
     }
     
     // Update diamond display in header
-    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
-    if (diamondDisplay) {
-      diamondDisplay.textContent = loadDiamonds();
-    }
+    updateHeaderDiamondsDisplay();
     
     // Start the Kopfnuss Challenge
     startKopfnussChallenge();
@@ -2439,10 +2427,7 @@ function showZeitChallengeStartPopup() {
     }
     
     // Update diamond display in header
-    const diamondDisplay = document.querySelector('.header-stats .stat-capsule:nth-child(2) .stat-value');
-    if (diamondDisplay) {
-      diamondDisplay.textContent = loadDiamonds();
-    }
+    updateHeaderDiamondsDisplay();
     
     // Start the Zeit-Challenge
     startZeitChallenge();
@@ -2953,8 +2938,7 @@ function setupDevSettingsListeners() {
       // Update dev settings display
       if (diamondsValue) diamondsValue.textContent = newValue;
       // Update main UI diamond display
-      const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
-      if (mainDiamondDisplay) mainDiamondDisplay.textContent = newValue;
+      updateHeaderDiamondsDisplay();
       showDevFeedback('💎 ' + newValue);
     });
   }
@@ -2967,8 +2951,7 @@ function setupDevSettingsListeners() {
       // Update dev settings display
       if (diamondsValue) diamondsValue.textContent = newValue;
       // Update main UI diamond display
-      const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
-      if (mainDiamondDisplay) mainDiamondDisplay.textContent = newValue;
+      updateHeaderDiamondsDisplay();
       showDevFeedback('💎 ' + newValue);
     });
   }
@@ -3224,8 +3207,7 @@ function setupDevSettingsListeners() {
         const devDiamondValue = document.getElementById('dev-diamonds-value');
         if (devDiamondValue) devDiamondValue.textContent = currentDiamonds;
         // Update main UI diamond display
-        const mainDiamondDisplay = document.querySelector('.header-stats .stat-capsule:last-child .stat-value');
-        if (mainDiamondDisplay) mainDiamondDisplay.textContent = currentDiamonds;
+        updateHeaderDiamondsDisplay();
       }
       
       if (tasksValue) tasksValue.textContent = progress.totalTasksCompleted;
