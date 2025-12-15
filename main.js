@@ -1495,7 +1495,8 @@ function showMilestoneRewardPopup(onClose = null) {
     saveStreakStones(currentStones + 1);
     
     // Update header display
-    updateHeaderStreakDisplay();
+    const streakInfo = getStreakInfo();
+    updateHeaderStreakDisplay(streakInfo.currentStreak, streakInfo.isFrozen);
     updateHeaderDiamondsDisplay();
     updateHeaderStreakStonesDisplay();
     
@@ -1516,7 +1517,8 @@ function showMilestoneRewardPopup(onClose = null) {
     addDiamonds(1);
     
     // Update header display
-    updateHeaderStreakDisplay();
+    const streakInfo = getStreakInfo();
+    updateHeaderStreakDisplay(streakInfo.currentStreak, streakInfo.isFrozen);
     updateHeaderDiamondsDisplay();
     updateHeaderStreakStonesDisplay();
     
