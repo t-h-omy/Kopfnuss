@@ -1185,6 +1185,66 @@
       "active": true,
       "pack": "unterwasser-welten",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "waldtiere_luchs",
+      "name": "Luchs",
+      "file": "backgrounds/streak-packs/waldtiere/lynx_lowpoly_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "waldtiere",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "waldtiere_salamander",
+      "name": "Salamander",
+      "file": "backgrounds/streak-packs/waldtiere/salamander_pattern_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "waldtiere",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "waldtiere_wildschwein",
+      "name": "Wildschwein-Ferkel",
+      "file": "backgrounds/streak-packs/waldtiere/wildschwein_ferkel_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "waldtiere",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "waldtiere_specht",
+      "name": "Specht",
+      "file": "backgrounds/streak-packs/waldtiere/woodpecker_optimized.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "waldtiere",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }

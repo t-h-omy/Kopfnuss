@@ -244,6 +244,11 @@
       "id": "unterwasser-welten",
       "name": "Unterwasser-Welten",
       "costStreakStones": 1
+    },
+    {
+      "id": "waldtiere",
+      "name": "Waldtiere",
+      "costStreakStones": 1
     }
   ]
 }
