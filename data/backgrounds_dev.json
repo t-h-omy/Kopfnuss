@@ -53,7 +53,7 @@
     },
     {
       "id": "candy",
-      "name": "S��igkeiten",
+      "name": "Süßigkeiten",
       "file": "backgrounds/02_standard/candy_background_optimized.webp",
       "category": "standard",
       "cost": 1,
@@ -648,7 +648,7 @@
     },
     {
       "id": "luckySymbols",
-      "name": "Gl�ckssymbole",
+      "name": "Glückssymbole",
       "file": "backgrounds/seasonal-events/new-years/lucky_symbols_optimized.webp",
       "category": "seasonal",
       "cost": 1,
@@ -818,7 +818,7 @@
     },
     {
       "id": "easterForest",
-      "name": "Fr�hlingswald",
+      "name": "Frühlingswald",
       "file": "backgrounds/seasonal-events/easter/forest_bg_optimized.webp",
       "category": "seasonal",
       "cost": 1,
@@ -954,7 +954,7 @@
     },
     {
       "id": "summerFruitsGlass",
-      "name": "Sommerfr�chte",
+      "name": "Sommerfrüchte",
       "file": "backgrounds/seasonal-events/summer-vacation/summer_fruits_glass_pattern.webp",
       "category": "seasonal",
       "cost": 1,
@@ -1005,7 +1005,7 @@
     },
     {
       "id": "streetChalk",
-      "name": "Stra�enkreide",
+      "name": "Straßenkreide",
       "file": "backgrounds/seasonal-events/summer-vacation/street_chalk.webp",
       "category": "seasonal",
       "cost": 1,
@@ -1039,7 +1039,7 @@
     },
     {
       "id": "ladybug",
-      "name": "Marienk�fer",
+      "name": "Marienkäfer",
       "file": "backgrounds/seasonal-events/summer-vacation/ladybug.webp",
       "category": "seasonal",
       "cost": 1,
@@ -1107,7 +1107,7 @@
     },
     {
       "id": "softGradientShapes",
-      "name": "Weiche Farbverl�ufe",
+      "name": "Weiche Farbverläufe",
       "file": "backgrounds/seasonal-events/summer-vacation/soft_gradient_shapes.webp",
       "category": "seasonal",
       "cost": 1,
