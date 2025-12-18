@@ -1410,6 +1410,74 @@
       "isDefault": false,
       "pack": "waldtiere",
       "minTasksSincePackUnlock": 16
+    },
+    {
+      "id": "alles_voellig_normal_kaese",
+      "name": "Käse in existenzieller Krise",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_kaese_existenzielle_krise.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 4
+    },
+    {
+      "id": "alles_voellig_normal_kartoffel",
+      "name": "Meditierende Kartoffel",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_meditierende_kartoffel_schwebend_v2.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 8
+    },
+    {
+      "id": "alles_voellig_normal_socke",
+      "name": "Philosophierende Socke",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_philosophierende_socke.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 12
+    },
+    {
+      "id": "alles_voellig_normal_schnecke",
+      "name": "Schnecke auf Geschäftsreise",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_schnecke_geschaeftsreise.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 16
     }
   ]
 }

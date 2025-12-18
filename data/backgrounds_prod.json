@@ -1245,6 +1245,66 @@
       "active": true,
       "pack": "waldtiere",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "alles_voellig_normal_kaese",
+      "name": "Käse in existenzieller Krise",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_kaese_existenzielle_krise.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "alles_voellig_normal_kartoffel",
+      "name": "Meditierende Kartoffel",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_meditierende_kartoffel_schwebend_v2.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "alles_voellig_normal_socke",
+      "name": "Philosophierende Socke",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_philosophierende_socke.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "alles_voellig_normal_schnecke",
+      "name": "Schnecke auf Geschäftsreise",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/kopfnuss_schnecke_geschaeftsreise.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }

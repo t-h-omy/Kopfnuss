@@ -249,6 +249,11 @@
       "id": "waldtiere",
       "name": "Waldtiere",
       "costStreakStones": 1
+    },
+    {
+      "id": "alles_voellig_normal",
+      "name": "Alles völlig normal",
+      "costStreakStones": 1
     }
   ]
 }
