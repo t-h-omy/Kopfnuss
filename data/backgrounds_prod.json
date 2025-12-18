@@ -1245,6 +1245,66 @@
       "active": true,
       "pack": "waldtiere",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "alles_voellig_normal_1",
+      "name": "Normal 1",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/bg_alles_voellig_normal_1.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "alles_voellig_normal_2",
+      "name": "Normal 2",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/bg_alles_voellig_normal_2.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "alles_voellig_normal_3",
+      "name": "Normal 3",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/bg_alles_voellig_normal_3.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "alles_voellig_normal_4",
+      "name": "Normal 4",
+      "file": "backgrounds/streak-packs/alles-voellig-normal/bg_alles_voellig_normal_4.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "alles_voellig_normal",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }
