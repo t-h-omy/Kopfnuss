@@ -20,6 +20,8 @@
   --app-height: 100vh;
   --header-height: 80px;
   --background-opacity: 0.35;  /* Set via JS from VISUAL_CONFIG */
+  --canvas-width-md: 480px;  /* Desktop canvas width at 768px+ */
+  --canvas-width-lg: 520px;  /* Desktop canvas width at 1024px+ */
 
   /* Primary Colors */
   --color-blue: #1E6BB8;
@@ -121,6 +123,14 @@ body {
   position: relative;
 }
 
+/* Desktop Canvas Wrapper - Only active on desktop (768px+) */
+#appCanvas {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background: transparent;
+}
+
 /* Task screen keyboard stability */
 body.task-screen-active {
   overflow: hidden;
@@ -129,7 +139,7 @@ body.task-screen-active {
 }
 
 /* Decorative background numbers */
-body::before {
+#appCanvas::before {
   content: '+ × ÷ − = 1 2 3 4 5 6 7 8 9 0';
   position: fixed;
   top: 10%;
@@ -2839,9 +2849,44 @@ button,
     --font-task: 36px;
   }
 
-  #app { max-width: 768px; }
+  /* Desktop Canvas - Centered mobile-like container */
+  #appCanvas {
+    max-width: var(--canvas-width-md);
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Constrain decorative background to canvas */
+  #appCanvas::before {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: var(--canvas-width-md);
+  }
+
+  /* Ensure challenges background is constrained to canvas */
+  .challenges-container::before {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: var(--canvas-width-md);
+  }
+
+  /* Ensure task screen background is constrained to canvas */
+  .task-screen::before {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: var(--canvas-width-md);
+  }
+
+  /* Constrain fixed header to canvas width */
+  .challenges-header {
+    max-width: var(--canvas-width-md);
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+
   #main-content { padding: var(--spacing-xl); }
-  body::before { font-size: 100px; }
 
   .challenges-header h1 { font-size: 36px; }
 
@@ -2870,9 +2915,29 @@ button,
     --font-task: 40px;
   }
 
-  #app { max-width: 1024px; }
+  /* Increase canvas max-width slightly for larger desktops */
+  #appCanvas {
+    max-width: var(--canvas-width-lg);
+  }
+
+  /* Update background constraint widths */
+  #appCanvas::before {
+    max-width: var(--canvas-width-lg);
+  }
+
+  .challenges-container::before {
+    max-width: var(--canvas-width-lg);
+  }
+
+  .task-screen::before {
+    max-width: var(--canvas-width-lg);
+  }
+
+  .challenges-header {
+    max-width: var(--canvas-width-lg);
+  }
+
   #main-content { padding: var(--spacing-xxl); }
-  body::before { font-size: 120px; }
 
   .challenge-node {
     width: 100px;
