@@ -121,6 +121,14 @@ body {
   position: relative;
 }
 
+/* Desktop Canvas Wrapper - Only active on desktop (768px+) */
+#appCanvas {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background: transparent;
+}
+
 /* Task screen keyboard stability */
 body.task-screen-active {
   overflow: hidden;
@@ -129,7 +137,7 @@ body.task-screen-active {
 }
 
 /* Decorative background numbers */
-body::before {
+#appCanvas::before {
   content: '+ × ÷ − = 1 2 3 4 5 6 7 8 9 0';
   position: fixed;
   top: 10%;
@@ -2839,9 +2847,45 @@ button,
     --font-task: 36px;
   }
 
+  /* Desktop Canvas - Centered mobile-like container */
+  #appCanvas {
+    max-width: 480px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Constrain decorative background to canvas */
+  #appCanvas::before {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 480px;
+  }
+
+  /* Ensure challenges background is constrained to canvas */
+  .challenges-container::before {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 480px;
+  }
+
+  /* Ensure task screen background is constrained to canvas */
+  .task-screen::before {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 480px;
+  }
+
+  /* Constrain fixed header to canvas width */
+  .challenges-header {
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+
   #app { max-width: 768px; }
   #main-content { padding: var(--spacing-xl); }
-  body::before { font-size: 100px; }
 
   .challenges-header h1 { font-size: 36px; }
 
@@ -2870,9 +2914,30 @@ button,
     --font-task: 40px;
   }
 
+  /* Increase canvas max-width slightly for larger desktops */
+  #appCanvas {
+    max-width: 520px;
+  }
+
+  /* Update background constraint widths */
+  #appCanvas::before {
+    max-width: 520px;
+  }
+
+  .challenges-container::before {
+    max-width: 520px;
+  }
+
+  .task-screen::before {
+    max-width: 520px;
+  }
+
+  .challenges-header {
+    max-width: 520px;
+  }
+
   #app { max-width: 1024px; }
   #main-content { padding: var(--spacing-xxl); }
-  body::before { font-size: 120px; }
 
   .challenge-node {
     width: 100px;
