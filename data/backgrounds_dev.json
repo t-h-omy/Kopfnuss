@@ -1478,6 +1478,74 @@
       "isDefault": false,
       "pack": "alles_voellig_normal",
       "minTasksSincePackUnlock": 16
+    },
+    {
+      "id": "pferde_foal_adult_storybook",
+      "name": "Fohlen und Erwachsenes",
+      "file": "backgrounds/streak-packs/pferde/kopfnuss_foal_adult_storybook.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "pferde",
+      "minTasksSincePackUnlock": 4
+    },
+    {
+      "id": "pferde_przewalski_peaceful_pair",
+      "name": "Przewalski-Pferde",
+      "file": "backgrounds/streak-packs/pferde/kopfnuss_przewalski_peaceful_pair.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "pferde",
+      "minTasksSincePackUnlock": 8
+    },
+    {
+      "id": "pferde_running_herd",
+      "name": "Laufende Herde",
+      "file": "backgrounds/streak-packs/pferde/kopfnuss_running_herd_motion_lines.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "pferde",
+      "minTasksSincePackUnlock": 12
+    },
+    {
+      "id": "pferde_wild_horses_pattern",
+      "name": "Wildpferde-Muster",
+      "file": "backgrounds/streak-packs/pferde/kopfnuss_wild_horses_pattern.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "pferde",
+      "minTasksSincePackUnlock": 16
     }
   ]
 }
