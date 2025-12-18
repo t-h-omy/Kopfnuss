@@ -2884,7 +2884,6 @@ button,
     right: auto;
   }
 
-  #app { max-width: 768px; }
   #main-content { padding: var(--spacing-xl); }
 
   .challenges-header h1 { font-size: 36px; }
@@ -2936,7 +2935,6 @@ button,
     max-width: 520px;
   }
 
-  #app { max-width: 1024px; }
   #main-content { padding: var(--spacing-xxl); }
 
   .challenge-node {
