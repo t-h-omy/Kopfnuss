@@ -1365,6 +1365,66 @@
       "active": true,
       "pack": "pferde",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "mondnacht_fireflies",
+      "name": "Glühwürmchen",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_moonlight_fireflies_magical.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "mondnacht_stag",
+      "name": "Hirsch",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_moonlight_stag_silhouette.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "mondnacht_vampire",
+      "name": "Vampirpaar",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_vampire_couple_blood_moon_1024x1536_q75.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "mondnacht_wolves",
+      "name": "Heulende Wölfe",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_wolves_howling_full_moon_1024x1536_q70.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }

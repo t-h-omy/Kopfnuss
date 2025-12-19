@@ -1546,6 +1546,74 @@
       "isDefault": false,
       "pack": "pferde",
       "minTasksSincePackUnlock": 16
+    },
+    {
+      "id": "mondnacht_fireflies",
+      "name": "Glühwürmchen",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_moonlight_fireflies_magical.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 4
+    },
+    {
+      "id": "mondnacht_stag",
+      "name": "Hirsch",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_moonlight_stag_silhouette.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 8
+    },
+    {
+      "id": "mondnacht_vampire",
+      "name": "Vampirpaar",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_vampire_couple_blood_moon_1024x1536_q75.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 12
+    },
+    {
+      "id": "mondnacht_wolves",
+      "name": "Heulende Wölfe",
+      "file": "backgrounds/streak-packs/mondnacht/kopfnuss_wolves_howling_full_moon_1024x1536_q70.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "mondnacht",
+      "minTasksSincePackUnlock": 16
     }
   ]
 }
