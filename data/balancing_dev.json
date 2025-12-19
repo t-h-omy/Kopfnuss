@@ -254,6 +254,11 @@
       "id": "alles_voellig_normal",
       "name": "Alles völlig normal",
       "costStreakStones": 1
+    },
+    {
+      "id": "pferde",
+      "name": "Pferde",
+      "costStreakStones": 1
     }
   ]
 }
