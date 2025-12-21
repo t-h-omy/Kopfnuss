@@ -484,40 +484,25 @@ export function restoreExpiredStreak() {
   saveDiamonds(diamonds - CONFIG.STREAK_RESCUE_COST);
   
   // Restore the streak and mark as active today
+  // Do NOT increment the streak - it will be incremented when player completes a challenge
   streak.isFrozen = false;
   streak.lossReason = null;
-  streak.lastActiveDate = today;
-  // Continue the streak (don't reset to 1)
-  streak.currentStreak += 1;
-  
-  // Update longest streak if necessary
-  if (streak.currentStreak > streak.longestStreak) {
-    streak.longestStreak = streak.currentStreak;
-  }
+  // Set lastActiveDate to one day before today so that completing a challenge today will increment the streak
+  // This ensures that when incrementStreakByChallenge is called, daysSinceLastActive will be 1
+  const yesterday = new Date(today + 'T00:00:00');
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  streak.lastActiveDate = yesterdayStr;
+  // Keep the streak at its current value (don't increment yet)
   
   saveStreak(streak);
-  
-  // Update milestone progress (continue, not reset, since streak was restored)
-  let milestoneProgress = loadMilestoneProgress();
-  milestoneProgress += 1;
-  
-  // Check if milestone is reached
-  const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
-  let milestoneReached = false;
-  
-  if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
-    milestoneReached = true;
-    milestoneProgress = 0; // Reset after milestone
-  }
-  
-  saveMilestoneProgress(milestoneProgress);
   
   return {
     success: true,
     message: 'Streak restored!',
     diamondsRemaining: diamonds - CONFIG.STREAK_RESCUE_COST,
     newStreak: streak.currentStreak,
-    milestoneReached: milestoneReached
+    milestoneReached: false
   };
 }
 
