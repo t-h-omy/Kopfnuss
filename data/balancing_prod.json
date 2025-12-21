@@ -67,8 +67,7 @@
     "SHADOW_SPREAD_LARGE": "2px",
     "SHADOW_OFFSET_Y_SMALL": "4px",
     "SHADOW_OFFSET_Y_LARGE": "6px",
-    "STREAK_MILESTONE_INTERVAL": 7,
-    "splashMinDurationMs": 1500
+    "STREAK_MILESTONE_INTERVAL": 7
   },
   "KOPFNUSS_DIFFICULTY": {
     "addition": {

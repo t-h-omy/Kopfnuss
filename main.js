@@ -135,7 +135,7 @@ import { logDebug, logInfo, logError } from './logic/logging.js';
  */
 const SplashScreenManager = {
   startTime: Date.now(),
-  minDuration: CONFIG.splashMinDurationMs || 1500,
+  minDuration: ANIMATION_TIMING.SPLASH_MIN_DURATION,
   appReady: false,
   
   /**
