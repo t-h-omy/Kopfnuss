@@ -264,6 +264,11 @@
       "id": "mondnacht",
       "name": "Mondnacht",
       "costStreakStones": 1
+    },
+    {
+      "id": "fruehling",
+      "name": "Frühling",
+      "costStreakStones": 1
     }
   ]
 }
