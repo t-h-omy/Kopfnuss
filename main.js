@@ -130,6 +130,60 @@ import {
 import { logDebug, logInfo, logError } from './logic/logging.js';
 
 /**
+ * Splash Screen Manager
+ * Manages the splash screen visibility and timing
+ */
+const SplashScreenManager = {
+  startTime: Date.now(),
+  minDuration: CONFIG.splashMinDurationMs || 1500,
+  appReady: false,
+  
+  /**
+   * Mark app as ready to show
+   */
+  markAppReady() {
+    this.appReady = true;
+    this.tryRemoveSplash();
+  },
+  
+  /**
+   * Try to remove splash screen if both conditions are met
+   */
+  tryRemoveSplash() {
+    if (!this.appReady) {
+      return;
+    }
+    
+    const elapsed = Date.now() - this.startTime;
+    const remaining = this.minDuration - elapsed;
+    
+    if (remaining > 0) {
+      // Wait for the remaining time
+      setTimeout(() => this.removeSplash(), remaining);
+    } else {
+      // Remove immediately
+      this.removeSplash();
+    }
+  },
+  
+  /**
+   * Remove the splash screen from DOM
+   */
+  removeSplash() {
+    const splashScreen = document.getElementById('splash-screen');
+    if (splashScreen) {
+      // Add fade-out class for smooth transition
+      splashScreen.classList.add('fade-out');
+      
+      // Remove from DOM after animation completes
+      setTimeout(() => {
+        splashScreen.remove();
+      }, 400); // Match the fadeOut animation duration
+    }
+  }
+};
+
+/**
  * Set the --app-height CSS custom property for mobile keyboard stability
  * This prevents layout shifts when mobile keyboard appears/disappears
  */
@@ -3744,6 +3798,9 @@ class KopfnussApp {
     
     // Start the popup chain
     showEventEndPopupIfNeeded();
+    
+    // Mark app as ready after initialization completes
+    SplashScreenManager.markAppReady();
   }
   
   handleOfflineStatus() {
