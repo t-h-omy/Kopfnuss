@@ -1425,6 +1425,66 @@
       "active": true,
       "pack": "mondnacht",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "fruehling_bees",
+      "name": "Bienen",
+      "file": "backgrounds/streak-packs/fruehling/kopfnuss_big_fluffy_bees_pollen_1024x1536_q60.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "fruehling",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "fruehling_blossom",
+      "name": "Blütenregen",
+      "file": "backgrounds/streak-packs/fruehling/kopfnuss_blossom_rain_oil_painting_1024x1536_q28.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "fruehling",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "fruehling_dandelion",
+      "name": "Löwenzahnwiese",
+      "file": "backgrounds/streak-packs/fruehling/kopfnuss_dandelion_meadow_blue_sky_1024x1536_q40.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "fruehling",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "fruehling_bunnies",
+      "name": "Hasen",
+      "file": "backgrounds/streak-packs/fruehling/kopfnuss_fresh_green_bushes_bunnies_1024x1536_q80.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "fruehling",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }
