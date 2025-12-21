@@ -220,8 +220,7 @@ document.documentElement.style.setProperty('--shop-badge-shake-duration', `${ANI
 document.documentElement.style.setProperty('--reward-diamond-shake-interval', `${ANIMATION_TIMING.REWARD_BUTTON_SHAKE_INTERVAL_MS}ms`);
 document.documentElement.style.setProperty('--reward-diamond-shake-duration', `${ANIMATION_TIMING.REWARD_BUTTON_SHAKE_DURATION_MS}ms`);
 
-// Apply selected background on load
-applySelectedBackground();
+// Note: applySelectedBackground() is now called in app.init() after balancing data loads
 
 // Initialize audio mute state from storage
 audioManager.setMuted(loadAudioMutedSetting());
@@ -3699,6 +3698,10 @@ class KopfnussApp {
   }
   
   init() {
+    // Apply selected background after balancing data has loaded
+    // This must be called early to avoid showing default background briefly
+    applySelectedBackground();
+    
     // Initialize UI bridge with references to screen loading functions
     initializeUIBridge({
       loadChallengesScreen,
