@@ -178,6 +178,12 @@ const SplashScreenManager = {
       // Remove from DOM after animation completes
       setTimeout(() => {
         splashScreen.remove();
+        
+        // Show app canvas after splash screen is removed
+        const appCanvas = document.getElementById('appCanvas');
+        if (appCanvas) {
+          appCanvas.classList.add('splash-complete');
+        }
       }, 400); // Match the fadeOut animation duration
     }
   }

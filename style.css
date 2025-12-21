@@ -129,6 +129,13 @@ body {
   min-height: 100vh;
   position: relative;
   background: transparent;
+  /* Hidden by default until splash screen is removed */
+  visibility: hidden;
+}
+
+/* Show app canvas after splash screen is removed */
+#appCanvas.splash-complete {
+  visibility: visible;
 }
 
 /* Task screen keyboard stability */
