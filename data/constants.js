@@ -7,6 +7,11 @@
  * These values control animation durations and delays throughout the app
  */
 export const ANIMATION_TIMING = {
+  // Minimum duration for splash screen visibility
+  // Applied in: main.js - SplashScreenManager
+  // Ensures splash screen remains visible for at least this duration
+  SPLASH_MIN_DURATION: 1500,
+  
   // Duration of the pulsing highlight effect on challenge nodes after auto-scroll
   // Applied in: logic/visualEffects.js - scrollToAndHighlightChallenge()
   // CSS match: style.css - .challenge-focus-highlight animation
