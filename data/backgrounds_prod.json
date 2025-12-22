@@ -1485,6 +1485,66 @@
       "active": true,
       "pack": "fruehling",
       "minTasksSincePackUnlock": 340
+    },
+    {
+      "id": "instrumente_klarinette",
+      "name": "Klarinette",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_klarinette_jazznacht.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 40
+    },
+    {
+      "id": "instrumente_piano",
+      "name": "Piano",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_piano_klaviertasten_rhythmus.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 140
+    },
+    {
+      "id": "instrumente_querfloete",
+      "name": "Querflöte",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_querfloete_floetenwind_silber.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 240
+    },
+    {
+      "id": "instrumente_tuba",
+      "name": "Tuba",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_tuba_brass_glow_spirale.webp",
+      "category": "standard",
+      "cost": 4,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null
+      },
+      "event": null,
+      "active": true,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 340
     }
   ]
 }
