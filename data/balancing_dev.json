@@ -269,6 +269,11 @@
       "id": "fruehling",
       "name": "Frühling",
       "costStreakStones": 1
+    },
+    {
+      "id": "instrumente",
+      "name": "Instrumente",
+      "costStreakStones": 1
     }
   ]
 }

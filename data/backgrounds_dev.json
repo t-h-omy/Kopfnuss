@@ -1682,6 +1682,74 @@
       "isDefault": false,
       "pack": "fruehling",
       "minTasksSincePackUnlock": 16
+    },
+    {
+      "id": "instrumente_klarinette",
+      "name": "Klarinette",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_klarinette_jazznacht.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 4
+    },
+    {
+      "id": "instrumente_piano",
+      "name": "Piano",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_piano_klaviertasten_rhythmus.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 8
+    },
+    {
+      "id": "instrumente_querfloete",
+      "name": "Querflöte",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_querfloete_floetenwind_silber.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 12
+    },
+    {
+      "id": "instrumente_tuba",
+      "name": "Tuba",
+      "file": "backgrounds/streak-packs/instrumente/kopfnuss_tuba_brass_glow_spirale.webp",
+      "category": "standard",
+      "cost": 1,
+      "currency": "diamonds",
+      "requirements": {
+        "minTasksSinceStart": null,
+        "minTasksSinceEventStart": null
+      },
+      "event": null,
+      "active": true,
+      "isDefault": false,
+      "pack": "instrumente",
+      "minTasksSincePackUnlock": 16
     }
   ]
 }
