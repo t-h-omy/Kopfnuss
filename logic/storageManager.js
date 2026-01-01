@@ -279,6 +279,56 @@ export function loadStreak() {
 }
 
 /**
+ * PROD SAVEGAME ACCESS (for Dev Menu only)
+ * These functions bypass dev mode prefix to access production savegame directly.
+ * WARNING: Only use these in dev menu cheats to modify PROD savegame.
+ */
+
+/**
+ * Load streak data from PROD savegame (bypasses dev mode prefix)
+ * @returns {Object} Streak object with default structure
+ */
+export function loadProdStreak() {
+  const prodKey = 'kopfnuss_streak';
+  return loadFromStorage(prodKey, {
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActiveDate: null,
+    isFrozen: false,
+    lossReason: null
+  });
+}
+
+/**
+ * Save streak data to PROD savegame (bypasses dev mode prefix)
+ * @param {Object} streak - Streak object
+ * @returns {boolean} Success status
+ */
+export function saveProdStreak(streak) {
+  const prodKey = 'kopfnuss_streak';
+  return saveToStorage(prodKey, streak);
+}
+
+/**
+ * Load milestone progress from PROD savegame (bypasses dev mode prefix)
+ * @returns {number} Current milestone progress (defaults to 0)
+ */
+export function loadProdMilestoneProgress() {
+  const prodKey = 'kopfnuss_milestone_progress';
+  return loadFromStorage(prodKey, 0);
+}
+
+/**
+ * Save milestone progress to PROD savegame (bypasses dev mode prefix)
+ * @param {number} progress - Current milestone progress count
+ * @returns {boolean} Success status
+ */
+export function saveProdMilestoneProgress(progress) {
+  const prodKey = 'kopfnuss_milestone_progress';
+  return saveToStorage(prodKey, progress);
+}
+
+/**
  * Save diamond count
  * @param {number} diamonds - Number of diamonds
  * @returns {boolean} Success status

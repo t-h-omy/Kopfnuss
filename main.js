@@ -30,7 +30,11 @@ import {
   loadStreakStones,
   saveStreakStones,
   loadMilestoneProgress,
-  saveMilestoneProgress
+  saveMilestoneProgress,
+  loadProdStreak,
+  saveProdStreak,
+  loadProdMilestoneProgress,
+  saveProdMilestoneProgress
 } from './logic/storageManager.js';
 import { VERSION } from './version.js';
 import { CONFIG } from './data/balancingLoader.js';
@@ -2755,6 +2759,14 @@ function showSettingsPopup() {
           </div>
         </div>
         <div class="dev-setting-row">
+          <label>🔥 Streak (PROD):</label>
+          <div class="dev-setting-controls">
+            <button id="dev-prod-streak-minus" class="dev-btn-small">-</button>
+            <span id="dev-prod-streak-value" class="dev-value">${loadProdStreak().currentStreak}</span>
+            <button id="dev-prod-streak-plus" class="dev-btn-small">+</button>
+          </div>
+        </div>
+        <div class="dev-setting-row">
           <label>🧊 Streak Status:</label>
           <div class="dev-setting-controls">
             <button id="dev-freeze-streak" class="dev-btn-action">Einfrieren</button>
@@ -3115,6 +3127,71 @@ function setupDevSettingsListeners() {
       if (milestoneReached) {
         showMilestoneRewardPopup();
       }
+    });
+  }
+  
+  // PROD Streak controls - modifies PROD savegame only
+  const prodStreakMinus = document.getElementById('dev-prod-streak-minus');
+  const prodStreakPlus = document.getElementById('dev-prod-streak-plus');
+  const prodStreakValue = document.getElementById('dev-prod-streak-value');
+  
+  if (prodStreakMinus) {
+    prodStreakMinus.addEventListener('click', () => {
+      const streak = loadProdStreak();
+      const oldStreak = streak.currentStreak;
+      streak.currentStreak = Math.max(0, streak.currentStreak - 1);
+      saveProdStreak(streak);
+      
+      // Update milestone progress: decrease by 1 if streak was actually decreased
+      if (oldStreak > 0) {
+        let milestoneProgress = loadProdMilestoneProgress();
+        milestoneProgress = Math.max(0, milestoneProgress - 1);
+        saveProdMilestoneProgress(milestoneProgress);
+      }
+      
+      // Update dev settings display
+      if (prodStreakValue) prodStreakValue.textContent = streak.currentStreak;
+      // Only update main UI if not in dev mode (i.e., showing PROD data)
+      if (!loadDevModeSetting()) {
+        const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
+        if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
+      }
+      showDevFeedback('🔥 PROD: ' + streak.currentStreak);
+    });
+  }
+  
+  if (prodStreakPlus) {
+    prodStreakPlus.addEventListener('click', () => {
+      const streak = loadProdStreak();
+      streak.currentStreak += 1;
+      if (streak.currentStreak > streak.longestStreak) {
+        streak.longestStreak = streak.currentStreak;
+      }
+      // DON'T update lastActiveDate in dev settings to avoid interfering with real gameplay
+      saveProdStreak(streak);
+      
+      // Update milestone progress: increase by 1
+      let milestoneProgress = loadProdMilestoneProgress();
+      milestoneProgress += 1;
+      
+      // Check if milestone is reached (but don't trigger popup for PROD modifications)
+      // NOTE: Per requirements, PROD cheat must NOT trigger milestone reward popups
+      const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
+      
+      if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
+        milestoneProgress = 0; // Reset after milestone
+      }
+      
+      saveProdMilestoneProgress(milestoneProgress);
+      
+      // Update dev settings display
+      if (prodStreakValue) prodStreakValue.textContent = streak.currentStreak;
+      // Only update main UI if not in dev mode (i.e., showing PROD data)
+      if (!loadDevModeSetting()) {
+        const mainStreakDisplay = document.querySelector('.header-stats .stat-capsule:first-child .stat-value');
+        if (mainStreakDisplay) mainStreakDisplay.textContent = streak.currentStreak;
+      }
+      showDevFeedback('🔥 PROD: ' + streak.currentStreak);
     });
   }
   
