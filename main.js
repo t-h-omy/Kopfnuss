@@ -3175,6 +3175,7 @@ function setupDevSettingsListeners() {
       milestoneProgress += 1;
       
       // Check if milestone is reached (but don't trigger popup for PROD modifications)
+      // NOTE: Per requirements, PROD cheat must NOT trigger milestone reward popups
       const milestoneInterval = CONFIG.STREAK_MILESTONE_INTERVAL;
       
       if (streak.currentStreak > 0 && streak.currentStreak % milestoneInterval === 0) {
