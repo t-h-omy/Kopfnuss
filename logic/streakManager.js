@@ -317,9 +317,26 @@ export function incrementStreakByChallenge() {
     };
   }
   
-  // More than 1 day gap - this shouldn't happen if updateStreak was called correctly
-  // But handle it by starting a new streak
-  if (daysSinceLastActive > 1) {
+  // More than 1 day gap - check what happened
+  if (daysSinceLastActive === 2) {
+    // 2 day gap means streak should be frozen, not reset
+    // This case should be handled by updateStreak() setting isFrozen=true
+    // and then unfreezeStreakByChallenge() should be called instead
+    // But if we get here, it means the streak wasn't properly frozen yet
+    // So we freeze it now and return without incrementing
+    streak.isFrozen = true;
+    streak.lossReason = STREAK_LOSS_REASON.FROZEN;
+    saveStreak(streak);
+    return {
+      success: false,
+      wasIncremented: false,
+      message: 'Streak is now frozen due to 2 day gap',
+      milestoneReached: false
+    };
+  }
+  
+  // More than 2 day gap - start new streak
+  if (daysSinceLastActive > 2) {
     streak.currentStreak = 1;
     streak.lastActiveDate = today;
     streak.isFrozen = false;
@@ -483,14 +500,17 @@ export function restoreExpiredStreak() {
   // Spend diamond and restore streak
   saveDiamonds(diamonds - CONFIG.STREAK_RESCUE_COST);
   
-  // Restore the streak and mark as active today
-  // IMPORTANT: Set lastActiveDate to TODAY, not yesterday
-  // This prevents a bug where if user doesn't complete a challenge immediately
-  // and reopens the next day, the streak would reset to 1
+  // Restore the streak and set lastActiveDate to yesterday
+  // This allows player to increment streak when completing a challenge today
+  // If player doesn't complete a challenge today and reopens tomorrow, streak will be frozen (2 day gap)
   streak.isFrozen = false;
   streak.lossReason = null;
-  streak.lastActiveDate = today; // Set to today, not yesterday
-  // Keep the streak at its current value (don't increment yet - will increment when challenge is completed)
+  // Set lastActiveDate to one day before today so that completing a challenge today will increment the streak
+  const yesterday = new Date(today + 'T00:00:00');
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  streak.lastActiveDate = yesterdayStr;
+  // Keep the streak at its current value (don't increment yet)
   
   saveStreak(streak);
   
