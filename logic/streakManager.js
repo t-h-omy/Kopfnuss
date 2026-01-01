@@ -484,16 +484,13 @@ export function restoreExpiredStreak() {
   saveDiamonds(diamonds - CONFIG.STREAK_RESCUE_COST);
   
   // Restore the streak and mark as active today
-  // Do NOT increment the streak - it will be incremented when player completes a challenge
+  // IMPORTANT: Set lastActiveDate to TODAY, not yesterday
+  // This prevents a bug where if user doesn't complete a challenge immediately
+  // and reopens the next day, the streak would reset to 1
   streak.isFrozen = false;
   streak.lossReason = null;
-  // Set lastActiveDate to one day before today so that completing a challenge today will increment the streak
-  // This ensures that when incrementStreakByChallenge is called, daysSinceLastActive will be 1
-  const yesterday = new Date(today + 'T00:00:00');
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-  streak.lastActiveDate = yesterdayStr;
-  // Keep the streak at its current value (don't increment yet)
+  streak.lastActiveDate = today; // Set to today, not yesterday
+  // Keep the streak at its current value (don't increment yet - will increment when challenge is completed)
   
   saveStreak(streak);
   
